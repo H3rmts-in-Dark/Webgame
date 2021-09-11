@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	
+	"Webgame/api"
 	"Webgame/serve"
 	"Webgame/util"
 	
@@ -17,6 +18,7 @@ func main() {
 	
 	router := mux.NewRouter().StrictSlash(true)
 	serve.CreateServe(router)
+	api.CreateAPI(router)
 	
 	err := http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
 	util.Log("MAIN", "Err: ", err)

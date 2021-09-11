@@ -13,14 +13,15 @@ import (
 
 var site []byte
 
-func Loadsite() {
+func Loadsite() error {
 	var err error
 	site, err = ioutil.ReadFile("test.html")
 	if err != nil {
 		util.Log("Serve", "err:", err)
-		panic(err)
+		return err
 	}
 	util.Log("Serve", "loaded Site")
+	return nil
 }
 
 func getSite() ([]byte, error) {

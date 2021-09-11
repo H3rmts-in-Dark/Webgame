@@ -8,8 +8,9 @@ import (
 )
 
 type config struct {
-	Port       int32
-	LogPrefix  bool
+	Port      int32
+	LogPrefix bool
+	Code      string
 }
 
 var conf config
@@ -25,13 +26,13 @@ func LoadConfig() {
 		panic(err)
 	}
 	defaultConfig()
-
+	
 	err = json.Unmarshal(data, &conf)
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
-
+	
 	Log("Config", "loaded config: ", fmt.Sprintf("%+v", conf))
 }
 

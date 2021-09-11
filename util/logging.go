@@ -5,15 +5,15 @@ import (
 	lg "log"
 )
 
-var stretch = "12"
+var stretch = "8"
 
 func Log(prefx string, message ...interface{}) {
-	prn := ""
+	var printstr string
 	if GetConfig().LogPrefix {
-		prn += fmt.Sprintf("%-"+stretch+"s|", prefx)
+		printstr += fmt.Sprintf("%-"+stretch+"s|", prefx)
 	}
 	for _, mess := range message {
-		prn += fmt.Sprintf("%v", mess)
+		printstr += fmt.Sprintf("%v", mess) + " "
 	}
-	lg.Println(prn)
+	lg.Println(printstr)
 }
