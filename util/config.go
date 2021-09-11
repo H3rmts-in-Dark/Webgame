@@ -8,8 +8,8 @@ import (
 )
 
 type config struct {
-	Port       int32
-	LogPrefix  bool
+	Port      int32
+	LogPrefix bool
 }
 
 var conf config
@@ -32,7 +32,7 @@ func LoadConfig() {
 		panic(err)
 	}
 
-	Log("Config", "loaded config: ", fmt.Sprintf("%+v", conf))
+	Log("CONFIG", "Loaded config: ", fmt.Sprintf("%+v", conf))
 }
 
 func defaultConfig() {

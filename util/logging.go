@@ -8,12 +8,12 @@ import (
 var stretch = "12"
 
 func Log(prefx string, message ...interface{}) {
-	prn := ""
+	print := ""
 	if GetConfig().LogPrefix {
-		prn += fmt.Sprintf("%-"+stretch+"s|", prefx)
+		print += fmt.Sprintf("%-"+stretch+"s| ", prefx)
 	}
 	for _, mess := range message {
-		prn += fmt.Sprintf("%v", mess)
+		print += fmt.Sprintf("%v", mess)
 	}
-	lg.Println(prn)
+	lg.Println(print)
 }
