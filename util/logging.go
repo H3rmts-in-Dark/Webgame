@@ -5,7 +5,7 @@ import (
 	lg "log"
 )
 
-var stretch = "14"
+var stretch = "12"
 
 func Log(prefx string, message ...interface{}) {
 	prn := ""
