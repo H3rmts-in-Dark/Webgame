@@ -49,19 +49,19 @@ func reciveAPI(raw *[]byte) []byte {
 	err := json.Unmarshal(*raw, &recive)
 	
 	if err != nil {
-		util.Log("API", "JSON decoding error: ", err, " :", string(*raw))
+		util.Log(util.API, "JSON decoding error: ", err, " :", string(*raw))
 		return nil
 	}
 	if len(recive) == 0 {
-		util.Log("API", "empty JSON")
+		util.Log(util.API, "empty JSON")
 		return nil
 	}
 	action := validateAPIJSON(&recive)
 	if action == Invalid {
-		util.Log("Api", "invalid action", recive)
+		util.Log(util.API, "invalid action", recive)
 		return nil
 	}
-	util.Log("Api", "recived:", recive)
+	util.Log(util.API, "recived:", recive)
 	
 	var data interface{}
 	
@@ -74,13 +74,13 @@ func reciveAPI(raw *[]byte) []byte {
 	}
 	
 	if err != nil {
-		util.Log("Api", "send err:", err)
+		util.Log(util.API, "send err:", err)
 		msg, _ := json.Marshal(map[string]interface{}{"action": action, "error": err.Error()})
 		return msg
 	} else {
 		msg, err := json.Marshal(map[string]interface{}{"action": action, "data": data})
 		if err != nil {
-			util.Log("Api", "send err:", err)
+			util.Log(util.API, "send err:", err)
 			msg, _ := json.Marshal(map[string]interface{}{"action": action, "error": err.Error()})
 			return msg
 		}
@@ -107,9 +107,9 @@ func CreateAPI(rout *mux.Router) {
 		
 		_, err := w.Write(msg)
 		if err != nil {
-			util.Log("API", "err in sending:", err)
+			util.Log(util.API, "err in sending:", err)
 		} else {
-			util.Log("API", "send:", string(msg))
+			util.Log(util.API, "send:", string(msg))
 		}
 	}).Methods("POST")
 }

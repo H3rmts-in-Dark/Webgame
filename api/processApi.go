@@ -25,10 +25,10 @@ func Checkadmin(js *map[string]interface{}) error {
 		if util.GetConfig().Code == code {
 			return nil
 		}
+		util.Log(util.API, "Code invalid:", code)
 	}
 	return &Permissionerror{}
 }
-
 
 /*
 Permissionerror

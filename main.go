@@ -20,21 +20,21 @@ func main() {
 		return
 	}
 	
-	util.Log("MAIN", "Starting Server")
+	util.Log(util.MAIN, "Starting Server")
 	
 	err = serve.Loadsite()
 	if err != nil {
 		return
 	}
-	util.Log("MAIN", "Loaded Sites")
+	util.Log(util.MAIN, "Loaded Sites")
 	
 	router := mux.NewRouter().StrictSlash(true)
 	serve.CreateServe(router)
 	api.CreateAPI(router)
 	
-	util.Log("MAIN", "Startup complete")
+	util.Log(util.MAIN, "Startup complete")
 	
 	// bocks if success
 	err = http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
-	util.Log("MAIN", "Error: ", err)
+	util.Log(util.MAIN, "Error: ", err)
 }
