@@ -29,6 +29,10 @@ func Err(prefx Type, err error, printtrace bool, message ...interface{}) {
 	}
 }
 
+func Debug(message ...interface{}) {
+	log("DEBUG", "*", message...)
+}
+
 func Log(prefx Type, message ...interface{}) {
 	log(prefx, ">", message...)
 }
@@ -36,7 +40,7 @@ func Log(prefx Type, message ...interface{}) {
 func log(prefx Type, suffix string, message ...interface{}) {
 	now := time.Now() // get this early.
 
-	_, file, line, ok := runtime.Caller(1)
+	_, file, line, ok := runtime.Caller(2)
 	if !ok {
 		file = "???"
 		line = 0
