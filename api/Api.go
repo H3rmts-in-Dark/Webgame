@@ -16,8 +16,8 @@ checks if recived JSON has APIkey and (Register or Activity or Log or Action) as
 returns the API key and Requesttype
 */
 func validateAPIJSON(js *map[string]interface{}) Action {
-	action, action_exists := (*js)["action"]
-	if action_exists {
+	action, actionExists := (*js)["action"]
+	if actionExists {
 		switch toAction(action) {
 		case ReloadSite:
 			return ReloadSite

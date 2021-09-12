@@ -20,8 +20,8 @@ Checkadmin
 check if send shacode exists or equals stored sha code
 */
 func Checkadmin(js *map[string]interface{}) error {
-	code, code_exists := (*js)["code"]
-	if code_exists {
+	code, codeExists := (*js)["code"]
+	if codeExists {
 		if util.GetConfig().Code == code {
 			return nil
 		}

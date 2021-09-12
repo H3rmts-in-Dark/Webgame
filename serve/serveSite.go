@@ -27,12 +27,13 @@ func getSite() ([]byte, error) {
 	if site != nil {
 		return site, nil
 	} else {
-		return nil, errors.New("No site loaded")
+		return nil, errors.New("no site loaded")
 	}
 }
 
 /*
-CreateServe:
+CreateServe
+
 Registers a handle for '/' to serve the html site
 */
 func CreateServe(rout *mux.Router) {
