@@ -2,12 +2,11 @@ package serve
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	
+
 	"Webgame/util"
-	
+
 	"github.com/gorilla/mux"
 )
 
@@ -15,12 +14,12 @@ var site []byte
 
 func Loadsite() error {
 	var err error
-	site, err = ioutil.ReadFile("test.html")
+	site, err = ioutil.ReadFile("resources/test.html")
 	if err != nil {
-		util.Log("Serve", "err:", err)
+		util.Log("SERVE", "Error:", err)
 		return err
 	}
-	util.Log("Serve", "loaded Site")
+	util.Log("SERVE", "loaded Site")
 	return nil
 }
 
@@ -28,37 +27,34 @@ func getSite() ([]byte, error) {
 	if site != nil {
 		return site, nil
 	} else {
-		return nil, errors.New("site not loaded")
+		return nil, errors.New("No site loaded")
 	}
 }
 
 /*
-CreateServe
-
-Registers '/' handle to server the html site
+CreateServe:
+Registers a handle for '/' to serve the html site
 */
 func CreateServe(rout *mux.Router) {
 	rout.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println()
-		
-		util.Log("Serve", "received request ", r.RemoteAddr)
-		
+		util.Log("SERVE", "received request from ", r.RemoteAddr)
+
 		msg, err := getSite()
-		
+
 		if err != nil {
-			util.Log("Serve", "err:", err)
+			util.Log("SERVE", "Error: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			msg = []byte("Error serving site")
 		} else {
 			w.WriteHeader(http.StatusOK)
 			w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		}
-		
+
 		_, err = w.Write(msg)
 		if err != nil {
-			util.Log("API", "err in sending:", err)
+			util.Log("SERVE", "Error in sending:", err)
 		} else {
-			util.Log("API", "send site")
+			util.Log("SERVE", "Sent site successfully")
 		}
 	})
 }

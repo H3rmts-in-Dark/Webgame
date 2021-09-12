@@ -1,5 +1,7 @@
 {
 	"Port": 18265,
 	"LogPrefix": true,
-	"Code": "supersaveandsecureAPIcode"
+	"Code": "supersaveandsecureAPIcode",
+	"prefixstretch": 9,
+	"locationstretch": 16
 }

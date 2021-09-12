@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 )
 
 type config struct {
-	Port      int32
-	LogPrefix bool
-	Code      string
+	Port            uint16
+	LogPrefix       bool
+	Code            string
+	Prefixstretch   int8
+	Locationstretch int8
 }
 
 var conf config
@@ -19,24 +20,32 @@ func GetConfig() *config {
 	return &conf
 }
 
-func LoadConfig() {
-	data, err := ioutil.ReadFile("util/config.json")
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	}
+func LoadConfig() error {
 	defaultConfig()
+	
+	data, err := ioutil.ReadFile(configfile)
+	if err != nil {
+		Log("CONFIG", "Error: ", err)
+		return err
+	}
 	
 	err = json.Unmarshal(data, &conf)
 	if err != nil {
-		log.Println(err)
-		panic(err)
+		Log("CONFIG", "Error: ", err)
+		return err
 	}
-	
-	Log("Config", "loaded config: ", fmt.Sprintf("%+v", conf))
+	Log("CONFIG", "Loaded config: ", fmt.Sprintf("%+v", conf))
+	return nil
 }
 
 func defaultConfig() {
-	conf.Port = -1
+	conf.Port = 0
 	conf.LogPrefix = true
+	conf.Code = "Bonk this should be overridden immediately"
+	conf.Prefixstretch = 0
+	conf.Locationstretch = 0
 }
+
+const (
+	configfile = "util/config.json"
+)

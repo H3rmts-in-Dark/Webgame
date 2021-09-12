@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	
 	"Webgame/api"
 	"Webgame/serve"
@@ -12,14 +13,28 @@ import (
 )
 
 func main() {
-	fmt.Println("\nStarting Server...\n ")
-	util.LoadConfig()
-	serve.Loadsite()
+	fmt.Printf("\nStarting Webgame Server Program args:%s\n\n", os.Args[1:])
+	
+	err := util.LoadConfig()
+	if err != nil {
+		return
+	}
+	
+	util.Log("MAIN", "Starting Server")
+	
+	err = serve.Loadsite()
+	if err != nil {
+		return
+	}
+	util.Log("MAIN", "Loaded Sites")
 	
 	router := mux.NewRouter().StrictSlash(true)
 	serve.CreateServe(router)
 	api.CreateAPI(router)
 	
-	err := http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
-	util.Log("MAIN", "Err: ", err)
+	util.Log("MAIN", "Startup complete")
+	
+	// bocks if success
+	err = http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
+	util.Log("MAIN", "Error: ", err)
 }
