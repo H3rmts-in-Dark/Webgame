@@ -2,4 +2,5 @@
  Webgame 
 
 Cmd to test API
-> curl http://localhost:18265/api -d "{\"action\":\"Reload Site\",\"code\":\"supersaveandsecureAPIcode\"}"
+> cmd
+> curl http://192.168.187.10:18265/api -d "{\"action\":\"Reload Site\",\"code\":\"supersaveandsecureAPIcode\"}"
