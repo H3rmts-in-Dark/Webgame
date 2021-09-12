@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
+	
 	"Webgame/util"
-
+	
 	"github.com/gorilla/mux"
 )
 
@@ -44,10 +44,10 @@ Afterwards, it returns a response byte array made of JSON data to write back at 
 */
 func receiveAPI(raw *[]byte) []byte {
 	fmt.Println()
-
+	
 	var receive map[string]interface{}
 	err := json.Unmarshal(*raw, &receive)
-
+	
 	if err != nil {
 		util.Err(util.API, err, false, "JSON decoding error:", string(*raw))
 		return nil
@@ -62,9 +62,9 @@ func receiveAPI(raw *[]byte) []byte {
 		return nil
 	}
 	util.Log(util.API, "received:", receive)
-
+	
 	var data interface{}
-
+	
 	switch action {
 	case ReloadSite:
 		err = CheckAdmin(&receive)
@@ -72,7 +72,7 @@ func receiveAPI(raw *[]byte) []byte {
 			data, err = ProcessSiteReloadRequest()
 		}
 	}
-
+	
 	if err != nil {
 		util.Err(util.API, err, false, "Error processing request")
 		msg, _ := json.Marshal(map[string]interface{}{"action": action, "error": err.Error()})
@@ -97,14 +97,14 @@ func CreateAPI(rout *mux.Router) {
 	rout.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 		raw, _ := ioutil.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "application/json")
-
+		
 		msg := receiveAPI(&raw)
-
+		
 		if msg == nil {
 			w.WriteHeader(http.StatusBadRequest)
 			msg, _ = json.Marshal(map[string]interface{}{"error": "Bad request"})
 		}
-
+		
 		_, err := w.Write(msg)
 		if err != nil {
 			util.Err(util.API, err, true, "Error writing response:")

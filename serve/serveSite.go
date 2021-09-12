@@ -71,10 +71,16 @@ func CreateServe(rout *mux.Router) {
 	rout.HandleFunc("/{site}", func(w http.ResponseWriter, r *http.Request) {
 		msg, err := getSite(r.URL.Path[1:])
 		
+		if r.URL.Path[1:] == "api" {
+			util.Err(util.SERVE, err, true, "API requested")
+			w.WriteHeader(http.StatusForbidden)
+			msg = []byte("Site Forbidden")
+		} else
+		
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error getting site")
-			w.WriteHeader(http.StatusInternalServerError)
-			msg = []byte("Error serving site")
+			w.WriteHeader(http.StatusNotFound)
+			msg = []byte("Site not found")
 		} else {
 			switch strings.Split(r.URL.Path[1:], ".")[1] {
 			case "css":
