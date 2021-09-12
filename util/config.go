@@ -14,6 +14,10 @@ type config struct {
 	Locationstretch int8
 }
 
+const (
+	configfile = "resources/config.json"
+)
+
 var conf config
 
 func GetConfig() *config {
@@ -22,30 +26,26 @@ func GetConfig() *config {
 
 func LoadConfig() error {
 	defaultConfig()
-	
+
 	data, err := ioutil.ReadFile(configfile)
 	if err != nil {
-		Err(CONFIG, err, true,"Error reading", configfile, "File")
+		Err(CONFIG, err, true, "Error reading", configfile, "file")
 		return err
 	}
-	
+
 	err = json.Unmarshal(data, &conf)
 	if err != nil {
-		Err(CONFIG, err,true, "Error Unmarshalling Configs")
+		Err(CONFIG, err, true, "Error unmarshalling configs")
 		return err
 	}
-	Log(CONFIG, "Loaded config: ", fmt.Sprintf("%+v", conf))
+	Log(CONFIG, "Loaded config:", fmt.Sprintf("%+v", conf))
 	return nil
 }
 
 func defaultConfig() {
 	conf.Port = 0
 	conf.LogPrefix = true
-	conf.Code = "Bonk this should be overridden immediately"
+	conf.Code = "this_is_supposed_to_be_a_secure_code_which_should_be_overridden"
 	conf.Prefixstretch = 0
 	conf.Locationstretch = 0
 }
-
-const (
-	configfile = "util/config.json"
-)

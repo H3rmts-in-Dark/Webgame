@@ -11,21 +11,21 @@ ProcessSiteReloadRequest
 Process request to add Program to list of connections
 */
 func ProcessSiteReloadRequest() (string, error) {
-	return "success", serve.Loadsite()
+	return "success", serve.Loadsites()
 }
 
 /*
-Checkadmin
+CheckAdmin
 
 check if send shacode exists or equals stored sha code
 */
-func Checkadmin(js *map[string]interface{}) error {
+func CheckAdmin(js *map[string]interface{}) error {
 	code, codeExists := (*js)["code"]
 	if codeExists {
 		if util.GetConfig().Code == code {
 			return nil
 		}
-		util.Err(util.API,nil, false,"Code invalid:", code)
+		util.Err(util.API, nil, false, "An invalid code has been entered:", code)
 	}
 	return &Permissionerror{}
 }
@@ -33,10 +33,10 @@ func Checkadmin(js *map[string]interface{}) error {
 /*
 Permissionerror
 
-Error thrown/returned when no admin priv are present
+Error thrown/returned when no admin privileges are present
 */
 type Permissionerror struct{}
 
 func (m *Permissionerror) Error() string {
-	return "no admin permissions"
+	return "No admin permissions"
 }
