@@ -36,5 +36,5 @@ func main() {
 	
 	// bocks if success
 	err = http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
-	util.Log(util.MAIN, "Error: ", err)
+	util.Err(util.MAIN, err, true,"Error serving site")
 }

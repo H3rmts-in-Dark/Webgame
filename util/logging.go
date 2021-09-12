@@ -4,12 +4,27 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
 )
 
+func Err(prefx Type, err error, printtrace bool, message ...interface{}) {
+	log(prefx, "!", message...)
+	if err != nil {
+		log(prefx, "!", err.Error())
+	}
+	if printtrace {
+		debug.PrintStack()
+	}
+}
+
 func Log(prefx Type, message ...interface{}) {
+	log(prefx, ">", message...)
+}
+
+func log(prefx Type, suffix string, message ...interface{}) {
 	now := time.Now() // get this early.
 	
 	_, file, line, ok := runtime.Caller(1)
@@ -37,9 +52,9 @@ func Log(prefx Type, message ...interface{}) {
 	}
 	
 	os.Stdout.Write([]byte(fmt.Sprintf(
-		"%s %s |%s> %s \n",
+		"%s %s |%s %s %s \n",
 		now.Format("2017-09-07 17:06:04.0000"),
-		location, prefix, printstr,
+		location, prefix, suffix, printstr,
 	)))
 }
 

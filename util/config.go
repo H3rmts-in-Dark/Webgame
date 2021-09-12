@@ -25,13 +25,13 @@ func LoadConfig() error {
 	
 	data, err := ioutil.ReadFile(configfile)
 	if err != nil {
-		Log(CONFIG, "Error: ", err)
+		Err(CONFIG, err, true,"Error reading", configfile, "File")
 		return err
 	}
 	
 	err = json.Unmarshal(data, &conf)
 	if err != nil {
-		Log(CONFIG, "Error: ", err)
+		Err(CONFIG, err,true, "Error Unmarshalling Configs")
 		return err
 	}
 	Log(CONFIG, "Loaded config: ", fmt.Sprintf("%+v", conf))

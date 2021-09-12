@@ -25,7 +25,7 @@ func Checkadmin(js *map[string]interface{}) error {
 		if util.GetConfig().Code == code {
 			return nil
 		}
-		util.Log(util.API, "Code invalid:", code)
+		util.Err(util.API,nil, false,"Code invalid:", code)
 	}
 	return &Permissionerror{}
 }

@@ -17,7 +17,7 @@ func Loadsite() error {
 	var err error
 	site, err = ioutil.ReadFile("resources/test.html")
 	if err != nil {
-		util.Log(util.SERVE, "Error:", err)
+		util.Err(util.SERVE, err,true, "Error loading Site")
 		return err
 	}
 	util.Log(util.SERVE, "Loaded Site: resources/test.html")
@@ -45,7 +45,7 @@ func CreateServe(rout *mux.Router) {
 		msg, err := getSite()
 		
 		if err != nil {
-			util.Log(util.SERVE, "Error: ", err)
+			util.Err(util.SERVE,err,true, "Error getting Site")
 			w.WriteHeader(http.StatusInternalServerError)
 			msg = []byte("Error serving site")
 		} else {
@@ -55,7 +55,7 @@ func CreateServe(rout *mux.Router) {
 		
 		_, err = w.Write(msg)
 		if err != nil {
-			util.Log(util.SERVE, "Error in sending:", err)
+			util.Err(util.SERVE, err,true, "Error Writing Response:")
 		} else {
 			util.Log(util.SERVE, "Sent site successfully")
 		}

@@ -49,16 +49,16 @@ func reciveAPI(raw *[]byte) []byte {
 	err := json.Unmarshal(*raw, &recive)
 	
 	if err != nil {
-		util.Log(util.API, "JSON decoding error: ", err, " :", string(*raw))
+		util.Err(util.API, err,false, "JSON Decoding Error: ", string(*raw))
 		return nil
 	}
 	if len(recive) == 0 {
-		util.Log(util.API, "empty JSON")
+		util.Err(util.API, nil,false, "Empty JSON Request")
 		return nil
 	}
 	action := validateAPIJSON(&recive)
 	if action == Invalid {
-		util.Log(util.API, "invalid action", recive)
+		util.Err(util.API, nil,false, "Invalid Request Action", recive)
 		return nil
 	}
 	util.Log(util.API, "recived:", recive)
@@ -74,13 +74,13 @@ func reciveAPI(raw *[]byte) []byte {
 	}
 	
 	if err != nil {
-		util.Log(util.API, "send err:", err)
+		util.Err(util.API, err,false, "Error Processing Request")
 		msg, _ := json.Marshal(map[string]interface{}{"action": action, "error": err.Error()})
 		return msg
 	} else {
 		msg, err := json.Marshal(map[string]interface{}{"action": action, "data": data})
 		if err != nil {
-			util.Log(util.API, "send err:", err)
+			util.Err(util.API, err, true,"Error Sending Answer")
 			msg, _ := json.Marshal(map[string]interface{}{"action": action, "error": err.Error()})
 			return msg
 		}
@@ -102,12 +102,12 @@ func CreateAPI(rout *mux.Router) {
 		
 		if msg == nil {
 			w.WriteHeader(http.StatusBadRequest)
-			msg, _ = json.Marshal(map[string]interface{}{"error": "bad request"})
+			msg, _ = json.Marshal(map[string]interface{}{"error": "Bad request"})
 		}
 		
 		_, err := w.Write(msg)
 		if err != nil {
-			util.Log(util.API, "err in sending:", err)
+			util.Err(util.API, err, true,"Error Writing Response:")
 		} else {
 			util.Log(util.API, "send:", string(msg))
 		}
