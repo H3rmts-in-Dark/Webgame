@@ -45,7 +45,7 @@ func LoadConfig() error {
 func defaultConfig() {
 	conf.Port = 0
 	conf.LogPrefix = true
-	conf.Code = "this_is_supposed_to_be_a_secure_code_which_should_be_overridden"
+	conf.Code = "this is supposed to be a secure code which should be overridden :Bonk:"
 	conf.Prefixstretch = 0
 	conf.Locationstretch = 0
 }

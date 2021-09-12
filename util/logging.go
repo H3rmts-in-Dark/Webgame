@@ -59,10 +59,10 @@ func log(prefx Type, suffix string, message ...interface{}) {
 	for _, mess := range message {
 		printstr += fmt.Sprintf("%v", mess) + " "
 	}
-
+	
 	os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s %s |%s %s %s \n",
-		now.Format("2017-09-07 17:06:04.0000"),
+		now.Format("2006.01.02 15:04:05.0000"),
 		location, prefix, suffix, printstr,
 	)))
 }
