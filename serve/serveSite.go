@@ -2,6 +2,7 @@ package serve
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -47,9 +48,10 @@ Registers a handle for '/' to serve the html site
 func CreateServe(rout *mux.Router) {
 	// Main site
 	rout.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println()
 		util.Log(util.SERVE, "Received request from", r.RemoteAddr, "for main site")
 		
-		msg, err := getSite("test.html")
+		msg, err := getSite("index.html")
 		
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error getting site")

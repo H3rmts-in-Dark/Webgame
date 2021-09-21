@@ -3,11 +3,12 @@
 
 package-lock.json
 node_modules
+pkg
 
 webassembly/target
 webassembly/pkg
 webassembly/Cargo.lock
 
 resources/sites/*.wasm
-resources/sites/0.pack.js
+resources/sites/*.pack.js
 resources/sites/pack.js

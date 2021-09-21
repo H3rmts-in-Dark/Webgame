@@ -1,5 +1,10 @@
 [package]
 name = "webgame"
+description = "Webgame"
+version = "0.1.0"
+authors = ["H3rmt"]
+categories = ["wasm"]
+edition = "2018"
 
 [lib]
 crate-type = ["cdylib"]
