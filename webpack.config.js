@@ -1,9 +1,7 @@
 const path = require("path");
-
-//const CopyPlugin = require("copy-webpack-plugin");
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 
-const out = path.resolve(__dirname, "resources/sites");
+const out = path.resolve(__dirname, "site");
 
 const src = path.resolve(__dirname, "webassembly");
 

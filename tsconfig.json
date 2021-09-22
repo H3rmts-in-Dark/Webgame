@@ -1,10 +1,7 @@
 {
 	"compilerOptions": {
-		"outDir": "./distts/",
-		"noImplicitAny": true,
-		"module": "es6",
-		"target": "es5",
+		"target": "esnext",
 		"allowJs": true,
-		"moduleResolution": "node"
+		"lib": ["DOM"]
 	}
 }
