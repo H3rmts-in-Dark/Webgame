@@ -1,29 +1,36 @@
 import '../css/login.css';
 
-function getparams(): {} {
-	var qd = {};
-	if (location.search) location.search.substr(1).split("&").forEach(function (item) {
-		var s = item.split("="),
-			k = s[0],
-			v = s[1] && decodeURIComponent(s[1]); //  null-coalescing / short-circuit
-		//(k in qd) ? qd[k].push(v) : qd[k] = [v]
-		(qd[k] = qd[k] || []).push(v) // null-coalescing / short-circuit
-	})
-	return qd
+function getparams(): Map<string, string> {
+	let params = new Map<string, string>()
+	if (location.search)
+		location.search.substr(1).split("&").forEach(function (item) {
+			const s = item.split("=")
+			params.set(s[0], decodeURIComponent(s[1]))
+		})
+	return params
 }
 
 function checkloggedin(): string | undefined {
-	return getparams()["IP"]
+	let ip = getparams().get("IP")
+	return (ip == undefined || ip.length == 0) ? undefined : ip
 }
 
 function visible(visible: boolean) {
-	
-	let loginshadow = document.getElementById('loginshadow')
-	loginshadow.style.display = visible ? "block":"none" 
+	document.getElementById('loginshadow').style.display = visible ? "block" : "none"
 }
 
+function logout() {
+	window.open(location.origin, "_self");
+}
+
+function addevents() {
+	document.getElementById('leavebutton').onclick = () => {
+		logout()
+	}
+}
 
 export {
 	checkloggedin,
-	visible
+	visible,
+	addevents
 }

@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+
 // use web_sys::console;
 
 #[cfg(feature = "wee_alloc")]
@@ -12,10 +13,10 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 extern {
-    fn alert(s: &str);
+	fn alert(s: &str);
 }
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, Custom created function that uses JS functions!");
+	alert("Hello, Custom created function that uses JS functions!");
 }

@@ -18,8 +18,9 @@ window.onload = () => {
 	if (ip) {
 		console.log(`passed login with ip:${ip}`)
 		login.visible(false)
-
-		main()
+		
+		login.addevents()
+		//main()
 	} else {
 		console.log("opening login")
 		login.visible(true)

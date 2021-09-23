@@ -3,6 +3,8 @@
 		"outDir": "tsout",
 		"target": "esnext",
 		"allowJs": true,
-		"lib": ["DOM"]
+		"lib": [
+			"DOM"
+		]
 	}
 }
