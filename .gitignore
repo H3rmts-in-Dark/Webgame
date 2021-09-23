@@ -9,5 +9,4 @@ webassembly/target
 webassembly/pkg
 webassembly/Cargo.lock
 
-site/*.wasm
-site/*.js
+site/

@@ -1,7 +1,6 @@
 import '../css/main.css';
 
-import * as im from "./tesfile";
-import {testhello} from "./tesfile";
+import * as login from './login'
 
 async function main() {
 	// @ts-ignore
@@ -10,12 +9,19 @@ async function main() {
 	console.log(wasm);
 	
 	wasm.greet()
-	
-	testhello()
-	
-	im.test3()
 }
 
-window.onload = main
+//window.onload = main
 
-im.test2()
+window.onload = () => {
+	let ip = login.checkloggedin()
+	if (ip) {
+		console.log(`passed login with ip:${ip}`)
+		login.visible(false)
+
+		main()
+	} else {
+		console.log("opening login")
+		login.visible(true)
+	}
+}
