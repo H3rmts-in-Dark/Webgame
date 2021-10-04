@@ -2,6 +2,6 @@
 	"Port": 18265,
 	"LogPrefix": true,
 	"Code": "supersaveandsecureAPIcode",
-	"prefixstretch": 9,
-	"locationstretch": 16
+	"prefixStretch": 9,
+	"locationStretch": 16
 }

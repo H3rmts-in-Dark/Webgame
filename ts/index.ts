@@ -1,28 +1,34 @@
-import '../css/main.css';
+// @ts-ignore
+import html from 'HTML/index.html'
 
-import * as login from './login'
+import "CSS/main.css";
 
-async function main() {
-	// @ts-ignore
-	const wasm = await import("../webassembly/pkg");
-	console.log("wasm: ")
-	console.log(wasm);
-	
+
+// @ts-ignore
+import * as login from './login.ts'
+
+// @ts-ignore
+import * as wasm from "../webassembly/pkg";
+
+
+function wasmtest() {
+	console.log(wasm)
 	wasm.greet()
 }
 
-//window.onload = main
+window.onload = () => {console.log("test loaded")}
 
-window.onload = () => {
-	let ip = login.checkloggedin()
+document.onload = () => {console.log("document loaded")}
+
+(() => {
+	let ip = login.checkLoggedin()
 	if (ip) {
 		console.log(`passed login with ip:${ip}`)
-		login.visible(false)
 		
-		login.addevents()
-		//main()
+		login.addEvents()
+		wasmtest()
 	} else {
 		console.log("opening login")
-		login.visible(true)
+		login.createLoginDiv()
 	}
-}
+})()

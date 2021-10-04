@@ -19,12 +19,12 @@ const (
 	CONFIG Type = "CONFIG"
 )
 
-func Err(prefx Type, err error, printtrace bool, message ...interface{}) {
+func Err(prefx Type, err error, printTrace bool, message ...interface{}) {
 	log(prefx, "!", message...)
 	if err != nil {
 		log(prefx, "!", err.Error())
 	}
-	if printtrace {
+	if printTrace {
 		debug.PrintStack()
 	}
 }
@@ -64,9 +64,12 @@ func log(prefx Type, suffix string, message ...interface{}) {
 		printstr += fmt.Sprintf("%v", mess) + " "
 	}
 	
-	os.Stdout.Write([]byte(fmt.Sprintf(
+	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s %s |%s %s %s \n",
 		now.Format("2006.01.02 15:04:05.0000"),
 		location, prefix, suffix, printstr,
 	)))
+	if err != nil {
+		return
+	}
 }

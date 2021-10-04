@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-// use web_sys::console;
+use web_sys::console;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -18,5 +18,6 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-	alert("Hello, Custom created function that uses JS functions!");
+	console::log_1(&JsValue::from_str("Hello world!"));
+	console::debug_1(&JsValue::null());
 }

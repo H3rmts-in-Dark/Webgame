@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const out = path.resolve(__dirname, "site");
 const src = path.resolve(__dirname, "webassembly");
 
+
 const Modes = {
 	Development: "development",
 	Production: "production",
@@ -18,7 +19,7 @@ module.exports = {
 	mode: mode, // renames everything to shit
 	devtool: "eval-cheap-module-source-map",
 	entry: {
-		index: "./js/index.ts",
+		index: "./ts/index.ts",
 	},
 	output: {
 		path: out,
@@ -28,9 +29,10 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			filename: "index.html",
 			title: "Webgame",
-			mode: mode,
+			template: "html/index.ejs",
 			favicon: "resources/favicon.ico",
-			template: "html/login.html"
+			mode: mode,
+			inject: "body",
 		}),
 		new WasmPackPlugin({
 			crateDirectory: src,
@@ -40,10 +42,15 @@ module.exports = {
 		}),
 		new MiniCssExtractPlugin({
 			filename: "index.css",
-		}),
+		})
 	],
 	resolve: {
-		extensions: [".ts", ".js"],
+		alias: {  // shorten imports from ../html/test.html to HTML/test.html
+			// IDE gets confused with functions in TS imports, but can resolve the file so only css and html
+			CSS: path.resolve(__dirname, "css"),
+			HTML: path.resolve(__dirname, "html"),
+//			TS: path.resolve(__dirname, "ts")
+		}
 	},
 	experiments: {
 		asyncWebAssembly: true,
@@ -51,21 +58,53 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.ts$/,
-				use: "ts-loader",
+				test: /\.ts$/i,
+				use: [
+					{
+						loader: "ts-loader",
+						options: {
+							transpileOnly: mode === Modes.Development,   // improves speed
+						}
+					}
+				]
+				
 			},
 			{
-				test: /\.css$/,
+				test: /\.css$/i,
 				use: [
-					MiniCssExtractPlugin.loader,
+					// normal: mode === Modes.Development ?
+					// but weird things happen, because some JS functions get
+					// executed before css is applied by style-loader so
+					// MiniCssExtractPlugin is used always
+					mode === Modes.Development ?
+						 {
+							 loader: "style-loader",   // loads css with style tags
+							 options: {
+								 injectType: "autoStyleTag",
+							 }
+						 } : {
+							 loader: MiniCssExtractPlugin.loader,
+							 options: {}
+						 },
 					{
 						loader: "css-loader",
 						options: {
-							sourceMap: true,
+							sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
 						},
 					},
 				],
-			}
+			},
+			{
+				test: /\.html$/i,
+				use: [
+					{
+						loader: "html-loader",
+						options: {
+							minimize: mode === Modes.Production,
+						}
+					}
+				]
+			},
 		],
 	},
 };

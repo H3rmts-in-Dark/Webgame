@@ -1,6 +1,19 @@
-import '../css/login.css';
+// @ts-ignore
+import html from 'HTML/login.html'
 
-function getparams(): Map<string, string> {
+import "CSS/login.css";
+
+
+let login: HTMLElement
+
+function createLoginDiv() {
+	login = document.createElement('div')
+	document.body.appendChild(login)
+	login.innerHTML = html
+	console.log(login)
+}
+
+function getParams(): Map<string, string> {
 	let params = new Map<string, string>()
 	if (location.search)
 		location.search.substr(1).split("&").forEach(function (item) {
@@ -10,27 +23,21 @@ function getparams(): Map<string, string> {
 	return params
 }
 
-function checkloggedin(): string | undefined {
-	let ip = getparams().get("IP")
+function checkLoggedin(): string | undefined {
+	let ip = getParams().get("IP")
 	return (ip == undefined || ip.length == 0) ? undefined : ip
-}
-
-function visible(visible: boolean) {
-	document.getElementById('loginshadow').style.display = visible ? "block" : "none"
 }
 
 function logout() {
 	window.open(location.origin, "_self");
 }
 
-function addevents() {
-	document.getElementById('leavebutton').onclick = () => {
-		logout()
-	}
+function addEvents() {
+	document.getElementById('leavebutton').onclick = logout
 }
 
 export {
-	checkloggedin,
-	visible,
-	addevents
+	checkLoggedin,
+	addEvents,
+	createLoginDiv
 }
