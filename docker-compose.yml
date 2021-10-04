@@ -1,0 +1,9 @@
+version: "3"
+# docker run --rm --name WebGame -p 9090:18265 webgame
+
+services:
+  webgame:
+    container_name: WebGame
+    image: webgame:latest
+    ports:
+      - 9090 : 18265
