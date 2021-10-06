@@ -14,4 +14,3 @@ WORKDIR /usr/app
 
 EXPOSE 18265
 CMD ["go", "run", "/usr/app"]
-# docker build -t webgame .
