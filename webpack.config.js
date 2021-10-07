@@ -36,8 +36,7 @@ module.exports = {
 		}),
 		new WasmPackPlugin({
 			crateDirectory: src,
-			outDir: "pkg",
-			outName: "WasmPack",
+			outName: "wasm",
 			forceMode: mode, // shortens wasm file significantly
 		}),
 		new MiniCssExtractPlugin({
@@ -75,16 +74,15 @@ module.exports = {
 					// but weird things happen, because some JS functions get
 					// executed before css is applied by style-loader so
 					// MiniCssExtractPlugin is used always
-					mode === Modes.Development ?
-						 {
-							 loader: "style-loader",   // loads css with style tags
-							 options: {
-								 injectType: "autoStyleTag",
-							 }
-						 } : {
-							 loader: MiniCssExtractPlugin.loader,
-							 options: {}
-						 },
+					mode === Modes.Development ? {
+						loader: "style-loader",   // loads css with style tags
+						options: {
+							injectType: "autoStyleTag",
+						}
+					} : {
+						loader: MiniCssExtractPlugin.loader,
+						options: {}
+					},
 					{
 						loader: "css-loader",
 						options: {

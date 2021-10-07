@@ -4,7 +4,8 @@
 		"target": "esnext",
 		"allowJs": true,
 		"lib": [
-			"DOM"
+			"DOM",
+			"es6"
 		]
 	}
 }
