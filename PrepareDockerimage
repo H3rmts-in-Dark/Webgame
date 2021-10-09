@@ -1,0 +1,5 @@
+FROM node:16.10.0 AS NODE
+FROM rust:1.55.0-slim AS RUST
+COPY --from=NODE . .
+
+# docker build -t preparedimage -f PrepareDockerimage .

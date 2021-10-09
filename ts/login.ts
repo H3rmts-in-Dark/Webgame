@@ -8,9 +8,8 @@ let login: HTMLElement
 
 function createLoginDiv() {
 	login = document.createElement('div')
-	document.body.appendChild(login)
-	login.innerHTML = html
-	console.log(login)
+	document.body.appendChild(login) // must happen before outerHTML is set because it requires a parent node
+	login.outerHTML = html
 }
 
 function getParams(): Map<string, string> {
