@@ -70,7 +70,7 @@ module.exports = {
 				
 			},
 			{
-				test: /\.css$/i,
+				test: /\.(css|sass)$/,
 				use: [
 					// normal: mode === Modes.Development ?
 					// but weird things happen, because some JS functions get
@@ -92,6 +92,12 @@ module.exports = {
 							sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
 						},
 					},
+					{
+						loader: "sass-loader",
+						options: {
+							sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
+						}
+					}
 				],
 			},
 			{

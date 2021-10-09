@@ -1,7 +1,7 @@
 // @ts-ignore
 import html from 'HTML/login.html'
 
-import "CSS/login.css";
+import "CSS/login.sass";
 
 
 let login: HTMLElement

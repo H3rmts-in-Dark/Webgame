@@ -5,19 +5,20 @@
 	"scripts": {
 		"build": "webpack"
 	},
-	
 	"devDependencies": {
-		"typescript": "^4.4.3"
+		"sass": "^1.42.1",
+		"typescript": "^4.4.3",
+		"style-loader": "^3.3.0"
 	},
 	"dependencies": {
 		"@wasm-tool/wasm-pack-plugin": "^1.5.0",
 		"css-loader": "^6.3.0",
+		"sass-loader": "^12.1.0",
 		"html-loader": "^2.1.2",
 		"html-webpack-plugin": "^5.3.2",
 		"mini-css-extract-plugin": "^2.3.0",
-		"style-loader": "^3.3.0",
 		"ts-loader": "^9.2.6",
-		"webpack": "^5.56.1",
+		"webpack": "^5.58.1",
 		"webpack-cli": "^4.8.0"
 	}
 }
