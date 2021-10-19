@@ -14,6 +14,13 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 // curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
+// tf is this?
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, PartialEq)]
@@ -55,6 +62,7 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
 	pub fn tick(&mut self) {
+		log!("tick");
 		let mut next = self.cells.clone();
 		
 		for row in 0..self.height {
@@ -113,7 +121,7 @@ impl fmt::Display for Universe {
 			write!(f, "\n")?;
 		}
 		
-		Ok(())
+		return Ok(());
 	}
 }
 

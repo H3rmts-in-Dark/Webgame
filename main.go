@@ -1,39 +1,44 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"os"
-	
 	"Webgame/api"
 	"Webgame/serve"
 	"Webgame/util"
-	
+	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	fmt.Printf("Starting webgame server program with arguments: %s\n\n", os.Args[1:])
-	
 	err := util.LoadConfig()
 	if err != nil {
 		return
 	}
-	
+
 	util.Log(util.MAIN, "Starting server")
-	
+
 	err = serve.Loadsites()
 	if err != nil {
 		return
 	}
-	
+
 	router := mux.NewRouter().StrictSlash(true)
 	api.CreateAPI(router) // API first because else site for api will get loaded TODO change port
 	serve.CreateServe(router)
-	
+
 	util.Log(util.MAIN, "Startup complete")
-	
+
+	server := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().Port), Handler: router}
+	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe started on localhost%s", server.Addr))
+	server.ErrorLog = log.New(util.LogWriter{}, "", 0)
+
 	// blocks if success
-	err = http.ListenAndServe(":"+fmt.Sprintf("%d", util.GetConfig().Port), router)
-	util.Err(util.MAIN, err, true, "Error serving site")
+	err = server.ListenAndServe()
+	// TODO ListenAndServeTLS
+
+	if err != nil {
+		util.Err(util.MAIN, err, true, "Error serving site")
+	}
 }

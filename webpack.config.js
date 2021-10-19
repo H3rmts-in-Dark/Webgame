@@ -70,10 +70,6 @@ module.exports = {
 			{
 				test: /\.(css|sass)$/,
 				use: [
-					// normal: mode === Modes.Development ?
-					// but weird things happen, because some JS functions get
-					// executed before css is applied by style-loader so
-					// MiniCssExtractPlugin is used always
 					mode === Modes.Development ? {
 						loader: "style-loader",   // loads css with style tags
 						options: {
