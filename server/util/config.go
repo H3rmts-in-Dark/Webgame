@@ -28,13 +28,13 @@ func GetConfig() *config {
 
 func LoadConfig() error {
 	defaultConfig()
-	
+
 	data, err := ioutil.ReadFile(Configfile)
 	if err != nil {
 		Err(CONFIG, err, true, "Error reading", Configfile, "file")
 		return err
 	}
-	
+
 	err = json.Unmarshal(data, &conf)
 	if err != nil {
 		Err(CONFIG, err, true, "Error unmarshalling configs")

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Webgame/api"
-	"Webgame/serve"
-	"Webgame/util"
+	"Webgame/server/api"
+	"Webgame/server/serve"
+	"Webgame/server/util"
 	"fmt"
 	"log"
 	"net/http"

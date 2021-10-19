@@ -1,8 +1,8 @@
 package api
 
 import (
-	"Webgame/serve"
-	"Webgame/util"
+	"Webgame/server/serve"
+	"Webgame/server/util"
 )
 
 /*
