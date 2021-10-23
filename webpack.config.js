@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const out = path.resolve(__dirname, "site");
-const src = path.resolve(__dirname, "webassembly");
+const wasmsrc = path.resolve(__dirname, "WebAssembly");
+const wasmout = path.resolve(__dirname, "pkg");
 
 
 const Modes = {
@@ -35,8 +36,9 @@ module.exports = {
 			inject: "body",
 		}),
 		new WasmPackPlugin({
-			crateDirectory: src,
+			crateDirectory: wasmsrc,
 			outName: "wasm",
+			outDir: wasmout,
 			forceMode: mode, // shortens wasm file significantly
 		}),
 		new MiniCssExtractPlugin({
