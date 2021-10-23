@@ -3,5 +3,6 @@
 	"LogPrefix": true,
 	"Code": "supersaveandsecureAPIcode",
 	"prefixStretch": 9,
-	"locationStretch": 16
+	"locationStretch": 16,
+	"Cache": false
 }

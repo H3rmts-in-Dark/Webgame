@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 )
 
 type config struct {
@@ -12,6 +13,7 @@ type config struct {
 	Code            string
 	Prefixstretch   int8
 	Locationstretch int8
+	Cache           bool
 }
 
 const (
@@ -47,7 +49,8 @@ func LoadConfig() error {
 func defaultConfig() {
 	conf.Port = 0
 	conf.LogPrefix = true
-	conf.Code = "this is supposed to be a secure code which should be overridden :Bonk:"
+	conf.Code = fmt.Sprintf("this is supposed to be a secure code which should be overridden :Bonk: %d", rand.Int())
 	conf.Prefixstretch = 0
 	conf.Locationstretch = 0
+	conf.Cache = true
 }

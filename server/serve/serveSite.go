@@ -25,7 +25,7 @@ func Loadsites() error {
 			return err
 		}
 		sites[site.Name()] = tmpsite
-		util.Log(util.SERVE, "Loaded site:", site.Name())
+		util.Log(util.SERVE, "Loaded site in cache:", site.Name())
 	}
 
 	util.Log(util.MAIN, "All sites loaded")
@@ -33,10 +33,20 @@ func Loadsites() error {
 }
 
 func getSite(name string) ([]byte, error) {
-	if sites[name] != nil {
-		return sites[name], nil
+	if util.GetConfig().Cache {
+		if sites[name] != nil {
+			return sites[name], nil
+		} else {
+			return nil, errors.New("no site loaded for: " + name)
+		}
 	} else {
-		return nil, errors.New("no site loaded for: " + name)
+		tmpsite, err := ioutil.ReadFile(util.Sitesdir + "/" + name)
+		if err != nil {
+			util.Err(util.SERVE, err, true, "Error loading site")
+			return nil, err
+		}
+		util.Log(util.SERVE, "Loaded site:", name)
+		return tmpsite, nil
 	}
 }
 

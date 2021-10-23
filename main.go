@@ -19,9 +19,11 @@ func main() {
 
 	util.Log(util.MAIN, "Starting server")
 
-	err = serve.Loadsites()
-	if err != nil {
-		return
+	if util.GetConfig().Cache {
+		err = serve.Loadsites()
+		if err != nil {
+			return
+		}
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
