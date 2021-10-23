@@ -7,7 +7,7 @@ import {memory} from "../pkg/wasm_bg.wasm";
 // @ts-ignore
 import html from 'HTML/wasmtest.html'
 
-import "CSS/login.sass";
+import "CSS/wasmtest.sass";
 
 
 let wasmtestElement: HTMLElement
@@ -24,27 +24,11 @@ function createWasmDiv() {
 	wasmtestElement.outerHTML = html
 }
 
+let paused: boolean = false
+let animationId: number = null;
+
 function wasmtest() {
 	createWasmDiv()
-	runwasm(40, 20)
-}
-
-function runwasm(_width: number, _height: number) {
-	// Construct the universe, and get its width and height.
-	const universe: wasm.Universe = wasm.Universe.new(_width, _height);
-	const width: number = universe.width();
-	const height: number = universe.height();
-	
-	let paused: boolean = false
-	let animationId: number = null;
-	
-	// Give the canvas room for all of our cells and a 1px border
-	// around each of them.
-	const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
-	canvas.height = (CELL_SIZE + 1) * height + 1;
-	canvas.width = (CELL_SIZE + 1) * width + 1;
-	
-	const ctx = canvas.getContext('2d');
 	
 	const playPauseButton = document.getElementById("play-pause");
 	
@@ -68,6 +52,11 @@ function runwasm(_width: number, _height: number) {
 		}
 	});
 	
+	const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
+	const ctx = canvas.getContext('2d');
+	
+	const fps = new FPS(document.getElementById("fps"))
+	
 	canvas.addEventListener("click", event => {
 		console.log("canvas clicked")
 		const boundingRect = canvas.getBoundingClientRect();
@@ -83,13 +72,11 @@ function runwasm(_width: number, _height: number) {
 		
 		universe.toggle_cell(row, col);
 		
-		console.log(scaleX,scaleY,canvasLeft,canvasTop,row,col)
+		console.log(scaleX, scaleY, canvasLeft, canvasTop, row, col)
 		
 		drawGrid(ctx, height, width);
 		drawCells(ctx, universe, height, width);
 	});
-	
-	const fps = new FPS(document.getElementById("fps"))
 	
 	const renderLoop = () => {
 		fps.render();
@@ -101,10 +88,59 @@ function runwasm(_width: number, _height: number) {
 		animationId = requestAnimationFrame(renderLoop);  // registers animation request and stores its ID
 	};
 	
+	let widthbutton = document.getElementById('width-input') as HTMLInputElement
+	widthbutton.oninput = () => {
+		console.log(`width change ${widthbutton.value}`)
+		cancelAnimationFrame(animationId);
+		
+		initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+		
+		drawGrid(ctx, height, width);
+		drawCells(ctx, universe, height, width);
+		if (!paused) {
+			animationId = requestAnimationFrame(renderLoop)
+		}
+	}
+	let heightbutton = document.getElementById('height-input') as HTMLInputElement
+	heightbutton.oninput = () => {
+		console.log(`height change ${heightbutton.value}`)
+		cancelAnimationFrame(animationId);
+		
+		initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+		
+		drawGrid(ctx, height, width);
+		drawCells(ctx, universe, height, width);
+		if (!paused) {
+			animationId = requestAnimationFrame(renderLoop)
+		}
+	}
+	
+	initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+	
+	fps.render();
 	drawGrid(ctx, height, width);
 	drawCells(ctx, universe, height, width);
-	
 	pause()
+}
+
+let universe: wasm.Universe
+let width: number
+let height: number
+
+function initwasm(_width: number, _height: number) {
+	console.log(`new init ${_width} ${_height}`)
+	
+	// Construct the universe, and get its width and height.
+	universe = wasm.Universe.new(_width, _height);
+	width = universe.width();
+	height = universe.height();
+	
+	const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
+	
+	// Give the canvas room for all of our cells and a 1px border
+	// around each of them.
+	canvas.height = (CELL_SIZE + 1) * height + 1;
+	canvas.width = (CELL_SIZE + 1) * width + 1;
 }
 
 
@@ -183,8 +219,8 @@ class FPS {
 		}
 		
 		// Find the max, min, and mean of our 100 latest timings.
-		let min = Infinity;
-		let max = -Infinity;
+		let min = -1;
+		let max = -1;
 		let sum = 0;
 		for (let i = 0; i < this.frames.length; i++) {
 			sum += this.frames[i];
