@@ -29,8 +29,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			filename: "index.html",
-			title: "Webgame",
-			template: "html/index.ejs",
+			template: "html/index.html",
 			favicon: "resources/favicon.ico",
 			mode: mode,
 			inject: "body",
