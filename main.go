@@ -20,7 +20,7 @@ func main() {
 	util.Log(util.MAIN, "Starting server")
 
 	if util.GetConfig().Cache {
-		err = serve.Loadsites()
+		err = serve.LoadSites()
 		if err != nil {
 			return
 		}

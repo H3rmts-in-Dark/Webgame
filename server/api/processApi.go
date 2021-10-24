@@ -3,6 +3,7 @@ package api
 import (
 	"Webgame/server/serve"
 	"Webgame/server/util"
+	"errors"
 )
 
 /*
@@ -11,7 +12,11 @@ ProcessSiteReloadRequest
 Process request to add Program to list of connections
 */
 func ProcessSiteReloadRequest() (string, error) {
-	return "success", serve.Loadsites()
+	if util.GetConfig().Cache {
+		return "success", serve.LoadSites()
+	} else {
+		return "failed", errors.New("caching deactivated")
+	}
 }
 
 /*

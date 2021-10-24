@@ -15,7 +15,7 @@ type Action string
 
 const (
 	Invalid    Action = "Invalid"
-	ReloadSite Action = "Reload Site"
+	ReloadSite Action = "Reload_Site"
 )
 
 /*

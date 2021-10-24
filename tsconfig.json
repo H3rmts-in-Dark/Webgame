@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"outDir": "ts-out",
 		"target": "esnext",
 		"allowJs": true,
 		"lib": [

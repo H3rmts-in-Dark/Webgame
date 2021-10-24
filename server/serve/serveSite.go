@@ -14,8 +14,17 @@ import (
 
 var sites map[string][]byte
 
-func Loadsites() error {
-	sitecount, _ := ioutil.ReadDir(util.Sitesdir)
+var forebidden = map[string]bool{"api": true}
+
+var headers = map[string]string{"css": "text/css; charset=utf-8", "ico": "image/x-icon"}
+
+func LoadSites() error {
+	sitecount, err := ioutil.ReadDir(util.Sitesdir)
+	if err != nil {
+		util.Err(util.SERVE, err, true, "Error reading sites directory")
+		return err
+	}
+
 	sites = make(map[string][]byte, len(sitecount))
 
 	for _, site := range sitecount {
@@ -32,22 +41,32 @@ func Loadsites() error {
 	return nil
 }
 
-func getSite(name string) ([]byte, error) {
+func getSite(name string) (site []byte, code int, err error) {
+	code, err = 202, nil
+	if val, exits := forebidden[name]; exits == true && val == true {
+		site, code = GetErrorSite(Forbidden)
+		err = errors.New("site: " + name + " Forbidden")
+		return
+	}
 	if util.GetConfig().Cache {
 		if sites[name] != nil {
-			return sites[name], nil
+			site = sites[name]
 		} else {
-			return nil, errors.New("no site loaded for: " + name)
+			site, code = GetErrorSite(NotFound)
+			err = errors.New("no site loaded for: " + name)
 		}
 	} else {
-		tmpsite, err := ioutil.ReadFile(util.Sitesdir + "/" + name)
+		var tmpSite []byte
+		tmpSite, err = ioutil.ReadFile(util.Sitesdir + "/" + name)
 		if err != nil {
-			util.Err(util.SERVE, err, true, "Error loading site")
-			return nil, err
+			util.Err(util.SERVE, err, false, "Error loading site")
+			site, code = GetErrorSite(NotFound)
+		} else {
+			util.Log(util.SERVE, "Loaded site:", name)
+			site = tmpSite
 		}
-		util.Log(util.SERVE, "Loaded site:", name)
-		return tmpsite, nil
 	}
+	return
 }
 
 /*
@@ -61,12 +80,11 @@ func CreateServe(rout *mux.Router) {
 		fmt.Println()
 		util.Log(util.SERVE, "Received request from", r.RemoteAddr, "for main site")
 
-		msg, err := getSite("index.html")
+		msg, code, err := getSite("index.html")
 
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error getting site")
-			w.WriteHeader(http.StatusInternalServerError)
-			msg = []byte("Error serving site")
+			w.WriteHeader(code)
 		} else {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		}
@@ -75,34 +93,29 @@ func CreateServe(rout *mux.Router) {
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error writing response:")
 		} else {
-			util.Log(util.SERVE, "Sent site successfully")
+			util.Log(util.SERVE, "Main Sent site successfully")
 		}
 	})
 
 	// Other Sites
 	rout.HandleFunc("/{site}", func(w http.ResponseWriter, r *http.Request) {
-		msg, err := getSite(r.URL.Path[1:])
+		msg, code, err := getSite(r.URL.Path[1:])
 
-		if r.URL.Path[1:] == "api" {
-			util.Err(util.SERVE, err, true, "API requested")
-			w.WriteHeader(http.StatusForbidden)
-			msg = []byte("Site Forbidden")
-		} else if err != nil {
-			util.Err(util.SERVE, err, true, "Error getting site")
-			w.WriteHeader(http.StatusNotFound)
-			msg = []byte("Site not found")
+		if err != nil {
+			util.Err(util.SERVE, err, false, "Error getting site")
+			w.WriteHeader(code)
 		} else {
-			switch strings.Split(r.URL.Path[1:], ".")[1] {
-			case "css":
-				w.Header().Set("Content-Type", "text/css; charset=utf-8")
-			case "ico":
-				w.Header().Set("Content-Type", "image/x-icon")
+			filetype := strings.Split(r.URL.Path[1:], ".")[1]
+			if val, exists := headers[filetype]; exists == true {
+				w.Header().Set("Content-Type", val)
 			}
 		}
 
 		_, err = w.Write(msg)
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error writing response:")
+		} else {
+			util.Log(util.SERVE, "Sent site successfully")
 		}
-	})
+	}).Methods("Get")
 }

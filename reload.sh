@@ -1,0 +1,1 @@
+curl --data '{"action": "Reload_Site", "code": "supersaveandsecureAPIcode"}' http://localhost:18265/api
