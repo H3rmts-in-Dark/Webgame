@@ -1,7 +1,7 @@
 {
 	"Port": 80,
 	"ApiPort": 18266,
-	"Code": "supersaveandsecureAPIcode",
+	"Code": "APICode",
 	"Cache": false,
 	"LogPrefix": true,
 	"StretchPrefix": 9,

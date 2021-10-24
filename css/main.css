@@ -8,7 +8,7 @@ body {
     height: 100%;
 }
 
-#topbar {
+#topBar {
     width: calc(100% - 2em);
     height: 5em;
 

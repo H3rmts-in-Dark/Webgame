@@ -20,7 +20,7 @@ const (
 
 /*
 checks if received JSON has APIkey and (Register or Activity or Log or Action) as key.
-Returns the API key and Requesttype.
+Returns the API key and RequestType.
 */
 func validateAPIJSON(js *map[string]interface{}) Action {
 	action, actionExists := (*js)["action"]

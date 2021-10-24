@@ -10,7 +10,7 @@ import html from 'HTML/wasmtest.html'
 import "CSS/wasmtest.sass";
 
 
-let wasmtestElement: HTMLElement
+let wasmTestElement: HTMLElement
 
 
 const CELL_SIZE = 5; // px
@@ -19,15 +19,15 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
 function createWasmDiv() {
-	wasmtestElement = document.createElement('div')
-	document.body.appendChild(wasmtestElement) // must happen before outerHTML is set because it requires a parent node
-	wasmtestElement.outerHTML = html
+	wasmTestElement = document.createElement('div')
+	document.body.appendChild(wasmTestElement) // must happen before outerHTML is set because it requires a parent node
+	wasmTestElement.outerHTML = html
 }
 
 let paused: boolean = false
 let animationId: number = null;
 
-function wasmtest() {
+function wasmTest() {
 	createWasmDiv()
 	
 	const playPauseButton = document.getElementById("play-pause");
@@ -88,12 +88,12 @@ function wasmtest() {
 		animationId = requestAnimationFrame(renderLoop);  // registers animation request and stores its ID
 	};
 	
-	let widthbutton = document.getElementById('width-input') as HTMLInputElement
-	widthbutton.oninput = () => {
-		console.log(`width change ${widthbutton.value}`)
+	let widthButton = document.getElementById('width-input') as HTMLInputElement
+	widthButton.oninput = () => {
+		console.log(`width change ${widthButton.value}`)
 		cancelAnimationFrame(animationId);
 		
-		initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+		initWASM(parseInt(widthButton.value), parseInt(heightButton.value))
 		
 		drawGrid(ctx, height, width);
 		drawCells(ctx, universe, height, width);
@@ -101,12 +101,12 @@ function wasmtest() {
 			animationId = requestAnimationFrame(renderLoop)
 		}
 	}
-	let heightbutton = document.getElementById('height-input') as HTMLInputElement
-	heightbutton.oninput = () => {
-		console.log(`height change ${heightbutton.value}`)
+	let heightButton = document.getElementById('height-input') as HTMLInputElement
+	heightButton.oninput = () => {
+		console.log(`height change ${heightButton.value}`)
 		cancelAnimationFrame(animationId);
 		
-		initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+		initWASM(parseInt(widthButton.value), parseInt(heightButton.value))
 		
 		drawGrid(ctx, height, width);
 		drawCells(ctx, universe, height, width);
@@ -115,7 +115,7 @@ function wasmtest() {
 		}
 	}
 	
-	initwasm(parseInt(widthbutton.value), parseInt(heightbutton.value))
+	initWASM(parseInt(widthButton.value), parseInt(heightButton.value))
 	
 	fps.render();
 	drawGrid(ctx, height, width);
@@ -127,7 +127,7 @@ let universe: wasm.Universe
 let width: number
 let height: number
 
-function initwasm(_width: number, _height: number) {
+function initWASM(_width: number, _height: number) {
 	console.log(`new init ${_width} ${_height}`)
 	
 	// Construct the universe, and get its width and height.
@@ -230,8 +230,8 @@ class FPS {
 		let mean = sum / this.frames.length;
 		
 		// Render the statistics.
-		this.fps.innerText = `Frames per Second: \nlatest = ${Math.round(fps)} \navg of last 100 = ${Math.round(mean)} \nmin of last 100 = ${Math.round(min)} \nmax of last 100 = ${Math.round(max)}`
+		this.fps.innerText = `Frames per Second: \n latest = ${Math.round(fps)} \n avg of last 100 = ${Math.round(mean)} \n min of last 100 = ${Math.round(min)} \n max of last 100 = ${Math.round(max)}`
 	}
 }
 
-export default wasmtest
+export default wasmTest

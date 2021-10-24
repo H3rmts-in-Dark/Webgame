@@ -23,10 +23,10 @@ const (
 
 var suffix = map[string]string{"Debug": "*", "Normal": ">", "Error": "!"}
 
-func Err(prefx LogGroup, err error, printTrace bool, message ...interface{}) {
-	log(prefx, suffix["Error"], message...)
+func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
+	log(prefix, suffix["Error"], message...)
 	if err != nil {
-		log(prefx, suffix["Error"], err.Error())
+		log(prefix, suffix["Error"], err.Error())
 	}
 	if printTrace {
 		debug.PrintStack()
@@ -37,8 +37,8 @@ func Debug(message ...interface{}) {
 	log("DEBUG", suffix["Debug"], message...)
 }
 
-func Log(prefx LogGroup, message ...interface{}) {
-	log(prefx, suffix["Normal"], message...)
+func Log(prefix LogGroup, message ...interface{}) {
+	log(prefix, suffix["Normal"], message...)
 }
 
 type LogWriter struct {
@@ -50,7 +50,7 @@ func (w *LogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func log(prefx LogGroup, suffix string, message ...interface{}) {
+func log(prefix LogGroup, suffix string, message ...interface{}) {
 	now := time.Now()
 
 	var location string
@@ -63,25 +63,25 @@ func log(prefx LogGroup, suffix string, message ...interface{}) {
 		}
 
 		file = file[strings.LastIndexByte(file, '/')+1:] // convert to relative path
-		var locationstretch = strconv.Itoa(int(GetConfig().StretchFile))
-		location = fmt.Sprintf("%-"+locationstretch+"s", fmt.Sprintf("%s:%d", file, line))
+		var locationStretch = strconv.Itoa(int(GetConfig().StretchFile))
+		location = fmt.Sprintf("%-"+locationStretch+"s", fmt.Sprintf("%s:%d", file, line))
 	}
 
-	var prefix string
+	var printPrefix string
 	if GetConfig().LogPrefix {
-		var prefixstretch = strconv.Itoa(int(GetConfig().StretchPrefix))
-		prefix = fmt.Sprintf("%-"+prefixstretch+"s %s", prefx, suffix)
+		var prefixStretch = strconv.Itoa(int(GetConfig().StretchPrefix))
+		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, suffix)
 	}
 
-	var printstr string
+	var printStr string
 	for _, mess := range message {
-		printstr += fmt.Sprintf("%v", mess) + " "
+		printStr += fmt.Sprintf("%v", mess) + " "
 	}
 
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s %s|%s %s \n",
 		now.Format("2006.01.02 15:04:05.00000"),
-		location, prefix, printstr,
+		location, printPrefix, printStr,
 	)))
 	if err != nil {
 		return

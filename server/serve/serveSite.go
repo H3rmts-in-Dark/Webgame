@@ -15,21 +15,21 @@ import (
 var sites map[string][]byte
 
 func LoadSites() error {
-	sitecount, err := ioutil.ReadDir(util.Sitesdir)
+	siteCount, err := ioutil.ReadDir(util.Sitesdir)
 	if err != nil {
 		util.Err(util.SERVE, err, true, "Error reading sites directory")
 		return err
 	}
 
-	sites = make(map[string][]byte, len(sitecount))
+	sites = make(map[string][]byte, len(siteCount))
 
-	for _, site := range sitecount {
-		tmpsite, err := ioutil.ReadFile(util.Sitesdir + "/" + site.Name())
+	for _, site := range siteCount {
+		tmpSite, err := ioutil.ReadFile(util.Sitesdir + "/" + site.Name())
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error loading site")
 			return err
 		}
-		sites[site.Name()] = tmpsite
+		sites[site.Name()] = tmpSite
 		util.Log(util.SERVE, "Loaded site in cache:", site.Name())
 	}
 
@@ -83,8 +83,8 @@ func CreateServe(rout *mux.Router) {
 			util.Err(util.SERVE, err, true, "Error getting main site")
 			w.WriteHeader(code)
 		} else {
-			filesplit := strings.Split(util.GetConfig().DefaultSite, ".")
-			filetype := filesplit[len(filesplit)-1]
+			fileSplit := strings.Split(util.GetConfig().DefaultSite, ".")
+			filetype := fileSplit[len(fileSplit)-1]
 			if val, exists := util.GetConfig().Headers[filetype]; exists == true {
 				w.Header().Set("Content-Type", val)
 			}
@@ -106,8 +106,8 @@ func CreateServe(rout *mux.Router) {
 			util.Err(util.SERVE, err, false, "Error getting site")
 			w.WriteHeader(code)
 		} else {
-			filesplit := strings.Split(r.URL.Path[1:], ".")
-			filetype := filesplit[len(filesplit)-1]
+			fileSplit := strings.Split(r.URL.Path[1:], ".")
+			filetype := fileSplit[len(fileSplit)-1]
 			if val, exists := util.GetConfig().Headers[filetype]; exists == true {
 				w.Header().Set("Content-Type", val)
 			}

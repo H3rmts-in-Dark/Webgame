@@ -10,7 +10,3 @@ webassembly/pkg
 webassembly/Cargo.lock
 
 site/
-
-reload.ps1
-rungo.ps1
-winstart.ps1

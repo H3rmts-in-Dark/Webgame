@@ -22,7 +22,7 @@ function getParams(): Map<string, string> {
 	return params
 }
 
-function checkLoggedin(): string | undefined {
+function checkLoggedIn(): string | undefined {
 	let ip = getParams().get("IP")
 	return (ip == undefined || ip.length == 0) ? undefined : ip
 }
@@ -32,11 +32,11 @@ function logout() {
 }
 
 function addEvents() {
-	document.getElementById('leavebutton').onclick = logout
+	document.getElementById('leaveButton').onclick = logout
 }
 
 export {
-	checkLoggedin,
+	checkLoggedIn,
 	addEvents,
 	createLoginDiv
 }

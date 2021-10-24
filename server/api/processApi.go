@@ -22,7 +22,7 @@ func ProcessSiteReloadRequest() (string, error) {
 /*
 CheckAdmin
 
-check if send shacode exists or equals stored sha code
+check if send hashcode exists or equals stored sha code
 */
 func CheckAdmin(js *map[string]interface{}) error {
 	code, codeExists := (*js)["code"]
@@ -32,16 +32,16 @@ func CheckAdmin(js *map[string]interface{}) error {
 		}
 		util.Err(util.API, nil, false, "An invalid code has been entered:", code)
 	}
-	return &Permissionerror{}
+	return &PermissionError{}
 }
 
 /*
-Permissionerror
+PermissionError
 
 Error thrown/returned when no admin privileges are present
 */
-type Permissionerror struct{}
+type PermissionError struct{}
 
-func (m *Permissionerror) Error() string {
+func (m *PermissionError) Error() string {
 	return "No admin permissions"
 }

@@ -32,12 +32,12 @@ func GetErrorSite(error Errors, host string) ([]byte, int) {
 	default:
 		site = getErrorNotFound()
 	}
-	replacesite := getHeader() + site + getFoot()
+	replaceSite := getHeader() + site + getFoot()
 
 	for repl, fun := range replace {
-		replacesite = strings.Replace(replacesite, repl, fun(), -1)
+		replaceSite = strings.Replace(replaceSite, repl, fun(), -1)
 	}
-	return []byte(replacesite), int(error)
+	return []byte(replaceSite), int(error)
 }
 
 func getForbidden() string {
