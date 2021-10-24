@@ -8,17 +8,81 @@ import (
 )
 
 type config struct {
-	Port            uint16
-	LogPrefix       bool
-	Code            string
-	Prefixstretch   int8
-	Locationstretch int8
-	Cache           bool
+	/*
+		Port for the website must be between 0 and 65536
+
+		use something linke 80 or 443
+
+		default:18265
+	*/
+	Port uint16
+
+	/*
+		Port used for the api must be between 0 and 65536
+		should be different from Port to avoid trying to server
+		api as a file
+
+		default: 18266
+	*/
+	ApiPort uint16
+
+	/*
+		code needed to perform admin actions on the api
+	*/
+	Code string
+
+	/*
+		true: loads all files in the Sitesdir directory in cache
+
+		false: loads file from Sitesdir directory every time it gets requested
+
+				+ faster serve speed
+				+ control over when users see new changes (show new files all at once)
+				- changes to files must be loaded by sending a refresh request to the API
+				- might load unnecessary files
+
+		default: true
+	*/
+	Cache bool
+
+	/*
+		adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
+		the type of log (> for Normal, * for Debug, ! for Error) (<-- default)
+
+		default: false
+	*/
+	LogPrefix bool
+
+	/*
+		stretches the prefix with LogGroup and > / * / ! to certain size
+
+		can be ignored if LogPrefix is set to false
+
+		default: 9 (fits the longest group)
+	*/
+	StretchPrefix uint8
+
+	/*
+		adds the file to the log where the Log method was called
+		should be activated for debug purposes
+
+		default: false
+	*/
+	LogFile bool
+
+	/*
+		stretches the filename:line number to certain size
+
+		can be ignored if LogFile is set to false
+
+		default: 16
+	*/
+	StretchFile uint8
 }
 
 const (
-	resourcesdir = "resources"
-	Configfile   = resourcesdir + "/config.json"
+	resourcesDir = "resources"
+	ConfigFile   = resourcesDir + "/config.json"
 	Sitesdir     = "site"
 )
 
@@ -31,9 +95,9 @@ func GetConfig() *config {
 func LoadConfig() error {
 	defaultConfig()
 
-	data, err := ioutil.ReadFile(Configfile)
+	data, err := ioutil.ReadFile(ConfigFile)
 	if err != nil {
-		Err(CONFIG, err, true, "Error reading", Configfile, "file")
+		Err(CONFIG, err, true, "Error reading", ConfigFile, "file")
 		return err
 	}
 
@@ -47,10 +111,12 @@ func LoadConfig() error {
 }
 
 func defaultConfig() {
-	conf.Port = 0
-	conf.LogPrefix = true
+	conf.Port = 18265
+	conf.ApiPort = 18266
+	conf.LogFile = false
+	conf.LogPrefix = false
 	conf.Code = fmt.Sprintf("this is supposed to be a secure code which should be overridden :Bonk: %d", rand.Int())
-	conf.Prefixstretch = 0
-	conf.Locationstretch = 0
+	conf.StretchPrefix = 9
+	conf.StretchFile = 16
 	conf.Cache = true
 }

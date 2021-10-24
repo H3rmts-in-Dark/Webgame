@@ -26,21 +26,35 @@ func main() {
 		}
 	}
 
-	router := mux.NewRouter().StrictSlash(true)
-	api.CreateAPI(router) // API first because else site for api will get loaded TODO change port
-	serve.CreateServe(router)
+	webRouter := mux.NewRouter().StrictSlash(true)
+	serve.CreateServe(webRouter)
+	webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().Port), Handler: webRouter}
+	webServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVER}, "", 0)
+
+	apiRouter := mux.NewRouter().StrictSlash(true)
+	api.CreateAPI(apiRouter)
+	apiServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().ApiPort), Handler: apiRouter}
+	apiServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVERAPI}, "", 0)
 
 	util.Log(util.MAIN, "Startup complete")
 
-	server := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().Port), Handler: router}
-	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe started on localhost%s", server.Addr))
-	server.ErrorLog = log.New(util.LogWriter{}, "", 0)
+	go func() {
+		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API started on api%s", apiServer.Addr))
+		// blocks if success
+		err = apiServer.ListenAndServe()
+		// TODO ListenAndServeTLS
 
+		if err != nil {
+			util.Err(util.MAIN, err, true, "Error starting api")
+		}
+	}()
+
+	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
 	// blocks if success
-	err = server.ListenAndServe()
+	err = webServer.ListenAndServe()
 	// TODO ListenAndServeTLS
 
 	if err != nil {
-		util.Err(util.MAIN, err, true, "Error serving site")
+		util.Err(util.MAIN, err, true, "Error starting webServer")
 	}
 }

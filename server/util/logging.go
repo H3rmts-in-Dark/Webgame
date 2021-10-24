@@ -10,20 +10,23 @@ import (
 	"time"
 )
 
-type Type string
+type LogGroup string
 
 const (
-	API       Type = "API"
-	MAIN      Type = "MAIN"
-	SERVE     Type = "SERVE"
-	CONFIG    Type = "CONFIG"
-	WEBSERVER Type = "WEBSERVER"
+	API       LogGroup = "API"
+	MAIN      LogGroup = "MAIN"
+	SERVE     LogGroup = "SERVE"
+	CONFIG    LogGroup = "CONFIG"
+	SERVER    LogGroup = "SERVER"
+	SERVERAPI LogGroup = "SERVERAPI"
 )
 
-func Err(prefx Type, err error, printTrace bool, message ...interface{}) {
-	log(prefx, "!", message...)
+var suffix = map[string]string{"Debug": "*", "Normal": ">", "Error": "!"}
+
+func Err(prefx LogGroup, err error, printTrace bool, message ...interface{}) {
+	log(prefx, suffix["Error"], message...)
 	if err != nil {
-		log(prefx, "!", err.Error())
+		log(prefx, suffix["Error"], err.Error())
 	}
 	if printTrace {
 		debug.PrintStack()
@@ -31,40 +34,43 @@ func Err(prefx Type, err error, printTrace bool, message ...interface{}) {
 }
 
 func Debug(message ...interface{}) {
-	log("DEBUG", "*", message...)
+	log("DEBUG", suffix["Debug"], message...)
 }
 
-func Log(prefx Type, message ...interface{}) {
-	log(prefx, ">", message...)
+func Log(prefx LogGroup, message ...interface{}) {
+	log(prefx, suffix["Normal"], message...)
 }
 
-type LogWriter struct{}
+type LogWriter struct {
+	Prefix LogGroup
+}
 
-func (w LogWriter) Write(p []byte) (n int, err error) {
-	Log(WEBSERVER, string(p))
+func (w *LogWriter) Write(p []byte) (n int, err error) {
+	Log(w.Prefix, string(p))
 	return len(p), nil
 }
 
-func log(prefx Type, suffix string, message ...interface{}) {
-	now := time.Now() // get this early.
-
-	_, file, line, ok := runtime.Caller(2)
-	if !ok {
-		file = "???"
-		line = 0
-	}
+func log(prefx LogGroup, suffix string, message ...interface{}) {
+	now := time.Now()
 
 	var location string
-	{
-		file = file[strings.LastIndexByte(file, '/')+1:]
-		var locationstretch = strconv.Itoa(int(GetConfig().Locationstretch))
+
+	if GetConfig().LogFile {
+		_, file, line, ok := runtime.Caller(2)
+		if !ok {
+			file = "???"
+			line = 0
+		}
+
+		file = file[strings.LastIndexByte(file, '/')+1:] // convert to relative path
+		var locationstretch = strconv.Itoa(int(GetConfig().StretchFile))
 		location = fmt.Sprintf("%-"+locationstretch+"s", fmt.Sprintf("%s:%d", file, line))
 	}
 
 	var prefix string
 	if GetConfig().LogPrefix {
-		var prefixstretch = strconv.Itoa(int(GetConfig().Prefixstretch))
-		prefix = fmt.Sprintf("%-"+prefixstretch+"s", prefx)
+		var prefixstretch = strconv.Itoa(int(GetConfig().StretchPrefix))
+		prefix = fmt.Sprintf("%-"+prefixstretch+"s %s", prefx, suffix)
 	}
 
 	var printstr string
@@ -73,9 +79,9 @@ func log(prefx Type, suffix string, message ...interface{}) {
 	}
 
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
-		"%s %s |%s %s %s \n",
-		now.Format("2006.01.02 15:04:05.0000"),
-		location, prefix, suffix, printstr,
+		"%s %s|%s %s \n",
+		now.Format("2006.01.02 15:04:05.00000"),
+		location, prefix, printstr,
 	)))
 	if err != nil {
 		return
