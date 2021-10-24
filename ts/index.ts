@@ -1,6 +1,3 @@
-// @ts-ignore
-import html from 'HTML/index.html'
-
 import "CSS/main.css";
 
 
