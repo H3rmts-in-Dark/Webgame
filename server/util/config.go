@@ -78,6 +78,32 @@ type config struct {
 		default: 16
 	*/
 	StretchFile uint8
+
+	/*
+		map of file extensions with the corresponding Content-Type
+
+		{"css": "text/css; charset=utf-8} <-- example for .css files
+
+		default: {}
+	*/
+	Headers map[string]string
+
+	/*
+		which site to serve if no path was specified
+		most likely be index.html
+
+		default: "index.html"
+	*/
+	DefaultSite string
+
+	/*
+		list of files or paths which are not served return a Forbidden site
+
+		{"api": true}  (<-- site/api returns a Forbidden site)
+
+		default: []
+	*/
+	Forbidden []string
 }
 
 const (
@@ -119,4 +145,7 @@ func defaultConfig() {
 	conf.StretchPrefix = 9
 	conf.StretchFile = 16
 	conf.Cache = true
+	conf.Headers = map[string]string{}
+	conf.DefaultSite = "index.html"
+	conf.Forbidden = []string{}
 }

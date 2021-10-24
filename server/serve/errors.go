@@ -15,10 +15,10 @@ const (
 	MethodNotAllowed Errors = http.StatusMethodNotAllowed // currently not in use
 )
 
-func GetErrorSite(error Errors) ([]byte, int) {
+func GetErrorSite(error Errors, host string) ([]byte, int) {
 	var replace = map[string]func() string{
 		"%%code%%":   func() string { return fmt.Sprintf("%d|%s", error, http.StatusText(int(error))) },
-		"%%public%%": func() string { return fmt.Sprintf("localhost:%d", util.GetConfig().Port) },
+		"%%public%%": func() string { return fmt.Sprintf("%s at Port %d", host, util.GetConfig().Port) },
 	}
 
 	var site string
@@ -37,7 +37,6 @@ func GetErrorSite(error Errors) ([]byte, int) {
 	for repl, fun := range replace {
 		replacesite = strings.Replace(replacesite, repl, fun(), -1)
 	}
-	util.Log(util.API, int(error))
 	return []byte(replacesite), int(error)
 }
 
