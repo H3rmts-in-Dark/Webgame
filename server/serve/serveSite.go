@@ -33,7 +33,7 @@ func LoadSites() error {
 		util.Log(util.SERVE, "Loaded site in cache:", site.Name())
 	}
 
-	util.Log(util.MAIN, "All sites loaded")
+	util.Log(util.SERVE, "All sites loaded")
 	return nil
 }
 
