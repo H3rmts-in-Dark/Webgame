@@ -1,7 +1,7 @@
 // @ts-ignore
-import html from 'HTML/login.html'
-
 import "CSS/login.sass";
+// @ts-ignore
+import html from 'HTML/login.html'
 
 
 let login: HTMLElement
@@ -14,8 +14,8 @@ function createLoginDiv() {
 
 function getParams(): Map<string, string> {
 	let params = new Map<string, string>()
-	if (location.search)
-		location.search.substr(1).split("&").forEach(function (item) {
+	if(location.search)
+		location.search.substr(1).split("&").forEach(function(item) {
 			const s = item.split("=")
 			params.set(s[0], decodeURIComponent(s[1]))
 		})

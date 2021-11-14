@@ -5,8 +5,8 @@ package-lock.json
 node_modules
 pkg
 
-webassembly/target
-webassembly/pkg
-webassembly/Cargo.lock
+WebAssembly/target
+WebAssembly/pkg
+WebAssembly/Cargo.lock
 
 site/

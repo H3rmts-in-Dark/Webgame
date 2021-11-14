@@ -3,6 +3,18 @@
     <deployment type="dockerfile">
       <settings>
         <option name="containerName" value="webgame" />
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="80" />
+              <option name="hostPort" value="80" />
+            </DockerPortBindingImpl>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="18266" />
+              <option name="hostPort" value="18266" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
         <option name="sourceFilePath" value="Dockerfile" />
       </settings>
     </deployment>

@@ -1,13 +1,12 @@
 // @ts-ignore
-import * as wasm from "../pkg/wasm.js";
-
-// @ts-ignore
-import {memory} from "../pkg/wasm_bg.wasm";
+import "CSS/wasmtest.sass";
 
 // @ts-ignore
 import html from 'HTML/wasmtest.html'
+import * as wasm from "../pkg/wasm.js";
 
-import "CSS/wasmtest.sass";
+// @ts-ignore
+import { memory } from "../pkg/wasm_bg.wasm";
 
 
 let wasmTestElement: HTMLElement
@@ -45,7 +44,7 @@ function wasmTest() {
 	};
 	
 	playPauseButton.addEventListener("click", () => {
-		if (paused) {
+		if(paused) {
 			play();
 		} else {
 			pause();
@@ -97,7 +96,7 @@ function wasmTest() {
 		
 		drawGrid(ctx, height, width);
 		drawCells(ctx, universe, height, width);
-		if (!paused) {
+		if(!paused) {
 			animationId = requestAnimationFrame(renderLoop)
 		}
 	}
@@ -110,7 +109,7 @@ function wasmTest() {
 		
 		drawGrid(ctx, height, width);
 		drawCells(ctx, universe, height, width);
-		if (!paused) {
+		if(!paused) {
 			animationId = requestAnimationFrame(renderLoop)
 		}
 	}
@@ -149,13 +148,13 @@ const drawGrid = (ctx: CanvasRenderingContext2D, height: number, width: number) 
 	ctx.strokeStyle = GRID_COLOR;
 	
 	// Vertical lines.
-	for (let i = 0; i <= width; i++) {
+	for(let i = 0; i <= width; i++) {
 		ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
 		ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
 	}
 	
 	// Horizontal lines.
-	for (let j = 0; j <= height; j++) {
+	for(let j = 0; j <= height; j++) {
 		ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
 		ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
 	}
@@ -173,19 +172,19 @@ function drawCells(ctx: CanvasRenderingContext2D, universe: wasm.Universe, heigh
 	
 	ctx.beginPath();
 	
-	for (let row = 0; row < height; row++) {
-		for (let col = 0; col < width; col++) {
+	for(let row = 0; row < height; row++) {
+		for(let col = 0; col < width; col++) {
 			const idx = getIndex(row, width, col);
 			
 			ctx.fillStyle = cells[idx] === wasm.Cell.Dead
-				 ? DEAD_COLOR
-				 : ALIVE_COLOR;
+					? DEAD_COLOR
+					: ALIVE_COLOR;
 			
 			ctx.fillRect(
-				 col * (CELL_SIZE + 1) + 1,
-				 row * (CELL_SIZE + 1) + 1,
-				 CELL_SIZE,
-				 CELL_SIZE
+					col * (CELL_SIZE + 1) + 1,
+					row * (CELL_SIZE + 1) + 1,
+					CELL_SIZE,
+					CELL_SIZE
 			);
 		}
 	}
@@ -214,7 +213,7 @@ class FPS {
 		
 		// Save only the latest 100 timings.
 		this.frames.push(fps);
-		if (this.frames.length > 100) {
+		if(this.frames.length > 100) {
 			this.frames.shift();
 		}
 		
@@ -222,7 +221,7 @@ class FPS {
 		let min = -1;
 		let max = -1;
 		let sum = 0;
-		for (let i = 0; i < this.frames.length; i++) {
+		for(let i = 0; i < this.frames.length; i++) {
 			sum += this.frames[i];
 			min = Math.min(this.frames[i], min);
 			max = Math.max(this.frames[i], max);

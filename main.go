@@ -1,12 +1,13 @@
 package main
 
 import (
-	"Webgame/server/api"
-	"Webgame/server/serve"
-	"Webgame/server/util"
 	"fmt"
 	"log"
 	"net/http"
+
+	"Webgame/server/api"
+	"Webgame/server/serve"
+	"Webgame/server/util"
 
 	"github.com/gorilla/mux"
 )

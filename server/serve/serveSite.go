@@ -80,7 +80,7 @@ func CreateServe(rout *mux.Router) {
 		msg, code, err := getSite(util.GetConfig().DefaultSite, r.Host)
 
 		if err != nil {
-			util.Err(util.SERVE, err, true, "Error getting main site")
+			util.Err(util.SERVE, err, false, "Error getting main site")
 			w.WriteHeader(code)
 		} else {
 			fileSplit := strings.Split(util.GetConfig().DefaultSite, ".")

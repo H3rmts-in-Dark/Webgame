@@ -1,10 +1,11 @@
 package serve
 
 import (
-	"Webgame/server/util"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"Webgame/server/util"
 )
 
 type Errors uint16

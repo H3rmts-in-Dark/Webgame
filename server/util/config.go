@@ -11,7 +11,7 @@ type config struct {
 	/*
 		Port for the website must be between 0 and 65536
 
-		use something linke 80 or 443
+		use something like 80 or 443
 
 		default:18265
 	*/
