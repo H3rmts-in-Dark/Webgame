@@ -21,7 +21,12 @@ const (
 	SERVERAPI LogGroup = "SERVERAPI"
 )
 
-var suffix = map[string]string{"Debug": "*", "Normal": ">", "Error": "!"}
+type logoptions struct {
+	suffix    string
+	colorcode string
+}
+
+var suffix = map[string]logoptions{"Debug": {"*", "\u001B[38;2;255;255;0m"}, "Normal": {">", "\u001B[38;2;0;255;0m"}, "Error": {"!", "\u001b[38;2;255;0;0m"}}
 
 func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
 	log(prefix, suffix["Error"], message...)
@@ -50,7 +55,7 @@ func (w *LogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func log(prefix LogGroup, suffix string, message ...interface{}) {
+func log(prefix LogGroup, logtype logoptions, message ...interface{}) {
 	now := time.Now()
 
 	var location string
@@ -70,7 +75,7 @@ func log(prefix LogGroup, suffix string, message ...interface{}) {
 	var printPrefix string
 	if GetConfig().LogPrefix {
 		var prefixStretch = strconv.Itoa(int(GetConfig().StretchPrefix))
-		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, suffix)
+		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, logtype.suffix)
 	}
 
 	var printStr string
@@ -79,7 +84,8 @@ func log(prefix LogGroup, suffix string, message ...interface{}) {
 	}
 
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
-		"%s %s|%s %s \n",
+		"%s%s %s|%s %s \u001b[0m\n",
+		logtype.colorcode,
 		now.Format("2006.01.02 15:04:05.00000"),
 		location, printPrefix, printStr,
 	)))
