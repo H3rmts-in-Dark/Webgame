@@ -2,8 +2,9 @@ FROM node:17 AS NODE
 FROM rust:1.56.1 AS RUST
 COPY --from=NODE . .
 
-COPY . /webgame
 WORKDIR /webgame
+
+COPY . .
 
 RUN npm install
 RUN npm run build

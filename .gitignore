@@ -1,12 +1,11 @@
 # intelliJ dir
-.idea
+.idea/
 
 package-lock.json
-node_modules
-pkg
+node_modules/
+pkg/
 
-WebAssembly/target
-WebAssembly/pkg
+WebAssembly/target/
 WebAssembly/Cargo.lock
 
 site/

@@ -2,6 +2,7 @@
   <configuration default="false" name="Docker" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
+        <option name="imageTag" value="webgame" />
         <option name="containerName" value="webgame" />
         <option name="portBindings">
           <list>

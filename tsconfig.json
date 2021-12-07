@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
+		"target": "ES6",
 		"allowJs": true,
+		"sourceMap": true,
 		"lib": [
 			"DOM",
-			"es6"
+			"ES2020"
 		]
 	}
 }

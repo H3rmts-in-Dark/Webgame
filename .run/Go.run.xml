@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Go" type="GoApplicationRunConfiguration" factoryName="Go Application">
-    <module name="Webgame" />
+    <module name="Projects" />
     <working_directory value="$PROJECT_DIR$" />
     <kind value="PACKAGE" />
     <package value="Webgame" />

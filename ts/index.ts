@@ -1,4 +1,4 @@
-import "CSS/main.css";
+import "CSS/main.sass";
 
 
 // @ts-ignore
