@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
+	"strconv"
 )
 
 type config struct {
@@ -132,12 +134,27 @@ func LoadConfig() error {
 		Err(CONFIG, err, true, "Error unmarshalling configs")
 		return err
 	}
+
+	// load some values from env
+	if os.Getenv("PORT") != "" {
+		port, err := strconv.Atoi(os.Getenv("PORT"))
+		if err != nil {
+			conf.Port = uint16(port)
+		}
+	}
+	if os.Getenv("APIPORT") != "" {
+		apiport, err := strconv.Atoi(os.Getenv("APIPORT"))
+		if err != nil {
+			conf.ApiPort = uint16(apiport)
+		}
+	}
+
 	Log(CONFIG, "Loaded config:", fmt.Sprintf("%+v", conf))
 	return nil
 }
 
 func defaultConfig() {
-	conf.Port = 18265
+	conf.Port = 443
 	conf.ApiPort = 18266
 	conf.LogFile = false
 	conf.LogPrefix = false

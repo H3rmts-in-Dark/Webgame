@@ -6,6 +6,9 @@ WORKDIR /webgame
 
 COPY . .
 
+ENV PORT=443
+ENV APIPORT=18266
+
 RUN npm install
 RUN npm run build
 

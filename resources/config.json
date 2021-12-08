@@ -1,6 +1,4 @@
 {
-	"Port": 80,
-	"ApiPort": 18266,
 	"Code": "APICode",
 	"Cache": false,
 	"LogPrefix": true,

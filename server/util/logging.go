@@ -13,12 +13,12 @@ import (
 type LogGroup string
 
 const (
-	API       LogGroup = "API"
-	MAIN      LogGroup = "MAIN"
-	SERVE     LogGroup = "SERVE"
-	CONFIG    LogGroup = "CONFIG"
-	SERVER    LogGroup = "SERVER"
-	SERVERAPI LogGroup = "SERVERAPI"
+	API     LogGroup = "API"
+	MAIN    LogGroup = "MAIN"
+	SERVE   LogGroup = "SERVE"
+	CONFIG  LogGroup = "CONFIG"
+	SERVER  LogGroup = "SERVER"
+	GRAPHQL LogGroup = "GRAPHQL"
 )
 
 type logoptions struct {

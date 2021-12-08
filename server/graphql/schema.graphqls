@@ -1,0 +1,26 @@
+type Setting {
+    name: String!
+    value: String!
+    admin: Boolean!
+}
+
+type Return {
+    ok: Boolean!
+    info: String!
+}
+
+input NewSetting {
+    name: String!
+    value: String!
+}
+
+type Query {
+    settings: [Setting!]
+    adminSettings: [Setting!]
+}
+
+type Mutation {
+    changeSetting(setting: NewSetting!): Return!
+    changeAdmin(setting: NewSetting!, validation: String!): Return!
+    reloadSite(validation: String!): Return!
+}

@@ -1,1 +1,1 @@
-docker run --name Webgame -p 80:80 -p 18266:18266 webgame
+docker run --name Webgame -p 443:443 -p 18266:18266 webgame

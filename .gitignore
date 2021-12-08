@@ -9,3 +9,5 @@ WebAssembly/target/
 WebAssembly/Cargo.lock
 
 site/
+/server/server.key
+/server/server.pem
