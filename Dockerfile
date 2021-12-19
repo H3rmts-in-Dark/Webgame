@@ -22,7 +22,7 @@ RUN npm run build
 
 
 # switch to go for serving
-FROM golang:1.17.2-alpine
+FROM golang:1.17.4-alpine
 
 WORKDIR /webgame
 COPY --from=BUILD /webgame/site ./site
