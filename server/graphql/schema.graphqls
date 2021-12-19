@@ -21,6 +21,7 @@ type Query {
 
 type Mutation {
     changeSetting(setting: NewSetting!): Return!
-    changeAdmin(setting: NewSetting!, validation: String!): Return!
-    reloadSite(validation: String!): Return!
+    changeAdmin(validation: String!,setting: NewSetting!): Return!
+    reloadSites(validation: String!): Return!
+    reloadSite(site: String!, validation: String!): Return!
 }

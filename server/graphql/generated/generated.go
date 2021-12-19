@@ -43,9 +43,10 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		ChangeAdmin   func(childComplexity int, setting model.NewSetting, validation string) int
+		ChangeAdmin   func(childComplexity int, validation string, setting model.NewSetting) int
 		ChangeSetting func(childComplexity int, setting model.NewSetting) int
-		ReloadSite    func(childComplexity int, validation string) int
+		ReloadSite    func(childComplexity int, site string, validation string) int
+		ReloadSites   func(childComplexity int, validation string) int
 	}
 
 	Query struct {
@@ -67,8 +68,9 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	ChangeSetting(ctx context.Context, setting model.NewSetting) (*model.Return, error)
-	ChangeAdmin(ctx context.Context, setting model.NewSetting, validation string) (*model.Return, error)
-	ReloadSite(ctx context.Context, validation string) (*model.Return, error)
+	ChangeAdmin(ctx context.Context, validation string, setting model.NewSetting) (*model.Return, error)
+	ReloadSites(ctx context.Context, validation string) (*model.Return, error)
+	ReloadSite(ctx context.Context, site string, validation string) (*model.Return, error)
 }
 type QueryResolver interface {
 	Settings(ctx context.Context) ([]*model.Setting, error)
@@ -100,7 +102,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ChangeAdmin(childComplexity, args["setting"].(model.NewSetting), args["validation"].(string)), true
+		return e.complexity.Mutation.ChangeAdmin(childComplexity, args["validation"].(string), args["setting"].(model.NewSetting)), true
 
 	case "Mutation.changeSetting":
 		if e.complexity.Mutation.ChangeSetting == nil {
@@ -124,7 +126,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ReloadSite(childComplexity, args["validation"].(string)), true
+		return e.complexity.Mutation.ReloadSite(childComplexity, args["site"].(string), args["validation"].(string)), true
+
+	case "Mutation.reloadSites":
+		if e.complexity.Mutation.ReloadSites == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_reloadSites_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ReloadSites(childComplexity, args["validation"].(string)), true
 
 	case "Query.adminSettings":
 		if e.complexity.Query.AdminSettings == nil {
@@ -262,8 +276,9 @@ type Query {
 
 type Mutation {
     changeSetting(setting: NewSetting!): Return!
-    changeAdmin(setting: NewSetting!, validation: String!): Return!
-    reloadSite(validation: String!): Return!
+    changeAdmin(validation: String!,setting: NewSetting!): Return!
+    reloadSites(validation: String!): Return!
+    reloadSite(site: String!, validation: String!): Return!
 }
 `, BuiltIn: false},
 	{Name: "federation/directives.graphql", Input: `
@@ -286,24 +301,24 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_changeAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewSetting
-	if tmp, ok := rawArgs["setting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg0, err = ec.unmarshalNNewSetting2WebgameᚋserverᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["setting"] = arg0
-	var arg1 string
+	var arg0 string
 	if tmp, ok := rawArgs["validation"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validation"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["validation"] = arg1
+	args["validation"] = arg0
+	var arg1 model.NewSetting
+	if tmp, ok := rawArgs["setting"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
+		arg1, err = ec.unmarshalNNewSetting2WebgameᚋserverᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["setting"] = arg1
 	return args, nil
 }
 
@@ -323,6 +338,30 @@ func (ec *executionContext) field_Mutation_changeSetting_args(ctx context.Contex
 }
 
 func (ec *executionContext) field_Mutation_reloadSite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["site"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("site"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["site"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["validation"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validation"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["validation"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_reloadSites_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -457,7 +496,49 @@ func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field gra
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ChangeAdmin(rctx, args["setting"].(model.NewSetting), args["validation"].(string))
+		return ec.resolvers.Mutation().ChangeAdmin(rctx, args["validation"].(string), args["setting"].(model.NewSetting))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Return)
+	fc.Result = res
+	return ec.marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_reloadSites(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_reloadSites_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ReloadSites(rctx, args["validation"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -499,7 +580,7 @@ func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ReloadSite(rctx, args["validation"].(string))
+		return ec.resolvers.Mutation().ReloadSite(rctx, args["site"].(string), args["validation"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2009,6 +2090,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "changeAdmin":
 			out.Values[i] = ec._Mutation_changeAdmin(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "reloadSites":
+			out.Values[i] = ec._Mutation_reloadSites(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
