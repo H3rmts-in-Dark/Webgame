@@ -109,9 +109,8 @@ type config struct {
 }
 
 const (
-	resourcesDir = "resources"
-	ConfigFile   = resourcesDir + "/config.json"
-	Sitesdir     = "site"
+	ConfigFile = "config.json"
+	Sitesdir   = "site"
 )
 
 var conf config
