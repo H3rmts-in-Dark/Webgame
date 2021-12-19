@@ -4,7 +4,7 @@ description = "Webgame"
 version = "0.1.0"
 authors = ["H3rmt"]
 categories = ["wasm"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
@@ -31,3 +31,4 @@ wee_alloc = { version = "0.4.2", optional = true }
 [dependencies.web-sys]
 version = "0.3.22"
 features = ["console"]
+

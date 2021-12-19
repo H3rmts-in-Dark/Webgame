@@ -1,20 +1,43 @@
-FROM node:17 AS NODE
-FROM rust:1.56.1 AS RUST
-COPY --from=NODE . .
+FROM node:17-alpine as BUILD
+COPY --from=rust:1.57.0-alpine /usr/local/cargo /usr/local/cargo
+ENV PATH="$PATH:/usr/local/cargo/bin"
 
 WORKDIR /webgame
-
 COPY . .
 
-ENV PORT=443
-ENV APIPORT=18266
+# add curl to get wasm-pack, add build-base for cc linker
+RUN apk add curl
+RUN apk add build-base
+
+# setup rust
+RUN rustup default stable
+RUN rustup target add wasm32-unknown-unknown
+
+# install wasm-pack
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
 
 RUN npm install
 RUN npm run build
 
-FROM golang:1.17.2 AS GO
-COPY --from=RUST /webgame /webgame
-WORKDIR /webgame
 
-EXPOSE 18265
-CMD ["go", "run", "/webgame"]
+# switch to go for serving
+FROM golang:1.17.2-alpine
+
+WORKDIR /webgame
+COPY --from=BUILD /webgame/site ./site
+COPY server ./server
+COPY scripts ./scripts
+COPY ["config.json", "go.mod", "go.sum", "main.go", "./"]
+
+ENV PORT=443
+ENV APIPORT=18040
+EXPOSE 18040
+
+RUN go install
+
+# create certificates
+RUN apk add openssl
+RUN scripts/createCerts.sh
+
+CMD ["go", "run", "."]
