@@ -50,7 +50,8 @@ func main() {
 func startwebServer(webServer *http.Server) {
 	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
 	// blocks if success
-	err := webServer.ListenAndServeTLS("server/server.pem", "server/server.key")
+	//err := webServer.ListenAndServeTLS("server/server.pem", "server/server.key")
+	err := webServer.ListenAndServe()
 
 	if err != nil {
 		util.Err(util.MAIN, err, true, "Error starting webServer")
@@ -60,7 +61,8 @@ func startwebServer(webServer *http.Server) {
 func startAPI(Api *http.Server) {
 	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API started on localhost%s", Api.Addr))
 	// blocks if success
-	err := Api.ListenAndServeTLS("server/server.pem", "server/server.key")
+	//err := Api.ListenAndServeTLS("server/server.pem", "server/server.key")
+	err := Api.ListenAndServe()
 
 	if err != nil {
 		util.Err(util.MAIN, err, true, "Error starting Api")

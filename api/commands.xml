@@ -1,0 +1,82 @@
+<config>
+	<commands>
+		<command name="reloadSite" admin="true" callback="reloadSite">
+			<arugments>
+				<argument name="Site" type="String" />
+			</arugments>
+			<help>
+				Usage: Goserver [-a] autorisation [site]
+				
+				Reloads a specific site from filesystem into the cache
+				
+				
+				positional arguments:
+					autorisation   str
+					site           str
+				
+				optional arguments:
+					-q, --quiet    Suppress the build output and print image
+					-h, --help     show this help message
+				<errors>
+					Throws an error if cashing is deactivated
+				</errors>
+				<see>
+					reloadSites
+				</see>
+			</help>
+		</command>
+		<command name="reloadSites" admin="true" callback="reloadSites">
+			<arugments />
+			<help>
+				This Command takes 0 arguments
+				
+				<errors>
+					Throws an error if cashing is deactivated
+				</errors>
+			</help>
+		</command>
+	</commands>
+	<help>
+		Usage:  docker [OPTIONS] COMMAND
+		
+		A self-sufficient runtime for containers
+		
+		Options:
+		--config string      Location of client config files (default "C:\\Users\\enric\\.docker")
+		-c, --context string     Name of the context to use to connect to the daemon (overrides DOCKER_HOST env var and default context set with "docker context use")
+		-D, --debug              Enable debug mode
+		-H, --host list          Daemon socket(s) to connect to
+		-l, --log-level string   Set the logging level ("debug"|"info"|"warn"|"error"|"fatal") (default "info")
+		--tls                Use TLS; implied by --tlsverify
+		-v, --version            Print version information and quit
+		
+		Management Commands:
+		builder     Manage builds
+		config      Manage Docker configs
+		stack       Manage Docker stacks
+		swarm       Manage Swarm
+		system      Manage Docker
+		trust       Manage trust on Docker images
+		volume      Manage volumes
+		
+		Commands:
+		attach      Attach local standard input, output, and error streams to a running container
+		build       Build an image from a Dockerfile
+		info        Display system-wide information
+		inspect     Return low-level information on Docker objects
+		kill        Kill one or more running containers
+		port        List port mappings or a specific mapping for the container
+		ps          List containers
+		pull        Pull an image or a repository from a registry
+		push        Push an image or a repository to a registry
+		rm          Remove one or more containers
+		rmi         Remove one or more images
+		run         Run a command in a new container
+		update      Update configuration of one or more containers
+		version     Show the Docker version information
+		
+		Run 'docker COMMAND --help' for more information on a command.
+		
+		To get more help with docker, check out our guides at https://docs.docker.com/go/guides/
+	</help>
+</config>

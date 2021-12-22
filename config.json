@@ -1,7 +1,6 @@
 {
-	"Port": 80,
 	"Code": "APICode",
-	"Cache": false,
+	"Cache": true,
 	"LogPrefix": true,
 	"StretchPrefix": 9,
 	"LogFile": true,
