@@ -33,6 +33,7 @@ function logout() {
 
 function addEvents() {
 	document.getElementById('leaveButton').onclick = logout
+	document.getElementById("leaveButton").style.display="inline-block"
 }
 
 export {

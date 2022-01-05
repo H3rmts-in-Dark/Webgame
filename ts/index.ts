@@ -13,7 +13,6 @@ import runWASM from './wasmtest.ts'
 	let ip = login.checkLoggedIn()
 	if(ip) {
 		console.log(`passed login with ip:${ip}`)
-		
 		login.addEvents()
 		runWASM()
 	} else {
