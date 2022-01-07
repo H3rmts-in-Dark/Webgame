@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  webgame:
+    container_name: Webgame
+    image: webgame
+    ports:
+      - 443:443/tcp
+      - 18266:18266/tcp
