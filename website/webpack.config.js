@@ -4,10 +4,9 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const out = path.resolve(__dirname, "site");
-const wasmSrc = path.resolve(__dirname, "WebAssembly");
+const out = path.resolve(__dirname, "./site");
+const wasmSrc = path.resolve(__dirname, "webassembly");
 const wasmOut = path.resolve(__dirname, "pkg");
-
 
 const Modes = {
 	Development: "development",

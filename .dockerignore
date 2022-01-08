@@ -5,8 +5,8 @@
 node_modules/
 pkg/
 
-WebAssembly/target/
-WebAssembly/Cargo.lock
+website/webassembly/target/
+website/webassembly/Cargo.lock
 
 site/
 

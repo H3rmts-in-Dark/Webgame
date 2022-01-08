@@ -1,9 +1,37 @@
 version: '3'
 
 services:
-  webgame:
-    container_name: Webgame
-    image: webgame
+  server:
+    build: ./server
+    restart: 'always'
     ports:
-      - 443:443/tcp
-      - 18266:18266/tcp
+      - "8080:80"
+      - "8443:443"
+      - "18267:18266"
+    depends_on:
+      - server-db
+      - build
+    links:
+      - server-db:database
+    volumes:
+      - site-volume:/server/site
+  
+  build:
+    build: ./website
+    volumes:
+      - site-volume:/website/site
+  
+  server-db:
+    image: mariadb:10.7
+    restart: 'always'
+    ports:
+      - "3307:3306" # for debugging
+    volumes:
+      - "/var/lib/mysql:${PWD}/data"
+    environment:
+      MARIADB_ROOT_PASSWORD: "root"
+      MARIADB_USER: "server"
+      MARIADB_PASSWORD: "server-password"
+
+volumes:
+  site-volume:

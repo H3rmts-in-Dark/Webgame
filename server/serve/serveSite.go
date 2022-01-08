@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"Webgame/server/util"
+	"Server/util"
 
 	"github.com/gorilla/mux"
 )
@@ -15,7 +15,7 @@ import (
 var sites map[string][]byte
 
 func LoadSites() error {
-	siteCount, err := ioutil.ReadDir(util.Sitesdir)
+	siteCount, err := ioutil.ReadDir(util.GetConfig().SitesDir)
 	if err != nil {
 		util.Err(util.SERVE, err, true, "Error reading sites directory")
 		return err
@@ -24,13 +24,13 @@ func LoadSites() error {
 	sites = make(map[string][]byte, len(siteCount))
 
 	for _, site := range siteCount {
-		tmpSite, err := ioutil.ReadFile(util.Sitesdir + "/" + site.Name())
+		tmpSite, err := ioutil.ReadFile(util.GetConfig().SitesDir + "/" + site.Name())
 		if err != nil {
-			util.Err(util.SERVE, err, true, "Error loading site")
-			return err
+			util.Err(util.SERVE, err, false, "Error loading site")
+		} else {
+			sites[site.Name()] = tmpSite
+			util.Log(util.SERVE, "Loaded site in cache:", site.Name())
 		}
-		sites[site.Name()] = tmpSite
-		util.Log(util.SERVE, "Loaded site in cache:", site.Name())
 	}
 
 	util.Log(util.SERVE, "All sites loaded")
@@ -53,7 +53,7 @@ func getSite(name string, host string) (site []byte, code int, err error) {
 		}
 	} else {
 		var tmpSite []byte
-		tmpSite, err = ioutil.ReadFile(util.Sitesdir + "/" + name)
+		tmpSite, err = ioutil.ReadFile(util.GetConfig().SitesDir + "/" + name)
 		if err != nil {
 			util.Err(util.SERVE, err, false, "Error loading site")
 			site, code = GetErrorSite(NotFound, host)

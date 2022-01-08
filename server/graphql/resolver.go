@@ -6,8 +6,8 @@ package graph
 import (
 	"context"
 
-	"Webgame/server/graphql/generated"
-	"Webgame/server/graphql/model"
+	"Server/graphql/generated"
+	"Server/graphql/model"
 )
 
 type Resolver struct{}

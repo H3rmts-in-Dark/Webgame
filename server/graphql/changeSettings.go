@@ -3,8 +3,8 @@ package graph
 import (
 	"errors"
 
-	"Webgame/server/serve"
-	"Webgame/server/util"
+	"Server/serve"
+	"Server/util"
 )
 
 /*

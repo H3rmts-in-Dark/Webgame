@@ -1,1 +1,0 @@
-curl --data '{"action": "Reload_Site", "code": "APICode"}' http://localhost:18266/api

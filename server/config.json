@@ -1,10 +1,15 @@
 {
 	"Code": "APICode",
 	"Cache": true,
-	"LogPrefix": true,
-	"StretchPrefix": 9,
-	"LogFile": true,
-	"StretchFile": 18,
+	"EnableHTTP": false,
+	"EnableHTTPS": true,
+	"ApiHTTPS": true,
+	"SitesDir": "./site",
+	
+	"Forbidden": [
+		"api"
+	],
+	
 	"defaultSite": "index.html",
 	"headers": {
 		"html": "text/html; charset=utf-8",
@@ -12,7 +17,10 @@
 		"wasm": "application/wasm",
 		"js": "application/js"
 	},
-	"forbidden": [
-		"api"
-	]
+	
+	"LogPrefix": true,
+	"LogFile": true,
+	"StretchPrefix": 9,
+	"StretchFile": 18
+	
 }

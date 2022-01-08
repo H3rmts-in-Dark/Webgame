@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"Webgame/server/util"
 )
 
 type Errors uint16
@@ -18,8 +16,8 @@ const (
 
 func GetErrorSite(error Errors, host string) ([]byte, int) {
 	var replace = map[string]func() string{
-		"%%code%%":   func() string { return fmt.Sprintf("%d|%s", error, http.StatusText(int(error))) },
-		"%%public%%": func() string { return fmt.Sprintf("%s at Port %d", host, util.GetConfig().Port) },
+		"%%code%%":   func() string { return fmt.Sprintf("%d | %s", error, http.StatusText(int(error))) },
+		"%%public%%": func() string { return fmt.Sprintf("%s", host) },
 	}
 
 	var site string

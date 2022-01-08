@@ -12,17 +12,26 @@ import (
 type config struct {
 	/*
 		Port for the website must be between 0 and 65536
+		this comes from the Dockerfile and should
+		not get changed via the config file
 
-		use something like 80 or 443
-
-		default:18265
+		default:80
 	*/
-	Port uint16
+	PortHTTP uint16
+
+	/*
+		Port for the website must be between 0 and 65536
+		this comes from the Dockerfile and should
+		not get changed via the config file
+
+		default:443
+	*/
+	PortHTTPS uint16
 
 	/*
 		Port used for the api must be between 0 and 65536
-		should be different from Port to avoid trying to server
-		api as a file
+		should be different from Port to avoid trying to serve
+		api by server
 
 		default: 18266
 	*/
@@ -30,6 +39,8 @@ type config struct {
 
 	/*
 		code needed to perform admin actions on the api
+
+		default: random generated string
 	*/
 	Code string
 
@@ -46,6 +57,39 @@ type config struct {
 		default: true
 	*/
 	Cache bool
+
+	/*
+		enabled HTTP serving on this server on PortHTTP
+
+		default: true
+	*/
+	EnableHTTP bool
+
+	/*
+		enabled HTTPS with provided HTTPS certificate serving on this server on PortHTTPS
+
+		default: true
+	*/
+	EnableHTTPS bool
+
+	/*
+		enabled HTTPS with provided HTTPS certificate serving on this server on ApiPort
+
+		default: true
+	*/
+	ApiHTTPS bool
+
+	/*
+		change to serve root for serving files
+		can be relative to the server main.go
+		or absolute
+
+		only this directory is served, but no underlying directory
+		get served
+
+		default: ./site
+	*/
+	SitesDir string
 
 	/*
 		adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
@@ -110,7 +154,6 @@ type config struct {
 
 const (
 	ConfigFile = "config.json"
-	Sitesdir   = "site"
 )
 
 var conf config
@@ -135,10 +178,16 @@ func LoadConfig() error {
 	}
 
 	// load some values from env
-	if os.Getenv("PORT") != "" {
-		port, err := strconv.Atoi(os.Getenv("PORT"))
+	if os.Getenv("PortHTTP") != "" {
+		port, err := strconv.Atoi(os.Getenv("PortHTTP"))
 		if err != nil {
-			conf.Port = uint16(port)
+			conf.PortHTTP = uint16(port)
+		}
+	}
+	if os.Getenv("PortHTTPS") != "" {
+		port, err := strconv.Atoi(os.Getenv("PortHTTPS"))
+		if err != nil {
+			conf.PortHTTPS = uint16(port)
 		}
 	}
 	if os.Getenv("APIPORT") != "" {
@@ -153,8 +202,13 @@ func LoadConfig() error {
 }
 
 func defaultConfig() {
-	conf.Port = 443
+	conf.PortHTTP = 80
+	conf.PortHTTPS = 443
 	conf.ApiPort = 18266
+	conf.EnableHTTPS = true
+	conf.EnableHTTP = true
+	conf.ApiHTTPS = true
+	conf.SitesDir = "./site"
 	conf.LogFile = false
 	conf.LogPrefix = false
 	conf.Code = fmt.Sprintf("this is supposed to be a secure code which should be overridden :Bonk: %d", rand.Int())

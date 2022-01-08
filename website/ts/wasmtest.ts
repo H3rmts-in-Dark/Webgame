@@ -3,6 +3,7 @@ import "CSS/wasmtest.sass";
 
 // @ts-ignore
 import html from 'HTML/wasmtest.html'
+// @ts-ignore
 import * as wasm from "../pkg/wasm.js";
 
 // @ts-ignore

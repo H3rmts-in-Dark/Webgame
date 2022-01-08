@@ -3,7 +3,7 @@
 package generated
 
 import (
-	"Webgame/server/graphql/model"
+	"Server/graphql/model"
 	"bytes"
 	"context"
 	"errors"
