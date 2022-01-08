@@ -1,13 +1,1 @@
-# intelliJ dir
 .idea/
-
-website/package-lock.json
-website/node_modules/
-website/pkg/
-website/webassembly/target/
-website/webassembly/Cargo.lock
-
-server/site/
-
-server/server.pem
-server/server.key
