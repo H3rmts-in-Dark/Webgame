@@ -19,6 +19,9 @@ jobs:
     - name: cd server
       run: cd server
     
+    - name: test
+      run: ls
+    
     - name: Build
       run: go build -v ./...
 
