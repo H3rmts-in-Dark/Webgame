@@ -1,11 +1,10 @@
 {
-	"PortHTTP": 808,
-	"Code": "APICode",
+	"Code": "APICodeSecure",
 	"Cache": true,
-	"EnableHTTP": true,
+	"EnableHTTP": false,
 	"EnableHTTPS": true,
 	"ApiHTTPS": true,
-	"SitesDir": "/home/enrico/Projects/Webgame/server/site",
+	"SitesDir": "./site",
 	
 	"DBHost": "127.0.0.1:3308",
 	"DBUser": "root",
