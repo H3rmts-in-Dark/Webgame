@@ -58,7 +58,6 @@ func getSite(name string, host string) (site []byte, code int, err error) {
 			util.Err(util.SERVE, err, false, "Error loading site")
 			site, code = GetErrorSite(NotFound, host)
 		} else {
-			util.Log(util.SERVE, "Loaded site:", name)
 			site = tmpSite
 		}
 	}
@@ -93,10 +92,8 @@ func CreateServe(rout *mux.Router) {
 		_, err = w.Write(msg)
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error writing response:")
-		} else {
-			util.Log(util.SERVE, "Send main site")
 		}
-	})
+	}).Methods("Get")
 
 	// Other Sites
 	rout.HandleFunc("/{site}", func(w http.ResponseWriter, r *http.Request) {
@@ -116,8 +113,6 @@ func CreateServe(rout *mux.Router) {
 		_, err = w.Write(msg)
 		if err != nil {
 			util.Err(util.SERVE, err, true, "Error writing response:")
-		} else {
-			util.Log(util.SERVE, "Sent site")
 		}
 	}).Methods("Get")
 }

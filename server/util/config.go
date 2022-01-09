@@ -13,7 +13,7 @@ type config struct {
 	/*
 		Port for the website must be between 0 and 65536
 		this comes from the Dockerfile and should
-		not get changed via the config file
+		not get changed via the config file if used with Docker
 
 		default:80
 	*/
@@ -22,7 +22,7 @@ type config struct {
 	/*
 		Port for the website must be between 0 and 65536
 		this comes from the Dockerfile and should
-		not get changed via the config file
+		not get changed via the config file if used with Docker
 
 		default:443
 	*/
@@ -150,6 +150,30 @@ type config struct {
 		default: []
 	*/
 	Forbidden []string
+
+	/*
+		host of DB to connect to.
+		Database to store logs, access logs, etc
+	*/
+	DBHost string
+
+	/*
+		user of DB to connect to.
+		Database to store logs, access logs, etc
+	*/
+	DBUser string
+
+	/*
+		password of DBUser to connect to.
+		Database to store logs, access logs, etc
+	*/
+	DBPassword string
+
+	/*
+		database of DB to use.
+		Database to store logs, access logs, etc
+	*/
+	DBDatabase string
 }
 
 const (
@@ -218,4 +242,8 @@ func defaultConfig() {
 	conf.Headers = map[string]string{}
 	conf.DefaultSite = "index.html"
 	conf.Forbidden = []string{}
+	conf.DBHost = "no host provided"
+	conf.DBUser = "no user provided"
+	conf.DBPassword = "no password provided"
+	conf.DBDatabase = "no database provided"
 }

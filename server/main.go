@@ -7,6 +7,7 @@ import (
 
 	graph "Server/graphql"
 	gen "Server/graphql/generated"
+	"Server/logging"
 	"Server/serve"
 	"Server/util"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -22,6 +23,7 @@ func main() {
 	}
 
 	util.Log(util.MAIN, "Starting server")
+	logging.SQLInit()
 
 	if util.GetConfig().Cache {
 		err = serve.LoadSites()

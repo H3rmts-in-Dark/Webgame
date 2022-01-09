@@ -1,10 +1,16 @@
 {
+	"PortHTTP": 808,
 	"Code": "APICode",
 	"Cache": true,
-	"EnableHTTP": false,
+	"EnableHTTP": true,
 	"EnableHTTPS": true,
 	"ApiHTTPS": true,
-	"SitesDir": "./site",
+	"SitesDir": "/home/enrico/Projects/Webgame/server/site",
+	
+	"DBHost": "127.0.0.1:3308",
+	"DBUser": "root",
+	"DBPassword": "root",
+	"DBDatabase": "server",
 	
 	"Forbidden": [
 		"api"
@@ -22,5 +28,4 @@
 	"LogFile": true,
 	"StretchPrefix": 9,
 	"StretchFile": 18
-	
 }
