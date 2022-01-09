@@ -36,4 +36,5 @@ services:
       MARIADB_PASSWORD: "server-password"
 
 volumes:
+  db-data:
   site-volume:
