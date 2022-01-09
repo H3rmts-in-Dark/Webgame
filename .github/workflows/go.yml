@@ -16,14 +16,8 @@ jobs:
       with:
         go-version: 1.17
     
-    - name: cd server
-      run: cd server
-    
-    - name: test
-      run: ls
-    
     - name: Build
-      run: go build -v ./...
+      run: go build -v ./server/main.go
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./server/main.go
