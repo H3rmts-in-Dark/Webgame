@@ -5,6 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -14,6 +15,12 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
-
+    
+    - name: cd server
+      run: cd server
+    
     - name: Build
-      run: go build -v ./server
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
