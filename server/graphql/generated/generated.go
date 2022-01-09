@@ -313,7 +313,7 @@ func (ec *executionContext) field_Mutation_changeAdmin_args(ctx context.Context,
 	var arg1 model.NewSetting
 	if tmp, ok := rawArgs["setting"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg1, err = ec.unmarshalNNewSetting2WebgameᚋserverᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
+		arg1, err = ec.unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -328,7 +328,7 @@ func (ec *executionContext) field_Mutation_changeSetting_args(ctx context.Contex
 	var arg0 model.NewSetting
 	if tmp, ok := rawArgs["setting"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg0, err = ec.unmarshalNNewSetting2WebgameᚋserverᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
+		arg0, err = ec.unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -468,7 +468,7 @@ func (ec *executionContext) _Mutation_changeSetting(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Return)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -510,7 +510,7 @@ func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Return)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_reloadSites(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -552,7 +552,7 @@ func (ec *executionContext) _Mutation_reloadSites(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Return)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -594,7 +594,7 @@ func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Return)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_settings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -626,7 +626,7 @@ func (ec *executionContext) _Query_settings(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Setting)
 	fc.Result = res
-	return ec.marshalOSetting2ᚕᚖWebgameᚋserverᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
+	return ec.marshalOSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_adminSettings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -658,7 +658,7 @@ func (ec *executionContext) _Query_adminSettings(ctx context.Context, field grap
 	}
 	res := resTmp.([]*model.Setting)
 	fc.Result = res
-	return ec.marshalOSetting2ᚕᚖWebgameᚋserverᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
+	return ec.marshalOSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2500,16 +2500,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewSetting2WebgameᚋserverᚋgraphqlᚋmodelᚐNewSetting(ctx context.Context, v interface{}) (model.NewSetting, error) {
+func (ec *executionContext) unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx context.Context, v interface{}) (model.NewSetting, error) {
 	res, err := ec.unmarshalInputNewSetting(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNReturn2WebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v model.Return) graphql.Marshaler {
+func (ec *executionContext) marshalNReturn2ServerᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v model.Return) graphql.Marshaler {
 	return ec._Return(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v *model.Return) graphql.Marshaler {
+func (ec *executionContext) marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v *model.Return) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2519,7 +2519,7 @@ func (ec *executionContext) marshalNReturn2ᚖWebgameᚋserverᚋgraphqlᚋmodel
 	return ec._Return(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNSetting2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐSetting(ctx context.Context, sel ast.SelectionSet, v *model.Setting) graphql.Marshaler {
+func (ec *executionContext) marshalNSetting2ᚖServerᚋgraphqlᚋmodelᚐSetting(ctx context.Context, sel ast.SelectionSet, v *model.Setting) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -2840,7 +2840,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOSetting2ᚕᚖWebgameᚋserverᚋgraphqlᚋmodelᚐSettingᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Setting) graphql.Marshaler {
+func (ec *executionContext) marshalOSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Setting) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -2867,7 +2867,7 @@ func (ec *executionContext) marshalOSetting2ᚕᚖWebgameᚋserverᚋgraphqlᚋm
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSetting2ᚖWebgameᚋserverᚋgraphqlᚋmodelᚐSetting(ctx, sel, v[i])
+			ret[i] = ec.marshalNSetting2ᚖServerᚋgraphqlᚋmodelᚐSetting(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
