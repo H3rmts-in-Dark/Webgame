@@ -10,6 +10,7 @@ import (
 	"Server/logging"
 	"Server/serve"
 	"Server/util"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
@@ -19,7 +20,7 @@ import (
 func main() {
 	err := util.LoadConfig()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	util.Log(util.MAIN, "Starting server")
@@ -28,20 +29,19 @@ func main() {
 	if util.GetConfig().Cache {
 		err = serve.LoadSites()
 		if err != nil {
-			return
+			panic(err)
 		}
 	}
 
-	webRouter := mux.NewRouter().StrictSlash(true)
-	serve.CreateServe(webRouter)
+	serv := serve.CreateServe()
 
 	if util.GetConfig().EnableHTTP {
-		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTP), Handler: webRouter}
+		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTP), Handler: serv}
 		webServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVER}, "", 0)
 		go startwebServer(webServer, false)
 	}
 	if util.GetConfig().EnableHTTPS {
-		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTPS), Handler: webRouter}
+		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTPS), Handler: serv}
 		webServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVER}, "", 0)
 		go startwebServer(webServer, true)
 	}
