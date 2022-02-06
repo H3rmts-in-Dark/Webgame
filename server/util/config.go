@@ -1,12 +1,13 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"strconv"
+
+	"gopkg.in/yaml.v2"
 )
 
 type config struct {
@@ -42,7 +43,7 @@ type config struct {
 
 		default: random generated string
 	*/
-	Code string
+	Code string `yaml:"Code"`
 
 	/*
 		true: loads all files in the Sitesdir directory in cache
@@ -56,28 +57,28 @@ type config struct {
 
 		default: true
 	*/
-	Cache bool
+	Cache bool `yaml:"Cache"`
 
 	/*
 		enabled HTTP serving on this server on PortHTTP
 
 		default: true
 	*/
-	EnableHTTP bool
+	EnableHTTP bool `yaml:"EnableHTTP"`
 
 	/*
 		enabled HTTPS with provided HTTPS certificate serving on this server on PortHTTPS
 
 		default: true
 	*/
-	EnableHTTPS bool
+	EnableHTTPS bool `yaml:"EnableHTTPS"`
 
 	/*
 		enabled HTTPS with provided HTTPS certificate serving on this server on ApiPort
 
 		default: true
 	*/
-	ApiHTTPS bool
+	ApiHTTPS bool `yaml:"ApiHTTPS"`
 
 	/*
 		change to serve root for serving files
@@ -89,7 +90,15 @@ type config struct {
 
 		default: ./site
 	*/
-	SitesDir string
+	SitesDir string `yaml:"SitesDir"`
+
+	/*
+		removes Debug logs from console if set to true
+		can improve cache loading speed
+
+		default: false
+	*/
+	Debug bool `yaml:"Debug"`
 
 	/*
 		adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
@@ -97,7 +106,7 @@ type config struct {
 
 		default: false
 	*/
-	LogPrefix bool
+	LogPrefix bool `yaml:"LogPrefix"`
 
 	/*
 		stretches the prefix with LogGroup and > / * / ! to certain size
@@ -106,7 +115,7 @@ type config struct {
 
 		default: 9 (fits the longest group)
 	*/
-	StretchPrefix uint8
+	StretchPrefix uint8 `yaml:"StretchPrefix"`
 
 	/*
 		adds the file to the log where the Log method was called
@@ -114,7 +123,7 @@ type config struct {
 
 		default: false
 	*/
-	LogFile bool
+	LogFile bool `yaml:"LogFile"`
 
 	/*
 		stretches the filename:line number to certain size
@@ -123,7 +132,7 @@ type config struct {
 
 		default: 16
 	*/
-	StretchFile uint8
+	StretchFile uint8 `yaml:"StretchFile"`
 
 	/*
 		map of file extensions with the corresponding Content-Type
@@ -132,7 +141,7 @@ type config struct {
 
 		default: {}
 	*/
-	Headers map[string]string
+	Headers map[string]string `yaml:"Headers"`
 
 	/*
 		which site to serve if no path was specified
@@ -140,7 +149,7 @@ type config struct {
 
 		default: "index.html"
 	*/
-	DefaultSite string
+	DefaultSite string `yaml:"DefaultSite"`
 
 	/*
 		list of files or paths which are not served return a Forbidden site
@@ -149,35 +158,35 @@ type config struct {
 
 		default: []
 	*/
-	Forbidden []string
+	Forbidden []string `yaml:"Forbidden"`
 
 	/*
 		host of DB to connect to.
 		Database to store logs, access logs, etc
 	*/
-	DBHost string
+	DBHost string `yaml:"DBHost"`
 
 	/*
 		user of DB to connect to.
 		Database to store logs, access logs, etc
 	*/
-	DBUser string
+	DBUser string `yaml:"DBUser"`
 
 	/*
 		password of DBUser to connect to.
 		Database to store logs, access logs, etc
 	*/
-	DBPassword string
+	DBPassword string `yaml:"DBPassword"`
 
 	/*
 		database of DB to use.
 		Database to store logs, access logs, etc
 	*/
-	DBDatabase string
+	DBDatabase string `yaml:"DBDatabase"`
 }
 
 const (
-	ConfigFile = "config.json"
+	ConfigFile = "server.yml"
 )
 
 var conf config
@@ -195,7 +204,7 @@ func LoadConfig() error {
 		return err
 	}
 
-	err = json.Unmarshal(data, &conf)
+	err = yaml.Unmarshal(data, &conf)
 	if err != nil {
 		Err(CONFIG, err, true, "Error unmarshalling configs")
 		return err
@@ -226,13 +235,14 @@ func LoadConfig() error {
 }
 
 func defaultConfig() {
-	conf.PortHTTP = 80
-	conf.PortHTTPS = 443
+	conf.PortHTTP = 8080 // TODO revert
+	conf.PortHTTPS = 8443
 	conf.ApiPort = 18266
 	conf.EnableHTTPS = true
 	conf.EnableHTTP = true
 	conf.ApiHTTPS = true
 	conf.SitesDir = "./site"
+	conf.Debug = false
 	conf.LogFile = false
 	conf.LogPrefix = false
 	conf.Code = fmt.Sprintf("this is supposed to be a secure code which should be overridden :Bonk: %d", rand.Int())

@@ -22,12 +22,12 @@ const (
 	GRAPHQL LogGroup = "GRAPHQL"
 )
 
-type logoptions struct {
+type logOptions struct {
 	suffix    string
 	colorcode string
 }
 
-var suffix = map[string]logoptions{"Debug": {"*", "\u001B[38;2;255;255;0m"}, "Normal": {">", "\u001B[38;2;0;255;0m"}, "Error": {"!", "\u001b[38;2;255;0;0m"}}
+var suffix = map[string]logOptions{"Debug": {"*", "\u001B[38;2;255;255;0m"}, "Normal": {">", "\u001B[38;2;0;255;0m"}, "Error": {"!", "\u001b[38;2;255;0;0m"}}
 
 func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
 	log(prefix, suffix["Error"], 1, message...)
@@ -40,7 +40,9 @@ func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
 }
 
 func Debug(message ...interface{}) {
-	log("DEBUG", suffix["Debug"], 1, message...)
+	if GetConfig().Debug {
+		log("DEBUG", suffix["Debug"], 1, message...)
+	}
 }
 
 func Log(prefix LogGroup, message ...interface{}) {
@@ -56,7 +58,7 @@ func (w *LogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func log(prefix LogGroup, logtype logoptions, skip uint8, message ...interface{}) {
+func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface{}) {
 	now := time.Now()
 
 	var location string
@@ -76,7 +78,7 @@ func log(prefix LogGroup, logtype logoptions, skip uint8, message ...interface{}
 	var printPrefix string
 	if GetConfig().LogPrefix {
 		var prefixStretch = strconv.Itoa(int(GetConfig().StretchPrefix))
-		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, logtype.suffix)
+		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, logOption.suffix)
 	}
 
 	var printStr string
@@ -86,7 +88,7 @@ func log(prefix LogGroup, logtype logoptions, skip uint8, message ...interface{}
 
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s%s %s|%s %s \u001b[0m\n",
-		logtype.colorcode,
+		logOption.colorcode,
 		now.Format("2006.01.02 15:04:05.00000"),
 		location, printPrefix, printStr,
 	)))
