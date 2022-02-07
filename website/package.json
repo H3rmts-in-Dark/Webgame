@@ -3,7 +3,8 @@
 	"name": "webgame",
 	"version": "0.1.0",
 	"scripts": {
-		"build": "webpack"
+		"build": "webpack",
+		"watch": "webpack watch"
 	},
 	"devDependencies": {
 		"sass": "^1.42.1",
