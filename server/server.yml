@@ -1,4 +1,3 @@
----
 Code: 'APICodeSecure'
 Cache: true
 Debug: false
@@ -11,10 +10,13 @@ DBUser: 'root'
 DBPassword: 'root'
 DBDatabase: 'server'
 Forbidden:
-  - 'api'
-defaultSite: "index.html"
-headers:
-  html: 'text/html; charset=utf-8'
+  Endpoints:
+    - '/api'
+  Regex:
+    - '.*\.json$'
+DefaultSite: "index.html"
+ContentTypes:
+  html: 'text/html'
   ico: 'image/x-icon'
   wasm: 'application/wasm'
   js: 'application/js'
