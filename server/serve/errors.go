@@ -77,7 +77,7 @@ func getErrorNotFound(path string, additional ...string) string {
 func getFoot(host string, goInfo string, sys string) string {
 	return fmt.Sprintf(`
 <hr>
-	<address>Golang Server at %s running %s on %s</address>
+<address>Golang Server at %s running %s on %s</address>
 	`, host, goInfo, sys)
 }
 
