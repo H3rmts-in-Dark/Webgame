@@ -3,67 +3,97 @@ package serve
 import (
 	"fmt"
 	"net/http"
-	"strings"
+	"runtime"
 )
 
 type Errors uint16
 
 const (
-	Forbidden        Errors = http.StatusForbidden
-	NotFound         Errors = http.StatusNotFound
-	MethodNotAllowed Errors = http.StatusMethodNotAllowed // currently not in use
+	Forbidden           Errors = http.StatusForbidden
+	NotFound            Errors = http.StatusNotFound
+	InternalServerError Errors = http.StatusInternalServerError
+	MethodNotAllowed    Errors = http.StatusMethodNotAllowed // currently not in use
 )
 
-func GetErrorSite(error Errors, host string) ([]byte, int) {
-	var replace = map[string]func() string{
-		"%%code%%":   func() string { return fmt.Sprintf("%d | %s", error, http.StatusText(int(error))) },
-		"%%public%%": func() string { return fmt.Sprintf("%s", host) },
-	}
-
+func GetErrorSite(error Errors, host string, path string, additional ...string) ([]byte, int) {
 	var site string
 	switch error {
 	case Forbidden:
-		site = getForbidden()
+		site = getForbidden(path, additional...)
 	case NotFound:
-		site = getNotFound()
+		site = getNotFound(path, additional...)
 	case MethodNotAllowed:
-		site = getMethodNotAllowed()
+		site = getMethodNotAllowed(path, additional...)
+	case InternalServerError:
+		site = getInternalServerError(path, additional...)
 	default:
-		site = getErrorNotFound()
+		site = getErrorNotFound(path, additional...)
 	}
-	replaceSite := getHeader() + site + getFoot()
+	replaceSite := getHeader(error, http.StatusText(int(error))) + site + getFoot(host, runtime.Version(), runtime.GOOS)
 
-	for repl, fun := range replace {
-		replaceSite = strings.Replace(replaceSite, repl, fun(), -1)
-	}
 	return []byte(replaceSite), int(error)
 }
 
-func getForbidden() string {
-	return "<h1>Forbidden</h1>" +
-		"<p>You are not allowed to access this site.</p>"
+func getForbidden(path string, additional ...string) string {
+	return fmt.Sprintf(`
+%s
+<p>You are not allowed to access this site.</p>
+<p>%s</p>
+	`, getTop("Forbidden", path), additional)
 }
 
-func getNotFound() string {
-	return "<h1>Not Found</h1>" +
-		"<p>Site not found on server.</p>"
+func getNotFound(path string, additional ...string) string {
+	return fmt.Sprintf(`
+%s
+<p>Site not found on server.</p>
+<p>%s</p>
+	`, getTop("Not Found", path), additional)
 }
 
-func getMethodNotAllowed() string {
-	return "<h1>MethodNotAllowed</h1>" +
-		"<p>Method not allowed.</p>"
+func getMethodNotAllowed(path string, additional ...string) string {
+	return fmt.Sprintf(`
+%s
+<p>Method not allowed.</p>
+<p>%s</p>
+	`, getTop("MethodNotAllowed", path), additional)
 }
 
-func getErrorNotFound() string {
-	return "<h1>Error not found</h1>" +
-		"<p>Error not found</p>"
+func getInternalServerError(path string, additional ...string) string {
+	return fmt.Sprintf(`
+%s
+<p>An error happend while processing your Request</p>
+<p>%s</p>
+	`, getTop("InternalServerError", path), additional)
 }
 
-func getFoot() string {
-	return "<hr>" +
-		"<address>Golang Server %%public%%</address>"
+func getErrorNotFound(path string, additional ...string) string {
+	return fmt.Sprintf(`
+%s
+<p>Error not found</p>
+<p>%s</p>
+	`, getTop("Error not found", path), additional)
 }
 
-func getHeader() string {
-	return "<head> <title>%%code%%</title> </head>"
+func getFoot(host string, goInfo string, sys string) string {
+	return fmt.Sprintf(`
+<hr>
+<address>Golang Server at %s running %s on %s</address>
+	`, host, goInfo, sys)
+}
+
+func getHeader(error Errors, status string) string {
+	return fmt.Sprintf(`
+<head>
+	<title>%d | %s</title>
+</head>
+	`, error, status)
+}
+
+func getTop(message string, file string) string {
+	return fmt.Sprintf(`
+<div style="display: flex;align-items: center;justify-content: space-between;">
+	<h1 style="margin-block: 0.2em;">%s</h1>
+	<p>Error accessing %s</p>
+</div>
+	`, message, file)
 }

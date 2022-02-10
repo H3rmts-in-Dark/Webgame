@@ -10,6 +10,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Forbidden struct {
+	Regex     []string `yaml:"Regex"`
+	Endpoints []string `yaml:"Endpoints"`
+}
+
 type config struct {
 	/*
 		Port for the website must be between 0 and 65536
@@ -141,7 +146,7 @@ type config struct {
 
 		default: {}
 	*/
-	Headers map[string]string `yaml:"Headers"`
+	ContentTypes map[string]string `yaml:"ContentTypes"`
 
 	/*
 		which site to serve if no path was specified
@@ -152,13 +157,22 @@ type config struct {
 	DefaultSite string `yaml:"DefaultSite"`
 
 	/*
-		list of files or paths which are not served return a Forbidden site
+		list of endpoints and regex to prevent a site from getting send
+		return a Forbidden Site when accessed
 
-		{"api": true}  (<-- site/api returns a Forbidden site)
+		all strings in Endpoints get checked as a prefix to queried URLs,
+		so it's best to leave out the / at the ent do also trigger on
+		- localhost/api
+		- localhost/api/
+		- localhost/api/test
 
-		default: []
+		all strings in regex get matched against queried URLs to
+		- block certain file-extensions with '.*\.json$'
+		- certain files like .ht* in apache to block htaccess
+
+		default: { Regex: [], Endpoints: []}
 	*/
-	Forbidden []string `yaml:"Forbidden"`
+	Forbidden Forbidden `yaml:"Forbidden"`
 
 	/*
 		host of DB to connect to.
@@ -234,6 +248,10 @@ func LoadConfig() error {
 	return nil
 }
 
+func validateConfig() {
+	// TODO test forebidden
+}
+
 func defaultConfig() {
 	conf.PortHTTP = 8080 // TODO revert
 	conf.PortHTTPS = 8443
@@ -249,9 +267,9 @@ func defaultConfig() {
 	conf.StretchPrefix = 9
 	conf.StretchFile = 16
 	conf.Cache = true
-	conf.Headers = map[string]string{}
+	conf.ContentTypes = map[string]string{}
 	conf.DefaultSite = "index.html"
-	conf.Forbidden = []string{}
+	conf.Forbidden = Forbidden{}
 	conf.DBHost = "no host provided"
 	conf.DBUser = "no user provided"
 	conf.DBPassword = "no password provided"
