@@ -1,26 +1,33 @@
-Code: 'APICodeSecure'
 Cache: true
-Debug: false
-EnableHTTP: true
-EnableHTTPS: false
-ApiHTTPS: false
 SitesDir: './site'
-DBHost: '127.0.0.1:3308'
-DBUser: 'root'
-DBPassword: 'root'
-DBDatabase: 'server'
+DefaultSite: "index.html"
 Forbidden:
   Endpoints:
-    - '/api'
+    - 'api'
+    - 'test/test'
   Regex:
     - '.*\.json$'
-DefaultSite: "index.html"
+
+EnableHTTP: true
+EnableHTTPS: true
+ApiHTTPS: true
+Code: 'APICodeSecure'
+
+Database:
+  DBHost: '127.0.0.1:3307'
+  DBUser: 'root'
+  DBPassword: 'root'
+  DBDatabase: 'server'
+
+Debug: false
 ContentTypes:
   html: 'text/html'
   ico: 'image/x-icon'
   wasm: 'application/wasm'
   js: 'application/js'
-LogPrefix: true
-LogFile: true
-StretchPrefix: 9
-StretchFile: 18
+
+Logging:
+  LogPrefix: true
+  LogFile: true
+  StretchPrefix: 9
+  StretchFile: 18

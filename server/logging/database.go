@@ -15,7 +15,7 @@ import (
 	Create and open SQL Connection
 */
 func SQLInit() {
-	DB, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", util.GetConfig().DBUser, util.GetConfig().DBPassword, util.GetConfig().DBHost, util.GetConfig().DBDatabase))
+	DB, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", util.GetConfig().Database.DBUser, util.GetConfig().Database.DBPassword, util.GetConfig().Database.DBHost, util.GetConfig().Database.DBDatabase))
 	if err != nil {
 		util.Err(util.SQL, err, true, "Error creating connection")
 		panic(err)
