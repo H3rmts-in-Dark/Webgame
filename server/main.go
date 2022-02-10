@@ -13,8 +13,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-
-	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -46,22 +44,22 @@ func main() {
 		go startwebServer(webServer, true)
 	}
 
-	APIRouter := mux.NewRouter().StrictSlash(true)
-	APIRouter.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	APIRouter.Handle("/query", handler.NewDefaultServer(gen.NewExecutableSchema(gen.Config{Resolvers: &graph.Resolver{}})))
-	APIServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().ApiPort), Handler: APIRouter}
+	http.HandleFunc("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", handler.NewDefaultServer(gen.NewExecutableSchema(gen.Config{Resolvers: &graph.Resolver{}})))
+	APIServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().ApiPort), Handler: http.DefaultServeMux}
 	APIServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.GRAPHQL}, "", 0)
 
 	startAPI(APIServer, util.GetConfig().ApiHTTPS)
 }
 
 func startwebServer(webServer *http.Server, tls bool) {
-	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
 	// blocks if success
 	var err error
 	if tls {
-		err = webServer.ListenAndServeTLS("server.pem", "server.key")
+		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver with TLS started on localhost%s", webServer.Addr))
+		err = webServer.ListenAndServeTLS(util.CertsFile, util.KeyFile)
 	} else {
+		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
 		err = webServer.ListenAndServe()
 	}
 
@@ -71,12 +69,13 @@ func startwebServer(webServer *http.Server, tls bool) {
 }
 
 func startAPI(api *http.Server, tls bool) {
-	util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API started on localhost%s", api.Addr))
 	// blocks if success
 	var err error
 	if tls {
-		err = api.ListenAndServeTLS("server.pem", "server.key")
+		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API with TLS started on localhost%s", api.Addr))
+		err = api.ListenAndServeTLS(util.CertsFile, util.KeyFile)
 	} else {
+		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API started on localhost%s", api.Addr))
 		err = api.ListenAndServe()
 	}
 
