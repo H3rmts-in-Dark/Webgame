@@ -1,12 +1,11 @@
----
 Code: 'APICodeSecure'
 Cache: true
 Debug: false
 EnableHTTP: true
-EnableHTTPS: true
-ApiHTTPS: true
+EnableHTTPS: false
+ApiHTTPS: false
 SitesDir: './site'
-DBHost: '127.0.0.1:3307'
+DBHost: '127.0.0.1:3308'
 DBUser: 'root'
 DBPassword: 'root'
 DBDatabase: 'server'
