@@ -97,9 +97,9 @@ func getSite(path string, host string) (site []byte, code int, err error) {
 
 	if util.GetConfig().Cache {
 		for _, forbidden := range util.GetConfig().Forbidden.Endpoints {
-			if strings.HasPrefix(path, forbidden) {
+			if strings.HasPrefix(path, forbidden+"/") || path == forbidden {
 				site, code = GetErrorSite(Forbidden, host, path)
-				err = errors.New("" + path + " Forbidden")
+				err = errors.New(path + " Forbidden by Endpoints " + forbidden)
 				return
 			}
 		}
@@ -113,7 +113,7 @@ func getSite(path string, host string) (site []byte, code int, err error) {
 			}
 			if match {
 				site, code = GetErrorSite(Forbidden, host, path)
-				err = errors.New("" + path + " Forbidden")
+				err = errors.New(path + " Forbidden by regex " + forbidden)
 				return
 			}
 		}

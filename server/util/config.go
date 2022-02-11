@@ -5,202 +5,198 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
+// Forbidden struct containing configuration to prevent some files or endpoints
 type Forbidden struct {
-	Regex     []string `yaml:"Regex"`
+	// all strings in regex get matched against queried URLs to
+	// - block certain file-extensions with '.*\.json$'
+	// - certain files like .ht* in apache to block htaccess
+	//
+	// default: []
+	Regex []string `yaml:"Regex"`
+
+	// all strings in Endpoints get checked as a prefix to queried URLs,
+	// if a / is missing at the beginning it gets automatically added
+	// - localhost/api
+	// - localhost/api/
+	// - localhost/api/test
+	//
+	// default: []
 	Endpoints []string `yaml:"Endpoints"`
 }
 
-type config struct {
-	/*
-		Port for the website must be between 0 and 65536
-		this comes from the Dockerfile and should
-		not get changed via the config file if used with Docker
+// Logging struct containing information about logging
+type Logging struct {
 
-		default:80
-	*/
-	PortHTTP uint16
-
-	/*
-		Port for the website must be between 0 and 65536
-		this comes from the Dockerfile and should
-		not get changed via the config file if used with Docker
-
-		default:443
-	*/
-	PortHTTPS uint16
-
-	/*
-		Port used for the api must be between 0 and 65536
-		should be different from Port to avoid trying to serve
-		api by server
-
-		default: 18266
-	*/
-	ApiPort uint16
-
-	/*
-		code needed to perform admin actions on the api
-
-		default: random generated string
-	*/
-	Code string `yaml:"Code"`
-
-	/*
-		true: loads all files in the Sitesdir directory in cache
-
-		false: loads file from Sitesdir directory every time it gets requested
-
-				+ faster serve speed
-				+ control over when users see new changes (show new files all at once)
-				- changes to files must be loaded by sending a refresh request to the API
-				- might load unnecessary files
-
-		default: true
-	*/
-	Cache bool `yaml:"Cache"`
-
-	/*
-		enabled HTTP serving on this server on PortHTTP
-
-		default: true
-	*/
-	EnableHTTP bool `yaml:"EnableHTTP"`
-
-	/*
-		enabled HTTPS with provided HTTPS certificate serving on this server on PortHTTPS
-
-		default: true
-	*/
-	EnableHTTPS bool `yaml:"EnableHTTPS"`
-
-	/*
-		enabled HTTPS with provided HTTPS certificate serving on this server on ApiPort
-
-		default: true
-	*/
-	ApiHTTPS bool `yaml:"ApiHTTPS"`
-
-	/*
-		change to serve root for serving files
-		can be relative to the server main.go
-		or absolute
-
-		only this directory is served, but no underlying directory
-		get served
-
-		default: ./site
-	*/
-	SitesDir string `yaml:"SitesDir"`
-
-	/*
-		removes Debug logs from console if set to true
-		can improve cache loading speed
-
-		default: false
-	*/
-	Debug bool `yaml:"Debug"`
-
-	/*
-		adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
-		the type of log (> for Normal, * for Debug, ! for Error) (<-- default)
-
-		default: false
-	*/
+	// adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
+	// the type of log (> for Normal, * for Debug, ! for Error) (<-- default)
+	//
+	// default: false
 	LogPrefix bool `yaml:"LogPrefix"`
 
-	/*
-		stretches the prefix with LogGroup and > / * / ! to certain size
-
-		can be ignored if LogPrefix is set to false
-
-		default: 9 (fits the longest group)
-	*/
-	StretchPrefix uint8 `yaml:"StretchPrefix"`
-
-	/*
-		adds the file to the log where the Log method was called
-		should be activated for debug purposes
-
-		default: false
-	*/
+	// stretches the prefix with LogGroup and > / * / ! to certain size
+	//
+	// can be ignored if LogPrefix is set to false
+	//
+	// default: 9 (fits the longest group)
 	LogFile bool `yaml:"LogFile"`
 
-	/*
-		stretches the filename:line number to certain size
+	// adds the file to the log where the Log method was called
+	// should be activated for debug purposes
+	//
+	// default: false
+	StretchPrefix int8 `yaml:"StretchPrefix"`
 
-		can be ignored if LogFile is set to false
+	// stretches the filename:line number to certain size
+	//
+	// can be ignored if LogFile is set to false
+	//
+	// default: 16
+	StretchFile int8 `yaml:"StretchFile"`
+}
 
-		default: 16
-	*/
-	StretchFile uint8 `yaml:"StretchFile"`
+// DB struct containing information about the Database connection
+type DB struct {
 
-	/*
-		map of file extensions with the corresponding Content-Type
-
-		{"css": "text/css; charset=utf-8} <-- example for .css files
-
-		default: {}
-	*/
-	ContentTypes map[string]string `yaml:"ContentTypes"`
-
-	/*
-		which site to serve if no path was specified
-		most likely be index.html
-
-		default: "index.html"
-	*/
-	DefaultSite string `yaml:"DefaultSite"`
-
-	/*
-		list of endpoints and regex to prevent a site from getting send
-		return a Forbidden Site when accessed
-
-		all strings in Endpoints get checked as a prefix to queried URLs,
-		so it's best to leave out the / at the ent do also trigger on
-		- localhost/api
-		- localhost/api/
-		- localhost/api/test
-
-		all strings in regex get matched against queried URLs to
-		- block certain file-extensions with '.*\.json$'
-		- certain files like .ht* in apache to block htaccess
-
-		default: { Regex: [], Endpoints: []}
-	*/
-	Forbidden Forbidden `yaml:"Forbidden"`
-
-	/*
-		host of DB to connect to.
-		Database to store logs, access logs, etc
-	*/
+	// host of DB to connect to.
+	// Database to store logs, access logs, etc.
+	//
+	// default: "no host provided"
 	DBHost string `yaml:"DBHost"`
 
-	/*
-		user of DB to connect to.
-		Database to store logs, access logs, etc
-	*/
+	// user of DB to connect to.
+	// Database to store logs, access logs, etc.
+	//
+	// default: "no user provided"
 	DBUser string `yaml:"DBUser"`
 
-	/*
-		password of DBUser to connect to.
-		Database to store logs, access logs, etc
-	*/
+	// password of DBUser to connect to.
+	// Database to store logs, access logs, etc.
+	//
+	// default: "no password provided"
 	DBPassword string `yaml:"DBPassword"`
 
-	/*
-		database of DB to use.
-		Database to store logs, access logs, etc
-	*/
+	// database of DB to use.
+	// Database to store logs, access logs, etc
+	//
+	// default: "no database provided"
 	DBDatabase string `yaml:"DBDatabase"`
+}
+
+type config struct {
+
+	// Port for the website must be between 0 and 65536
+	// this comes from the Dockerfile and should
+	// not get changed via the config file if used with Docker
+	//
+	// default: 80
+	PortHTTP uint16
+
+	// Port for the website must be between 0 and 65536
+	// this comes from the Dockerfile and should
+	// not get changed via the config file if used with Docker
+	//
+	// default: 443
+	PortHTTPS uint16
+
+	// Port used for the api must be between 0 and 65536
+	// should be different from Port to avoid trying to serve
+	// api by server
+	//
+	// default: 18266
+	ApiPort uint16
+
+	// code needed to perform admin actions on the api
+	// should be changed, or it must be read from console output
+	// TODO move this somewhere out of config
+	//
+	// default: generated string + random Int
+	Code string `yaml:"Code"`
+
+	// true: loads all files in the Sitesdir directory in cache
+	//
+	// false: loads file from Sitesdir directory every time it gets requested
+	//
+	// 	+ faster serve speed
+	// 	+ control over when users see new changes (show new files all at once)
+	// 	- changes to files must be loaded by sending a refresh request to the API
+	// 	- might load unnecessary files
+	//    - longer initial start time
+	//
+	// default: true
+	Cache bool `yaml:"Cache"`
+
+	// enabled HTTP serving on this server on PortHTTP
+	//
+	// default: true
+	EnableHTTP bool `yaml:"EnableHTTP"`
+
+	// enabled HTTPS with provided HTTPS certificate serving on this server on PortHTTPS
+	//
+	// default: true
+	EnableHTTPS bool `yaml:"EnableHTTPS"`
+
+	// enabled HTTPS with provided HTTPS certificate serving on this server on ApiPort
+	//
+	// default: true
+	ApiHTTPS bool `yaml:"ApiHTTPS"`
+
+	// change to serve root for serving files
+	// can be relative to the server main.go
+	// or absolute
+	//
+	// only this directory is served, but no underlying directory
+	// get served
+	//
+	// default: ./site
+	SitesDir string `yaml:"SitesDir"`
+
+	// removes Debug logs from console if set to true
+	// can improve cache loading speed
+	//
+	// default: false
+	Debug bool `yaml:"Debug"`
+
+	// set of configurations fo logging
+	//
+	// see Logging
+	Logging Logging `yaml:"Logging"`
+
+	// map of file extensions with the corresponding Content-Type
+	//
+	// {"css": "text/css} <-- example for .css files
+	//
+	// default: {}
+	ContentTypes map[string]string `yaml:"ContentTypes"`
+
+	// which site to serve if no path was specified
+	// most likely be index.html
+	//
+	// default: "index.html"
+	DefaultSite string `yaml:"DefaultSite"`
+
+	// list of endpoints and regex to prevent a site from getting send
+	// return a Forbidden Site when accessed
+	//
+	// see Forbidden
+	Forbidden Forbidden `yaml:"Forbidden"`
+
+	// Configuration for Database connection
+	//
+	// see DB
+	Database DB `yaml:"Database"`
 }
 
 const (
 	ConfigFile = "server.yml"
+	CertsFile  = "certs/cert.pem"
+	KeyFile    = "certs/key.pem"
 )
 
 var conf config
@@ -245,33 +241,60 @@ func LoadConfig() error {
 	}
 
 	Log(CONFIG, "Loaded config:", fmt.Sprintf("%+v", conf))
+
+	validateConfig()
+	Log(CONFIG, "Validated config:", fmt.Sprintf("%+v", conf))
 	return nil
 }
 
 func validateConfig() {
-	// TODO test forebidden
+	for i, endpoint := range conf.Forbidden.Endpoints {
+		if !strings.HasPrefix(endpoint, "/") {
+			endpoint = "/" + endpoint
+		}
+		conf.Forbidden.Endpoints[i] = endpoint
+	}
+
+	for _, regex := range conf.Forbidden.Regex {
+		if _, err := regexp.Compile(regex); err != nil {
+			Err(CONFIG, err, false, fmt.Sprintf("invalid regex %s in conf.Forbidden.Regex found", regex))
+			panic(err)
+		}
+	}
 }
 
 func defaultConfig() {
 	conf.PortHTTP = 8080 // TODO revert
 	conf.PortHTTPS = 8443
 	conf.ApiPort = 18266
+
+	conf.Cache = true
+	conf.SitesDir = "./site"
+	conf.DefaultSite = "index.html"
+	conf.Forbidden = Forbidden{
+		Regex:     []string{},
+		Endpoints: []string{},
+	}
+
 	conf.EnableHTTPS = true
 	conf.EnableHTTP = true
 	conf.ApiHTTPS = true
-	conf.SitesDir = "./site"
-	conf.Debug = false
-	conf.LogFile = false
-	conf.LogPrefix = false
 	conf.Code = fmt.Sprintf("this is supposed to be a secure code which should be overridden :Bonk: %d", rand.Int())
-	conf.StretchPrefix = 9
-	conf.StretchFile = 16
-	conf.Cache = true
+
+	conf.Logging = Logging{
+		LogPrefix:     false,
+		LogFile:       false,
+		StretchPrefix: 9,
+		StretchFile:   16,
+	}
+
+	conf.Debug = false
 	conf.ContentTypes = map[string]string{}
-	conf.DefaultSite = "index.html"
-	conf.Forbidden = Forbidden{}
-	conf.DBHost = "no host provided"
-	conf.DBUser = "no user provided"
-	conf.DBPassword = "no password provided"
-	conf.DBDatabase = "no database provided"
+
+	conf.Database = DB{
+		DBHost:     "no host provided",
+		DBUser:     "no user provided",
+		DBDatabase: "no password provided",
+		DBPassword: "no database provided",
+	}
 }

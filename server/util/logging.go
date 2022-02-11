@@ -24,17 +24,21 @@ const (
 
 type logOptions struct {
 	suffix    string
-	colorcode string
+	colorCode string
 }
 
-var suffix = map[string]logOptions{"Debug": {"*", "\u001B[38;2;255;255;0m"}, "Normal": {">", "\u001B[38;2;0;255;0m"}, "Error": {"!", "\u001b[38;2;255;0;0m"}}
+var suffix = map[string]logOptions{
+	"Debug":  {suffix: "*", colorCode: "\u001B[38;2;255;255;0m"},
+	"Normal": {suffix: ">", colorCode: "\u001B[38;2;0;255;0m"},
+	"Error":  {suffix: "!", colorCode: "\u001b[38;2;255;0;0m"},
+}
 
 func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
 	log(prefix, suffix["Error"], 1, message...)
 	if err != nil {
 		log(prefix, suffix["Error"], 1, err.Error())
 	}
-	if printTrace {
+	if printTrace && GetConfig().Debug {
 		debug.PrintStack()
 	}
 }
@@ -63,7 +67,7 @@ func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface
 
 	var location string
 
-	if GetConfig().LogFile {
+	if GetConfig().Logging.LogFile {
 		_, file, line, ok := runtime.Caller(int(1 + skip))
 		if !ok {
 			file = "???"
@@ -71,13 +75,13 @@ func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface
 		}
 
 		file = file[strings.LastIndexByte(file, '/')+1:] // convert to relative path
-		var locationStretch = strconv.Itoa(int(GetConfig().StretchFile))
+		var locationStretch = strconv.Itoa(int(GetConfig().Logging.StretchFile))
 		location = fmt.Sprintf("%-"+locationStretch+"s", fmt.Sprintf("%s:%d", file, line))
 	}
 
 	var printPrefix string
-	if GetConfig().LogPrefix {
-		var prefixStretch = strconv.Itoa(int(GetConfig().StretchPrefix))
+	if GetConfig().Logging.LogPrefix {
+		var prefixStretch = strconv.Itoa(int(GetConfig().Logging.StretchPrefix))
 		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, logOption.suffix)
 	}
 
@@ -88,7 +92,7 @@ func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface
 
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s%s %s|%s %s \u001b[0m\n",
-		logOption.colorcode,
+		logOption.colorCode,
 		now.Format("2006.01.02 15:04:05.0000"),
 		location, printPrefix, printStr,
 	)))

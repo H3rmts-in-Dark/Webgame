@@ -1,4 +1,3 @@
 site/
 
-server.pem
-server.key
+*.pem
