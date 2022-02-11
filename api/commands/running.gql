@@ -1,0 +1,8 @@
+mutation {
+    reloadSites(validation: "APICode") {
+        ok
+        info
+    }
+}
+
+#TODO change this to an info request with uptime, general information, ...

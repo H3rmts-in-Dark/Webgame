@@ -2,15 +2,15 @@ import click
 import requests
 from PyInquirer import style_from_dict, Token, prompt
 
+from Globlals import main
+from commands import running
+
+_ = running
+
 
 # https://zetcode.com/python/click/
 
-
-@click.group()
-def main():
-	"""
-	CLI to interact with golang server
-	"""
+# https://click.palletsprojects.com/en/7.x/options/
 
 
 @main.command("gethello")
@@ -42,6 +42,7 @@ def search(query):
 
 @main.command()
 @click.argument('id')
+@click.option('--password', prompt=True, hide_input=True) #, confirmation_prompt=True)
 def get(id):
 	"""This return a particular book from the given id on Google Books"""
 	url_format = 'https://www.googleapis.com/books/v1/volumes/{}'
@@ -96,6 +97,7 @@ def dialog():
 	})
 	answers = prompt(questions, style=style)
 	click.echo(answers)
+
 
 if __name__ == "__main__":
 	main()
