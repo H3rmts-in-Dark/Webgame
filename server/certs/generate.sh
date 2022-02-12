@@ -3,4 +3,4 @@ openssl req -newkey rsa:8192 \
   -days 7300 \
   -out cert.pem \
   -keyout key.pem \
-  -subj "/C=US/ST=California/L=Mountain View/O=Your Organization/OU=Your Unit/CN=localhost"
+  -subj "/C=DE/ST=Bayern/L=Donauwörth/O=H3rmts in Dark/OU=Unit/CN=localhost"

@@ -16,16 +16,15 @@ import (
 )
 
 func main() {
-	err := util.LoadConfig()
-	if err != nil {
-		panic(err)
-	}
+	util.LoadConfig()
+	util.ValidateConfig()
+	logging.Log(logging.CONFIG, "Loaded config:", fmt.Sprintf("%+v", util.GetConfig()))
 
-	util.Log(util.MAIN, "Starting server")
+	logging.Log(logging.MAIN, "Starting server")
 	logging.SQLInit()
 
 	if util.GetConfig().Cache {
-		err = serve.LoadSites()
+		err := serve.LoadSites()
 		if err != nil {
 			panic(err)
 		}
@@ -35,36 +34,36 @@ func main() {
 
 	if util.GetConfig().EnableHTTP {
 		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTP), Handler: serv}
-		webServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVER}, "", 0)
-		go startwebServer(webServer, false)
+		webServer.ErrorLog = log.New(&logging.LogWriter{Prefix: logging.SERVER}, "", 0)
+		go startWebServer(webServer, false)
 	}
 	if util.GetConfig().EnableHTTPS {
 		webServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().PortHTTPS), Handler: serv}
-		webServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.SERVER}, "", 0)
-		go startwebServer(webServer, true)
+		webServer.ErrorLog = log.New(&logging.LogWriter{Prefix: logging.SERVER}, "", 0)
+		go startWebServer(webServer, true)
 	}
 
 	http.HandleFunc("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", handler.NewDefaultServer(gen.NewExecutableSchema(gen.Config{Resolvers: &graph.Resolver{}})))
 	APIServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().ApiPort), Handler: http.DefaultServeMux}
-	APIServer.ErrorLog = log.New(&util.LogWriter{Prefix: util.GRAPHQL}, "", 0)
+	APIServer.ErrorLog = log.New(&logging.LogWriter{Prefix: logging.GRAPHQL}, "", 0)
 
 	startAPI(APIServer, util.GetConfig().ApiHTTPS)
 }
 
-func startwebServer(webServer *http.Server, tls bool) {
+func startWebServer(webServer *http.Server, tls bool) {
 	// blocks if success
 	var err error
 	if tls {
-		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver with TLS started on localhost%s", webServer.Addr))
+		logging.Log(logging.MAIN, fmt.Sprintf("ListenAndServe Webserver with TLS started on localhost%s", webServer.Addr))
 		err = webServer.ListenAndServeTLS(util.CertsFile, util.KeyFile)
 	} else {
-		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
+		logging.Log(logging.MAIN, fmt.Sprintf("ListenAndServe Webserver started on localhost%s", webServer.Addr))
 		err = webServer.ListenAndServe()
 	}
 
 	if err != nil {
-		util.Err(util.MAIN, err, true, "Error starting webServer")
+		logging.Err(logging.MAIN, err, true, "Error starting webServer")
 	}
 }
 
@@ -72,14 +71,14 @@ func startAPI(api *http.Server, tls bool) {
 	// blocks if success
 	var err error
 	if tls {
-		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API with TLS started on localhost%s", api.Addr))
+		logging.Log(logging.MAIN, fmt.Sprintf("ListenAndServe API with TLS started on localhost%s", api.Addr))
 		err = api.ListenAndServeTLS(util.CertsFile, util.KeyFile)
 	} else {
-		util.Log(util.MAIN, fmt.Sprintf("ListenAndServe API started on localhost%s", api.Addr))
+		logging.Log(logging.MAIN, fmt.Sprintf("ListenAndServe API started on localhost%s", api.Addr))
 		err = api.ListenAndServe()
 	}
 
 	if err != nil {
-		util.Err(util.MAIN, err, true, "Error starting Api")
+		logging.Err(logging.MAIN, err, true, "Error starting Api")
 	}
 }

@@ -17,6 +17,7 @@ const (
 
 func GetErrorSite(error Errors, host string, path string, additional ...string) ([]byte, int) {
 	var site string
+
 	switch error {
 	case Forbidden:
 		site = getForbidden(path, additional...)
@@ -29,9 +30,9 @@ func GetErrorSite(error Errors, host string, path string, additional ...string) 
 	default:
 		site = getErrorNotFound(path, additional...)
 	}
-	replaceSite := getHeader(error, http.StatusText(int(error))) + site + getFoot(host, runtime.Version(), runtime.GOOS)
+	site = getHeader(error, http.StatusText(int(error))) + site + getFoot(host, runtime.Version(), runtime.GOOS)
 
-	return []byte(replaceSite), int(error)
+	return []byte(site), int(error)
 }
 
 func getForbidden(path string, additional ...string) string {
@@ -91,7 +92,7 @@ func getHeader(error Errors, status string) string {
 
 func getTop(message string, file string) string {
 	return fmt.Sprintf(`
-<div style="display: flex;align-items: center;justify-content: space-between;">
+<div style="display: flex;align-items: center;justify-content: space-between; gap:30px;">
 	<h1 style="margin-block: 0.2em;">%s</h1>
 	<p>Error accessing %s</p>
 </div>

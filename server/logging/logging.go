@@ -1,4 +1,4 @@
-package util
+package logging
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"Server/util"
 )
 
 type LogGroup string
@@ -27,30 +29,30 @@ type logOptions struct {
 	colorCode string
 }
 
-var suffix = map[string]logOptions{
-	"Debug":  {suffix: "*", colorCode: "\u001B[38;2;255;255;0m"},
-	"Normal": {suffix: ">", colorCode: "\u001B[38;2;0;255;0m"},
+var prefix = map[string]logOptions{
+	"Debug":  {suffix: "*", colorCode: "\u001B[38;2;100;80;100m"},
+	"Normal": {suffix: ">", colorCode: "\u001B[38;2;255;255;255m"},
 	"Error":  {suffix: "!", colorCode: "\u001b[38;2;255;0;0m"},
 }
 
-func Err(prefix LogGroup, err error, printTrace bool, message ...interface{}) {
-	log(prefix, suffix["Error"], 1, message...)
+func Err(group LogGroup, err error, printTrace bool, message ...interface{}) {
+	log(group, prefix["Error"], 1, message...)
 	if err != nil {
-		log(prefix, suffix["Error"], 1, err.Error())
+		log(group, prefix["Error"], 1, err.Error())
 	}
-	if printTrace && GetConfig().Debug {
+	if printTrace && util.GetConfig().Debug {
 		debug.PrintStack()
 	}
 }
 
 func Debug(message ...interface{}) {
-	if GetConfig().Debug {
-		log("DEBUG", suffix["Debug"], 1, message...)
+	if util.GetConfig().Debug {
+		log("DEBUG", prefix["Debug"], 1, message...)
 	}
 }
 
-func Log(prefix LogGroup, message ...interface{}) {
-	log(prefix, suffix["Normal"], 1, message...)
+func Log(group LogGroup, message ...interface{}) {
+	log(group, prefix["Normal"], 1, message...)
 }
 
 type LogWriter struct {
@@ -58,7 +60,7 @@ type LogWriter struct {
 }
 
 func (w *LogWriter) Write(p []byte) (n int, err error) {
-	log(w.Prefix, suffix["Normal"], 2, string(p))
+	log(w.Prefix, prefix["Normal"], 2, string(p))
 	return len(p), nil
 }
 
@@ -67,21 +69,21 @@ func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface
 
 	var location string
 
-	if GetConfig().Logging.LogFile {
+	if util.GetConfig().Logging.LogFile {
 		_, file, line, ok := runtime.Caller(int(1 + skip))
 		if !ok {
 			file = "???"
 			line = 0
 		}
 
-		file = file[strings.LastIndexByte(file, '/')+1:] // convert to relative path
-		var locationStretch = strconv.Itoa(int(GetConfig().Logging.StretchFile))
+		file = file[strings.LastIndexByte(file, '/')+1:] // get relative path
+		var locationStretch = strconv.Itoa(int(util.GetConfig().Logging.StretchFile))
 		location = fmt.Sprintf("%-"+locationStretch+"s", fmt.Sprintf("%s:%d", file, line))
 	}
 
 	var printPrefix string
-	if GetConfig().Logging.LogPrefix {
-		var prefixStretch = strconv.Itoa(int(GetConfig().Logging.StretchPrefix))
+	if util.GetConfig().Logging.LogPrefix {
+		var prefixStretch = strconv.Itoa(int(util.GetConfig().Logging.StretchPrefix))
 		printPrefix = fmt.Sprintf("%-"+prefixStretch+"s %s", prefix, logOption.suffix)
 	}
 

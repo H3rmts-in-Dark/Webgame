@@ -1,24 +1,9 @@
 package graph
 
 import (
-	"errors"
-
-	"Server/serve"
+	"Server/logging"
 	"Server/util"
 )
-
-/*
-ProcessSiteReloadRequest
-
-Process request to add Program to list of connections
-*/
-func ProcessSiteReloadRequest() error {
-	if util.GetConfig().Cache {
-		return serve.LoadSites()
-	} else {
-		return errors.New("caching deactivated")
-	}
-}
 
 /*
 CheckAdmin
@@ -29,7 +14,7 @@ func (r Resolver) CheckAdmin(code string) error {
 	if util.GetConfig().Code == code {
 		return nil
 	}
-	util.Err(util.API, nil, false, "An invalid code has been entered:", code)
+	logging.Err(logging.API, nil, false, "An invalid code has been entered:", code)
 	return &PermissionError{}
 }
 

@@ -14,9 +14,14 @@ input NewSetting {
     value: String!
 }
 
+type Ping {
+	uptime: Int!
+}
+
 type Query {
     settings: [Setting!]
     adminSettings: [Setting!]
+    ping: Ping!
 }
 
 type Mutation {

@@ -1,7 +1,6 @@
 FROM golang:1.17.4-alpine
 
-WORKDIR /server
-COPY . .
+RUN apk add openssl
 
 ENV PortHTTP=80
 ENV PortHTTPS=443
@@ -10,9 +9,12 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 18266
 
-# create certificates
-RUN apk add openssl && ./createCerts.sh
+WORKDIR /server
+COPY . .
 
-RUN go install
+# create certificates TODO should be chaned to 1 certificate
+#RUN ./certs/generate.sh
 
-CMD ["go", "run", "."]
+RUN go install && go build -o server
+
+CMD ["./server"]

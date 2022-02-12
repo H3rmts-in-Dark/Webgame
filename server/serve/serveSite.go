@@ -10,18 +10,19 @@ import (
 	"strings"
 	"time"
 
+	"Server/logging"
 	"Server/util"
 )
 
 var root dir
 
 func LoadSites() error {
-	util.Log(util.SERVE, "Loading Sites into Cache")
+	logging.Log(logging.SERVE, "Loading Sites into Cache")
 	start := time.Now()
 	var size uint64
 	var count uint32
-	root, size, count = loadDir(util.GetConfig().SitesDir)
-	util.Log(util.SERVE, fmt.Sprintf("All files (%d) loaded in %s; Size %dMB", count, time.Since(start), size/1048576))
+	root = loadDir(util.GetConfig().SitesDir, &size, &count)
+	logging.Log(logging.SERVE, fmt.Sprintf("All files (%d) loaded in %s  Size:%dMB", count, time.Since(start), size/1048576))
 
 	return nil
 }
@@ -31,36 +32,32 @@ type dir struct {
 	dirs  map[string]dir
 }
 
-func loadDir(name string) (dir, uint64, uint32) {
+func loadDir(name string, size *uint64, count *uint32) dir {
 	siteCount, err := ioutil.ReadDir(name)
 	if err != nil {
-		util.Err(util.SERVE, err, false, "Error reading directory", name)
-		return dir{}, 0, 0
+		logging.Err(logging.SERVE, err, false, "Error reading directory", name)
+		return dir{}
 	}
 	dir := dir{map[string][]byte{}, map[string]dir{}}
 
-	var size uint64 = 0
-	var count uint32 = 0
 	for _, site := range siteCount {
 		if info, _ := os.Stat(name + "/" + site.Name()); info.IsDir() {
-			dr, s, c := loadDir(name + "/" + site.Name())
-			size += s
-			count += c
+			dr := loadDir(name+"/"+site.Name(), size, count)
 			dir.dirs[site.Name()] = dr
-			util.Debug(util.SERVE, "Loaded directory in cache", fmt.Sprintf("%s/%s", name, site.Name()))
+			logging.Debug(logging.SERVE, "Loaded directory in cache", fmt.Sprintf("%s/%s", name, site.Name()))
 		} else {
 			tmpSite, err := ioutil.ReadFile(name + "/" + site.Name())
 			if err != nil {
-				util.Err(util.SERVE, err, false, "Error loading site", fmt.Sprintf("%s/%s", name, site.Name()))
+				logging.Err(logging.SERVE, err, false, "Error loading site", fmt.Sprintf("%s/%s", name, site.Name()))
 			} else {
-				size += uint64(len(tmpSite))
-				count++
+				*size += uint64(len(tmpSite))
+				*count++
 				dir.files[site.Name()] = tmpSite
-				util.Debug(util.SERVE, "Loaded site in cache", fmt.Sprintf("%s/%s", name, site.Name()))
+				logging.Debug(logging.SERVE, "Loaded site in cache", fmt.Sprintf("%s/%s", name, site.Name()))
 			}
 		}
 	}
-	return dir, size, count
+	return dir
 }
 
 /*
@@ -92,29 +89,24 @@ func getSite(name string, host string) (site []byte, code int, err error) {
 }
 */
 
-func getSite(path string, host string) (site []byte, code int, err error) {
-	code, err = 202, nil
-
+func getSite(path string, host string) (*[]byte, int, error) {
 	if util.GetConfig().Cache {
 		for _, forbidden := range util.GetConfig().Forbidden.Endpoints {
 			if strings.HasPrefix(path, forbidden+"/") || path == forbidden {
-				site, code = GetErrorSite(Forbidden, host, path)
-				err = errors.New(path + " Forbidden by Endpoints " + forbidden)
-				return
+				site, code := GetErrorSite(Forbidden, host, path)
+				return &site, code, errors.New(path + " Forbidden by Endpoints " + forbidden)
 			}
 		}
 
 		for _, forbidden := range util.GetConfig().Forbidden.Regex {
-			match, er := regexp.Match(forbidden, []byte(path))
-			if er != nil {
-				site, code = GetErrorSite(InternalServerError, host, path, fmt.Sprintf("Error checking forbidden regex"))
-				err = er
-				return
+			match, err := regexp.Match(forbidden, []byte(path))
+			if err != nil {
+				site, code := GetErrorSite(InternalServerError, host, path, fmt.Sprintf("Error checking forbidden regex"))
+				return &site, code, err
 			}
 			if match {
-				site, code = GetErrorSite(Forbidden, host, path)
-				err = errors.New(path + " Forbidden by regex " + forbidden)
-				return
+				site, code := GetErrorSite(Forbidden, host, path)
+				return &site, code, errors.New(path + " Forbidden by regex " + forbidden)
 			}
 		}
 
@@ -126,23 +118,22 @@ func getSite(path string, host string) (site []byte, code int, err error) {
 		for i := 0; i < depth-1; i++ {
 			dir = dir.dirs[pathSplit[i]]
 		}
-		site = dir.files[pathSplit[depth-1]]
+		site := dir.files[pathSplit[depth-1]]
 		if site == nil {
 			if _, ok := dir.dirs[pathSplit[depth-1]]; ok {
-				site, code = GetErrorSite(NotFound, host, path, fmt.Sprintf("%s is no file, but a directory", pathSplit[depth-1]))
-				err = errors.New(fmt.Sprintf("no site data for: %v", pathSplit))
-				return
+				site, code := GetErrorSite(NotFound, host, path, fmt.Sprintf("%s is no file, but a directory", pathSplit[depth-1]))
+				return &site, code, errors.New(fmt.Sprintf("no site data for: %v", pathSplit))
 			}
-			site, code = GetErrorSite(NotFound, host, path)
-			err = errors.New(fmt.Sprintf("no site data for: %s", pathSplit))
-			return
+			site, code := GetErrorSite(NotFound, host, path)
+			return &site, code, errors.New(fmt.Sprintf("no site data for: %s", pathSplit))
 		}
+		return &site, 202, nil
 
 	} else {
 		// TODO implement reading
 	}
 
-	return
+	return nil, 500, nil
 }
 
 /*
@@ -156,7 +147,7 @@ func CreateServe() http.HandlerFunc {
 		msg, code, err := getSite(r.URL.Path, r.Host)
 
 		if err != nil {
-			util.Err(util.SERVE, err, false, fmt.Sprintf("Error getting site %s", r.URL.Path))
+			logging.Err(logging.SERVE, err, false, fmt.Sprintf("Error getting site %s", r.URL.Path))
 			w.WriteHeader(code)
 		} else {
 			fileSplit := strings.Split(r.URL.Path[1:], ".")
@@ -166,9 +157,9 @@ func CreateServe() http.HandlerFunc {
 			}
 		}
 
-		_, err = w.Write(msg)
+		_, err = w.Write(*msg)
 		if err != nil {
-			util.Err(util.SERVE, err, true, "Error writing response:")
+			logging.Err(logging.SERVE, err, true, "Error writing response:")
 		}
 	}
 

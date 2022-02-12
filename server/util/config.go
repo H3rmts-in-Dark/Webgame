@@ -14,14 +14,14 @@ import (
 
 // Forbidden struct containing configuration to prevent some files or endpoints
 type Forbidden struct {
-	// all strings in regex get matched against queried URLs to
+	// all strings in regex get matched against queried URIs to
 	// - block certain file-extensions with '.*\.json$'
 	// - certain files like .ht* in apache to block htaccess
 	//
 	// default: []
 	Regex []string `yaml:"Regex"`
 
-	// all strings in Endpoints get checked as a prefix to queried URLs,
+	// all strings in Endpoints get checked as a prefix to queried URIs,
 	// if a / is missing at the beginning it gets automatically added
 	// - localhost/api
 	// - localhost/api/
@@ -34,7 +34,7 @@ type Forbidden struct {
 // Logging struct containing information about logging
 type Logging struct {
 
-	// adds a LogGroup to the log ( |CONFIG ) and adds a suffix to indicate
+	// adds a LogGroup to the log ( |CONFIG ) and adds a prefix to indicate
 	// the type of log (> for Normal, * for Debug, ! for Error) (<-- default)
 	//
 	// default: false
@@ -170,7 +170,7 @@ type config struct {
 
 	// map of file extensions with the corresponding Content-Type
 	//
-	// {"css": "text/css} <-- example for .css files
+	// {"css": "text/css"} <-- example for .css files
 	//
 	// default: {}
 	ContentTypes map[string]string `yaml:"ContentTypes"`
@@ -205,19 +205,19 @@ func GetConfig() *config {
 	return &conf
 }
 
-func LoadConfig() error {
+func LoadConfig() {
 	defaultConfig()
 
 	data, err := ioutil.ReadFile(ConfigFile)
 	if err != nil {
-		Err(CONFIG, err, true, "Error reading", ConfigFile, "file")
-		return err
+		fmt.Printf("Error reading %s err:%s", ConfigFile, err)
+		panic(err)
 	}
 
 	err = yaml.Unmarshal(data, &conf)
 	if err != nil {
-		Err(CONFIG, err, true, "Error unmarshalling configs")
-		return err
+		fmt.Printf("Error unmarshalling configs %s err:%s", ConfigFile, err)
+		panic(err)
 	}
 
 	// load some values from env
@@ -234,20 +234,14 @@ func LoadConfig() error {
 		}
 	}
 	if os.Getenv("APIPORT") != "" {
-		apiport, err := strconv.Atoi(os.Getenv("APIPORT"))
+		apiPort, err := strconv.Atoi(os.Getenv("APIPORT"))
 		if err != nil {
-			conf.ApiPort = uint16(apiport)
+			conf.ApiPort = uint16(apiPort)
 		}
 	}
-
-	Log(CONFIG, "Loaded config:", fmt.Sprintf("%+v", conf))
-
-	validateConfig()
-	Log(CONFIG, "Validated config:", fmt.Sprintf("%+v", conf))
-	return nil
 }
 
-func validateConfig() {
+func ValidateConfig() {
 	for i, endpoint := range conf.Forbidden.Endpoints {
 		if !strings.HasPrefix(endpoint, "/") {
 			endpoint = "/" + endpoint
@@ -257,7 +251,7 @@ func validateConfig() {
 
 	for _, regex := range conf.Forbidden.Regex {
 		if _, err := regexp.Compile(regex); err != nil {
-			Err(CONFIG, err, false, fmt.Sprintf("invalid regex %s in conf.Forbidden.Regex found", regex))
+			fmt.Printf("invalid regex %s in conf.Forbidden.Regex found err: %s", regex, err)
 			panic(err)
 		}
 	}
