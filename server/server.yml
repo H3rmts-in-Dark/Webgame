@@ -2,23 +2,24 @@ Code: 'APICodeSecure'
 
 Cache: true
 SitesDir: './site'
-DefaultSite: "index.html"
+DefaultSite: "/index.html"
 Forbidden:
   Endpoints:
-  - 'api'
-  - 'test/test'
+    - 'api'
+    - 'test/test'
   Regex:
-  - '.*\.json$'
+    - '.*\.json$'
 
 EnableHTTP: true
 EnableHTTPS: true
 ApiHTTPS: true
 
 Database:
-  DBHost: '127.0.0.1:3307'
-  DBUser: 'root'
-  DBPassword: 'root'
-  DBDatabase: 'server'
+  Host: '127.0.0.1'
+  Port: 9042
+  User: 'root'
+  Password: 'root'
+  Database: 'server'
 
 Debug: false
 ContentTypes:

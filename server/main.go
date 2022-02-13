@@ -21,7 +21,7 @@ func main() {
 	logging.Log(logging.CONFIG, "Loaded config:", fmt.Sprintf("%+v", util.GetConfig()))
 
 	logging.Log(logging.MAIN, "Starting server")
-	logging.SQLInit()
+	logging.DBInit()
 
 	if util.GetConfig().Cache {
 		err := serve.LoadSites()

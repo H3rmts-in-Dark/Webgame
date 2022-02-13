@@ -68,25 +68,31 @@ type DB struct {
 	// Database to store logs, access logs, etc.
 	//
 	// default: "no host provided"
-	DBHost string `yaml:"DBHost"`
+	Host string `yaml:"Host"`
+
+	// port of DB to connect to.
+	// Database to store logs, access logs, etc.
+	//
+	// default: "no port provided"
+	Port uint16 `yaml:"Port"`
 
 	// user of DB to connect to.
 	// Database to store logs, access logs, etc.
 	//
 	// default: "no user provided"
-	DBUser string `yaml:"DBUser"`
+	User string `yaml:"User"`
 
-	// password of DBUser to connect to.
+	// password of User to connect to.
 	// Database to store logs, access logs, etc.
 	//
 	// default: "no password provided"
-	DBPassword string `yaml:"DBPassword"`
+	Password string `yaml:"Password"`
 
 	// database of DB to use.
 	// Database to store logs, access logs, etc
 	//
 	// default: "no database provided"
-	DBDatabase string `yaml:"DBDatabase"`
+	Database string `yaml:"Database"`
 }
 
 type config struct {
@@ -255,6 +261,10 @@ func ValidateConfig() {
 			panic(err)
 		}
 	}
+
+	if !strings.HasPrefix(conf.DefaultSite, "/") {
+		conf.DefaultSite = "/" + conf.DefaultSite
+	}
 }
 
 func defaultConfig() {
@@ -286,9 +296,10 @@ func defaultConfig() {
 	conf.ContentTypes = map[string]string{}
 
 	conf.Database = DB{
-		DBHost:     "no host provided",
-		DBUser:     "no user provided",
-		DBDatabase: "no password provided",
-		DBPassword: "no database provided",
+		Host:     "no host provided",
+		Port:     0,
+		User:     "no user provided",
+		Database: "no password provided",
+		Password: "no database provided",
 	}
 }

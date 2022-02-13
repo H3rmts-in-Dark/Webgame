@@ -91,6 +91,9 @@ func getSite(name string, host string) (site []byte, code int, err error) {
 
 func getSite(path string, host string) (*[]byte, int, error) {
 	if util.GetConfig().Cache {
+		if path == "/" {
+			path = util.GetConfig().DefaultSite
+		}
 		for _, forbidden := range util.GetConfig().Forbidden.Endpoints {
 			if strings.HasPrefix(path, forbidden+"/") || path == forbidden {
 				site, code := GetErrorSite(Forbidden, host, path)
@@ -117,6 +120,9 @@ func getSite(path string, host string) (*[]byte, int, error) {
 		dir := root
 		for i := 0; i < depth-1; i++ {
 			dir = dir.dirs[pathSplit[i]]
+			if dir.files == nil {
+				break
+			}
 		}
 		site := dir.files[pathSplit[depth-1]]
 		if site == nil {
@@ -127,13 +133,11 @@ func getSite(path string, host string) (*[]byte, int, error) {
 			site, code := GetErrorSite(NotFound, host, path)
 			return &site, code, errors.New(fmt.Sprintf("no site data for: %s", pathSplit))
 		}
-		return &site, 202, nil
+		return &site, 200, nil
 
 	} else {
-		// TODO implement reading
+		return nil, 500, errors.New("file reading not implemented")
 	}
-
-	return nil, 500, nil
 }
 
 /*
@@ -142,8 +146,9 @@ CreateServe
 Registers a handle for '/' to serve the DefaultSite
 */
 func CreateServe() http.HandlerFunc {
-
 	fun := func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
 		msg, code, err := getSite(r.URL.Path, r.Host)
 
 		if err != nil {
@@ -156,11 +161,12 @@ func CreateServe() http.HandlerFunc {
 				w.Header().Set("Content-Type", val)
 			}
 		}
-
-		_, err = w.Write(*msg)
-		if err != nil {
-			logging.Err(logging.SERVE, err, true, "Error writing response:")
+		searchTime := time.Now()
+		_, er := w.Write(*msg)
+		if er != nil {
+			logging.Err(logging.SERVE, er, true, "Error writing response:")
 		}
+		go logging.LogAccess(code, int(time.Since(start).Microseconds()), int(searchTime.Sub(start).Microseconds()), err, er, r.TLS != nil, r.Method, r.URL.Path)
 	}
 
 	return fun

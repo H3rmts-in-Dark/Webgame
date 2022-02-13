@@ -1,30 +1,50 @@
 package logging
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-
 	"Server/util"
 
-	// used at sql.Open(->"mysql"<-, fmt.Sprintf ...)
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gocql/gocql"
 )
 
-/*
-	Create and open SQL Connection
-*/
-func SQLInit() {
-	DB, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", util.GetConfig().Database.DBUser, util.GetConfig().Database.DBPassword, util.GetConfig().Database.DBHost, util.GetConfig().Database.DBDatabase))
+var session *gocql.Session
+
+// DBInit Create and open DB Connection
+func DBInit() {
+	cluster := gocql.NewCluster(util.GetConfig().Database.Host)
+	cluster.Port = int(util.GetConfig().Database.Port)
+	cluster.Keyspace = util.GetConfig().Database.Database
+	cluster.Authenticator = gocql.PasswordAuthenticator{
+		Username: util.GetConfig().Database.User,
+		Password: util.GetConfig().Database.Password,
+	}
+	var err error
+	session, err = cluster.CreateSession()
 	if err != nil {
-		Err(SQL, err, true, "Error creating connection")
+		Err(DB, err, true, "Error creating connection")
 		panic(err)
 	}
-	ctx := context.Background()
-	err = DB.PingContext(ctx)
+	Log(DB, "Connection established")
+}
+
+func LogAccess(code int, duration int, searchDuration int, error error, writeErr error, https bool, method string, uri string) {
+	query := session.Query(
+		"INSERT INTO access (id, uri, code, duration, searchDuration, method, https, error, writeErr) VALUES (?,?,?,?,?,?,?,?,?)",
+		gocql.TimeUUID(), uri, code, duration, searchDuration, method, https, (func() interface{} {
+			if error != nil {
+				return error.Error()
+			} else {
+				return nil
+			}
+		})(), (func() interface{} {
+			if writeErr != nil {
+				return writeErr.Error()
+			} else {
+				return nil
+			}
+		})())
+	err := query.Exec()
 	if err != nil {
-		Err(SQL, err, true, "Error creating connection")
-		panic(err)
+		Err(DB, err, false, "Error inserting access into DB")
+		Debug(query.Context())
 	}
-	Log(SQL, "Connection established")
 }

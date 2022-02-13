@@ -19,7 +19,7 @@ const (
 	MAIN    LogGroup = "MAIN"
 	SERVE   LogGroup = "SERVE"
 	CONFIG  LogGroup = "CONFIG"
-	SQL     LogGroup = "SQL"
+	DB      LogGroup = "DB"
 	SERVER  LogGroup = "SERVER"
 	GRAPHQL LogGroup = "GRAPHQL"
 )
