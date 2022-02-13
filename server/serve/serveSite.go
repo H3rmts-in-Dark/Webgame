@@ -35,7 +35,7 @@ type dir struct {
 func loadDir(name string, size *uint64, count *uint32) dir {
 	siteCount, err := ioutil.ReadDir(name)
 	if err != nil {
-		logging.Err(logging.SERVE, err, false, "Error reading directory", name)
+		logging.Err(logging.SERVE, err, "Error reading directory", name)
 		return dir{}
 	}
 	dir := dir{map[string][]byte{}, map[string]dir{}}
@@ -48,7 +48,7 @@ func loadDir(name string, size *uint64, count *uint32) dir {
 		} else {
 			tmpSite, err := ioutil.ReadFile(name + "/" + site.Name())
 			if err != nil {
-				logging.Err(logging.SERVE, err, false, "Error loading site", fmt.Sprintf("%s/%s", name, site.Name()))
+				logging.Err(logging.SERVE, err, "Error loading site", fmt.Sprintf("%s/%s", name, site.Name()))
 			} else {
 				*size += uint64(len(tmpSite))
 				*count++
@@ -152,7 +152,7 @@ func CreateServe() http.HandlerFunc {
 		msg, code, err := getSite(r.URL.Path, r.Host)
 
 		if err != nil {
-			logging.Err(logging.SERVE, err, false, fmt.Sprintf("Error getting site %s", r.URL.Path))
+			logging.Err(logging.SERVE, err, fmt.Sprintf("Error getting site %s", r.URL.Path))
 			w.WriteHeader(code)
 		} else {
 			fileSplit := strings.Split(r.URL.Path[1:], ".")
@@ -164,7 +164,7 @@ func CreateServe() http.HandlerFunc {
 		searchTime := time.Now()
 		_, er := w.Write(*msg)
 		if er != nil {
-			logging.Err(logging.SERVE, er, true, "Error writing response:")
+			logging.Err(logging.SERVE, er, "Error writing response:")
 		}
 		go logging.LogAccess(code, int(time.Since(start).Microseconds()), int(searchTime.Sub(start).Microseconds()), err, er, r.TLS != nil, r.Method, r.URL.Path)
 	}

@@ -6,11 +6,13 @@ import (
 	"github.com/gocql/gocql"
 )
 
+var cluster *gocql.ClusterConfig
 var session *gocql.Session
+var GQLsession *gocql.Session
 
 // DBInit Create and open DB Connection
 func DBInit() {
-	cluster := gocql.NewCluster(util.GetConfig().Database.Host)
+	cluster = gocql.NewCluster(util.GetConfig().Database.Host)
 	cluster.Port = int(util.GetConfig().Database.Port)
 	cluster.Keyspace = util.GetConfig().Database.Database
 	cluster.Authenticator = gocql.PasswordAuthenticator{
@@ -20,7 +22,12 @@ func DBInit() {
 	var err error
 	session, err = cluster.CreateSession()
 	if err != nil {
-		Err(DB, err, true, "Error creating connection")
+		Err(DB, err, "Error creating connection")
+		panic(err)
+	}
+	GQLsession, err = cluster.CreateSession()
+	if err != nil {
+		Err(DB, err, "Error creating connection")
 		panic(err)
 	}
 	Log(DB, "Connection established")
@@ -44,7 +51,7 @@ func LogAccess(code int, duration int, searchDuration int, error error, writeErr
 		})())
 	err := query.Exec()
 	if err != nil {
-		Err(DB, err, false, "Error inserting access into DB")
+		Err(DB, err, "Error inserting access into DB")
 		Debug(query.Context())
 	}
 }

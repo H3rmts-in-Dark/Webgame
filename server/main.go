@@ -12,7 +12,6 @@ import (
 	"Server/util"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 )
 
 func main() {
@@ -43,8 +42,8 @@ func main() {
 		go startWebServer(webServer, true)
 	}
 
-	http.HandleFunc("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", handler.NewDefaultServer(gen.NewExecutableSchema(gen.Config{Resolvers: &graph.Resolver{}})))
+	http.HandleFunc("/", graph.GetPlayground)
+	http.Handle("/query", handler.NewDefaultServer(gen.NewExecutableSchema(gen.Config{Resolvers: graph.GenResolver()})))
 	APIServer := &http.Server{Addr: ":" + fmt.Sprintf("%d", util.GetConfig().ApiPort), Handler: http.DefaultServeMux}
 	APIServer.ErrorLog = log.New(&logging.LogWriter{Prefix: logging.GRAPHQL}, "", 0)
 
@@ -63,7 +62,7 @@ func startWebServer(webServer *http.Server, tls bool) {
 	}
 
 	if err != nil {
-		logging.Err(logging.MAIN, err, true, "Error starting webServer")
+		logging.Err(logging.MAIN, err, "Error starting webServer")
 	}
 }
 
@@ -79,6 +78,6 @@ func startAPI(api *http.Server, tls bool) {
 	}
 
 	if err != nil {
-		logging.Err(logging.MAIN, err, true, "Error starting Api")
+		logging.Err(logging.MAIN, err, "Error starting Api")
 	}
 }

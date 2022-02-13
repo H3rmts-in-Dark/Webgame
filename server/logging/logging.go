@@ -35,12 +35,12 @@ var prefix = map[string]logOptions{
 	"Error":  {suffix: "!", colorCode: "\u001b[38;2;255;0;0m"},
 }
 
-func Err(group LogGroup, err error, printTrace bool, message ...interface{}) {
+func Err(group LogGroup, err error, message ...interface{}) {
 	log(group, prefix["Error"], 1, message...)
 	if err != nil {
 		log(group, prefix["Error"], 1, err.Error())
 	}
-	if printTrace && util.GetConfig().Debug {
+	if util.GetConfig().Debug {
 		debug.PrintStack()
 	}
 }

@@ -15,13 +15,29 @@ input NewSetting {
 }
 
 type Ping {
-	uptime: Int!
+    uptime: Int!
+}
+
+type AccessLog {
+    id: ID!
+    code: Int!
+    duration: Int!
+    error: String
+    https: Boolean!
+    method: String!
+    searchduration: Int!
+    uri: String!
+    writeerr: String
 }
 
 type Query {
-    settings: [Setting!]
-    adminSettings: [Setting!]
+    settings: [Setting!]!
+    adminSettings: [Setting!]!
     ping: Ping!
+    AccessLogs: [AccessLog!]!
+    AccessLogsLimit(limit: Int): [AccessLog!]!
+    AccessLogsByTime(from: Int!, to: Int!): [AccessLog!]!
+    AccessLogsByCode(from: Int!, to: Int!): [AccessLog!]!
 }
 
 type Mutation {

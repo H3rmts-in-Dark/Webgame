@@ -14,7 +14,7 @@ func (r Resolver) CheckAdmin(code string) error {
 	if util.GetConfig().Code == code {
 		return nil
 	}
-	logging.Err(logging.API, nil, false, "An invalid code has been entered:", code)
+	logging.Err(logging.API, nil, "An invalid code has been entered:", code)
 	return &PermissionError{}
 }
 

@@ -2,6 +2,18 @@
 
 package model
 
+type AccessLog struct {
+	ID             string  `json:"id"`
+	Code           int     `json:"code"`
+	Duration       int     `json:"duration"`
+	Error          *string `json:"error"`
+	HTTPS          bool    `json:"https"`
+	Method         string  `json:"method"`
+	Searchduration int     `json:"searchduration"`
+	URI            string  `json:"uri"`
+	Writeerr       *string `json:"writeerr"`
+}
+
 type NewSetting struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
