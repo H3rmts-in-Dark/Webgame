@@ -55,3 +55,20 @@ func LogAccess(code int, duration int, searchDuration int, error error, writeErr
 		Debug(query.Context())
 	}
 }
+
+func LogAPIAccess(duration int, error error, request string) {
+	query := session.Query(
+		"INSERT INTO apiaccess (id, duration, error, request) VALUES (?,?,?,?)",
+		gocql.TimeUUID(), duration, (func() interface{} {
+			if error != nil {
+				return error.Error()
+			} else {
+				return nil
+			}
+		})(), request)
+	err := query.Exec()
+	if err != nil {
+		Err(DB, err, "Error inserting accessapi into DB")
+		Debug(query.Context())
+	}
+}

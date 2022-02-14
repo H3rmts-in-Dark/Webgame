@@ -2,7 +2,7 @@
 
 package model
 
-type AccessLog struct {
+type Access struct {
 	ID             string  `json:"id"`
 	Code           int     `json:"code"`
 	Duration       int     `json:"duration"`
@@ -12,6 +12,13 @@ type AccessLog struct {
 	Searchduration int     `json:"searchduration"`
 	URI            string  `json:"uri"`
 	Writeerr       *string `json:"writeerr"`
+}
+
+type APIAccess struct {
+	ID       string  `json:"id"`
+	Duration int     `json:"duration"`
+	Error    *string `json:"error"`
+	Request  string  `json:"request"`
 }
 
 type NewSetting struct {

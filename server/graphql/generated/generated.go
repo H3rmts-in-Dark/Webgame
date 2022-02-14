@@ -35,7 +35,6 @@ type Config struct {
 }
 
 type ResolverRoot interface {
-	Mutation() MutationResolver
 	Query() QueryResolver
 }
 
@@ -43,7 +42,7 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	AccessLog struct {
+	Access struct {
 		Code           func(childComplexity int) int
 		Duration       func(childComplexity int) int
 		Error          func(childComplexity int) int
@@ -55,11 +54,11 @@ type ComplexityRoot struct {
 		Writeerr       func(childComplexity int) int
 	}
 
-	Mutation struct {
-		ChangeAdmin   func(childComplexity int, validation string, setting model.NewSetting) int
-		ChangeSetting func(childComplexity int, setting model.NewSetting) int
-		ReloadSite    func(childComplexity int, site string, validation string) int
-		ReloadSites   func(childComplexity int, validation string) int
+	ApiAccess struct {
+		Duration func(childComplexity int) int
+		Error    func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Request  func(childComplexity int) int
 	}
 
 	Ping struct {
@@ -67,13 +66,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AccessLogs       func(childComplexity int) int
-		AccessLogsByCode func(childComplexity int, from int, to int) int
-		AccessLogsByTime func(childComplexity int, from int, to int) int
-		AccessLogsLimit  func(childComplexity int, limit *int) int
-		AdminSettings    func(childComplexity int) int
-		Ping             func(childComplexity int) int
-		Settings         func(childComplexity int) int
+		AccessAPILogs       func(childComplexity int) int
+		AccessAPILogsByTime func(childComplexity int, from int, to int) int
+		AccessAPILogsLimit  func(childComplexity int, limit *int) int
+		AccessLogs          func(childComplexity int) int
+		AccessLogsByCode    func(childComplexity int, from int, to int) int
+		AccessLogsByTime    func(childComplexity int, from int, to int) int
+		AccessLogsLimit     func(childComplexity int, limit *int) int
+		Ping                func(childComplexity int) int
 	}
 
 	Return struct {
@@ -88,20 +88,15 @@ type ComplexityRoot struct {
 	}
 }
 
-type MutationResolver interface {
-	ChangeSetting(ctx context.Context, setting model.NewSetting) (*model.Return, error)
-	ChangeAdmin(ctx context.Context, validation string, setting model.NewSetting) (*model.Return, error)
-	ReloadSites(ctx context.Context, validation string) (*model.Return, error)
-	ReloadSite(ctx context.Context, site string, validation string) (*model.Return, error)
-}
 type QueryResolver interface {
-	Settings(ctx context.Context) ([]*model.Setting, error)
-	AdminSettings(ctx context.Context) ([]*model.Setting, error)
 	Ping(ctx context.Context) (*model.Ping, error)
-	AccessLogs(ctx context.Context) ([]*model.AccessLog, error)
-	AccessLogsLimit(ctx context.Context, limit *int) ([]*model.AccessLog, error)
-	AccessLogsByTime(ctx context.Context, from int, to int) ([]*model.AccessLog, error)
-	AccessLogsByCode(ctx context.Context, from int, to int) ([]*model.AccessLog, error)
+	AccessLogs(ctx context.Context) ([]*model.Access, error)
+	AccessLogsLimit(ctx context.Context, limit *int) ([]*model.Access, error)
+	AccessLogsByTime(ctx context.Context, from int, to int) ([]*model.Access, error)
+	AccessLogsByCode(ctx context.Context, from int, to int) ([]*model.Access, error)
+	AccessAPILogs(ctx context.Context) ([]*model.APIAccess, error)
+	AccessAPILogsLimit(ctx context.Context, limit *int) ([]*model.APIAccess, error)
+	AccessAPILogsByTime(ctx context.Context, from int, to int) ([]*model.APIAccess, error)
 }
 
 type executableSchema struct {
@@ -119,116 +114,96 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AccessLog.code":
-		if e.complexity.AccessLog.Code == nil {
+	case "Access.code":
+		if e.complexity.Access.Code == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Code(childComplexity), true
+		return e.complexity.Access.Code(childComplexity), true
 
-	case "AccessLog.duration":
-		if e.complexity.AccessLog.Duration == nil {
+	case "Access.duration":
+		if e.complexity.Access.Duration == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Duration(childComplexity), true
+		return e.complexity.Access.Duration(childComplexity), true
 
-	case "AccessLog.error":
-		if e.complexity.AccessLog.Error == nil {
+	case "Access.error":
+		if e.complexity.Access.Error == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Error(childComplexity), true
+		return e.complexity.Access.Error(childComplexity), true
 
-	case "AccessLog.https":
-		if e.complexity.AccessLog.HTTPS == nil {
+	case "Access.https":
+		if e.complexity.Access.HTTPS == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.HTTPS(childComplexity), true
+		return e.complexity.Access.HTTPS(childComplexity), true
 
-	case "AccessLog.id":
-		if e.complexity.AccessLog.ID == nil {
+	case "Access.id":
+		if e.complexity.Access.ID == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.ID(childComplexity), true
+		return e.complexity.Access.ID(childComplexity), true
 
-	case "AccessLog.method":
-		if e.complexity.AccessLog.Method == nil {
+	case "Access.method":
+		if e.complexity.Access.Method == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Method(childComplexity), true
+		return e.complexity.Access.Method(childComplexity), true
 
-	case "AccessLog.searchduration":
-		if e.complexity.AccessLog.Searchduration == nil {
+	case "Access.searchduration":
+		if e.complexity.Access.Searchduration == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Searchduration(childComplexity), true
+		return e.complexity.Access.Searchduration(childComplexity), true
 
-	case "AccessLog.uri":
-		if e.complexity.AccessLog.URI == nil {
+	case "Access.uri":
+		if e.complexity.Access.URI == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.URI(childComplexity), true
+		return e.complexity.Access.URI(childComplexity), true
 
-	case "AccessLog.writeerr":
-		if e.complexity.AccessLog.Writeerr == nil {
+	case "Access.writeerr":
+		if e.complexity.Access.Writeerr == nil {
 			break
 		}
 
-		return e.complexity.AccessLog.Writeerr(childComplexity), true
+		return e.complexity.Access.Writeerr(childComplexity), true
 
-	case "Mutation.changeAdmin":
-		if e.complexity.Mutation.ChangeAdmin == nil {
+	case "ApiAccess.duration":
+		if e.complexity.ApiAccess.Duration == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_changeAdmin_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.ApiAccess.Duration(childComplexity), true
 
-		return e.complexity.Mutation.ChangeAdmin(childComplexity, args["validation"].(string), args["setting"].(model.NewSetting)), true
-
-	case "Mutation.changeSetting":
-		if e.complexity.Mutation.ChangeSetting == nil {
+	case "ApiAccess.error":
+		if e.complexity.ApiAccess.Error == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_changeSetting_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.ApiAccess.Error(childComplexity), true
 
-		return e.complexity.Mutation.ChangeSetting(childComplexity, args["setting"].(model.NewSetting)), true
-
-	case "Mutation.reloadSite":
-		if e.complexity.Mutation.ReloadSite == nil {
+	case "ApiAccess.id":
+		if e.complexity.ApiAccess.ID == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_reloadSite_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.ApiAccess.ID(childComplexity), true
 
-		return e.complexity.Mutation.ReloadSite(childComplexity, args["site"].(string), args["validation"].(string)), true
-
-	case "Mutation.reloadSites":
-		if e.complexity.Mutation.ReloadSites == nil {
+	case "ApiAccess.request":
+		if e.complexity.ApiAccess.Request == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_reloadSites_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.ReloadSites(childComplexity, args["validation"].(string)), true
+		return e.complexity.ApiAccess.Request(childComplexity), true
 
 	case "Ping.uptime":
 		if e.complexity.Ping.Uptime == nil {
@@ -236,6 +211,37 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Ping.Uptime(childComplexity), true
+
+	case "Query.AccessApiLogs":
+		if e.complexity.Query.AccessAPILogs == nil {
+			break
+		}
+
+		return e.complexity.Query.AccessAPILogs(childComplexity), true
+
+	case "Query.AccessApiLogsByTime":
+		if e.complexity.Query.AccessAPILogsByTime == nil {
+			break
+		}
+
+		args, err := ec.field_Query_AccessApiLogsByTime_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AccessAPILogsByTime(childComplexity, args["from"].(int), args["to"].(int)), true
+
+	case "Query.AccessApiLogsLimit":
+		if e.complexity.Query.AccessAPILogsLimit == nil {
+			break
+		}
+
+		args, err := ec.field_Query_AccessApiLogsLimit_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AccessAPILogsLimit(childComplexity, args["limit"].(*int)), true
 
 	case "Query.AccessLogs":
 		if e.complexity.Query.AccessLogs == nil {
@@ -280,26 +286,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.AccessLogsLimit(childComplexity, args["limit"].(*int)), true
 
-	case "Query.adminSettings":
-		if e.complexity.Query.AdminSettings == nil {
-			break
-		}
-
-		return e.complexity.Query.AdminSettings(childComplexity), true
-
 	case "Query.ping":
 		if e.complexity.Query.Ping == nil {
 			break
 		}
 
 		return e.complexity.Query.Ping(childComplexity), true
-
-	case "Query.settings":
-		if e.complexity.Query.Settings == nil {
-			break
-		}
-
-		return e.complexity.Query.Settings(childComplexity), true
 
 	case "Return.info":
 		if e.complexity.Return.Info == nil {
@@ -360,20 +352,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				Data: buf.Bytes(),
 			}
 		}
-	case ast.Mutation:
-		return func(ctx context.Context) *graphql.Response {
-			if !first {
-				return nil
-			}
-			first = false
-			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
-			var buf bytes.Buffer
-			data.MarshalGQL(&buf)
-
-			return &graphql.Response{
-				Data: buf.Bytes(),
-			}
-		}
 
 	default:
 		return graphql.OneShot(graphql.ErrorResponse(ctx, "unsupported GraphQL operation"))
@@ -420,7 +398,7 @@ type Ping {
     uptime: Int!
 }
 
-type AccessLog {
+type Access {
     id: ID!
     code: Int!
     duration: Int!
@@ -432,23 +410,25 @@ type AccessLog {
     writeerr: String
 }
 
-type Query {
-    settings: [Setting!]!
-    adminSettings: [Setting!]!
-    ping: Ping!
-    AccessLogs: [AccessLog!]!
-    AccessLogsLimit(limit: Int): [AccessLog!]!
-    AccessLogsByTime(from: Int!, to: Int!): [AccessLog!]!
-    AccessLogsByCode(from: Int!, to: Int!): [AccessLog!]!
+type ApiAccess {
+    id: ID!
+    duration: Int!
+    error: String
+    request: String!
 }
 
-type Mutation {
-    changeSetting(setting: NewSetting!): Return!
-    changeAdmin(validation: String!,setting: NewSetting!): Return!
-    reloadSites(validation: String!): Return!
-    reloadSite(site: String!, validation: String!): Return!
-}
-`, BuiltIn: false},
+type Query {
+    ping: Ping!
+
+    AccessLogs: [Access!]!
+    AccessLogsLimit(limit: Int): [Access!]!
+    AccessLogsByTime(from: Int!, to: Int!): [Access!]!
+    AccessLogsByCode(from: Int!, to: Int!): [Access!]!
+
+    AccessApiLogs: [ApiAccess!]!
+    AccessApiLogsLimit(limit: Int): [ApiAccess!]!
+    AccessApiLogsByTime(from: Int!, to: Int!): [ApiAccess!]!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -456,81 +436,42 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_changeAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_AccessApiLogsByTime_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["validation"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validation"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["validation"] = arg0
-	var arg1 model.NewSetting
-	if tmp, ok := rawArgs["setting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg1, err = ec.unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
+	args["from"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["setting"] = arg1
+	args["to"] = arg1
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_changeSetting_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_AccessApiLogsLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewSetting
-	if tmp, ok := rawArgs["setting"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("setting"))
-		arg0, err = ec.unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["setting"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_reloadSite_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["site"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("site"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["site"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["validation"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validation"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["validation"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_reloadSites_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["validation"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validation"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["validation"] = arg0
+	args["limit"] = arg0
 	return args, nil
 }
 
@@ -665,7 +606,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AccessLog_id(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_id(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -673,7 +614,7 @@ func (ec *executionContext) _AccessLog_id(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -700,7 +641,7 @@ func (ec *executionContext) _AccessLog_id(ctx context.Context, field graphql.Col
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_code(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_code(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -708,7 +649,7 @@ func (ec *executionContext) _AccessLog_code(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -735,7 +676,7 @@ func (ec *executionContext) _AccessLog_code(ctx context.Context, field graphql.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_duration(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_duration(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -743,7 +684,7 @@ func (ec *executionContext) _AccessLog_duration(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -770,7 +711,7 @@ func (ec *executionContext) _AccessLog_duration(ctx context.Context, field graph
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_error(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_error(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -778,7 +719,7 @@ func (ec *executionContext) _AccessLog_error(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -802,7 +743,7 @@ func (ec *executionContext) _AccessLog_error(ctx context.Context, field graphql.
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_https(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_https(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -810,7 +751,7 @@ func (ec *executionContext) _AccessLog_https(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -837,7 +778,7 @@ func (ec *executionContext) _AccessLog_https(ctx context.Context, field graphql.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_method(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_method(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -845,7 +786,7 @@ func (ec *executionContext) _AccessLog_method(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -872,7 +813,7 @@ func (ec *executionContext) _AccessLog_method(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_searchduration(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_searchduration(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -880,7 +821,7 @@ func (ec *executionContext) _AccessLog_searchduration(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -907,7 +848,7 @@ func (ec *executionContext) _AccessLog_searchduration(ctx context.Context, field
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_uri(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_uri(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -915,7 +856,7 @@ func (ec *executionContext) _AccessLog_uri(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -942,7 +883,7 @@ func (ec *executionContext) _AccessLog_uri(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AccessLog_writeerr(ctx context.Context, field graphql.CollectedField, obj *model.AccessLog) (ret graphql.Marshaler) {
+func (ec *executionContext) _Access_writeerr(ctx context.Context, field graphql.CollectedField, obj *model.Access) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -950,7 +891,7 @@ func (ec *executionContext) _AccessLog_writeerr(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "AccessLog",
+		Object:     "Access",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -974,7 +915,7 @@ func (ec *executionContext) _AccessLog_writeerr(ctx context.Context, field graph
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_changeSetting(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _ApiAccess_id(ctx context.Context, field graphql.CollectedField, obj *model.APIAccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -982,24 +923,17 @@ func (ec *executionContext) _Mutation_changeSetting(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "ApiAccess",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_changeSetting_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ChangeSetting(rctx, args["setting"].(model.NewSetting))
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1011,12 +945,12 @@ func (ec *executionContext) _Mutation_changeSetting(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Return)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _ApiAccess_duration(ctx context.Context, field graphql.CollectedField, obj *model.APIAccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1024,24 +958,17 @@ func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "ApiAccess",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_changeAdmin_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ChangeAdmin(rctx, args["validation"].(string), args["setting"].(model.NewSetting))
+		return obj.Duration, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1053,12 +980,12 @@ func (ec *executionContext) _Mutation_changeAdmin(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Return)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_reloadSites(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _ApiAccess_error(ctx context.Context, field graphql.CollectedField, obj *model.APIAccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1066,41 +993,31 @@ func (ec *executionContext) _Mutation_reloadSites(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "ApiAccess",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_reloadSites_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ReloadSites(rctx, args["validation"].(string))
+		return obj.Error, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Return)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _ApiAccess_request(ctx context.Context, field graphql.CollectedField, obj *model.APIAccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1108,24 +1025,17 @@ func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "ApiAccess",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_reloadSite_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ReloadSite(rctx, args["site"].(string), args["validation"].(string))
+		return obj.Request, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1137,9 +1047,9 @@ func (ec *executionContext) _Mutation_reloadSite(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Return)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Ping_uptime(ctx context.Context, field graphql.CollectedField, obj *model.Ping) (ret graphql.Marshaler) {
@@ -1175,76 +1085,6 @@ func (ec *executionContext) _Ping_uptime(ctx context.Context, field graphql.Coll
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_settings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Settings(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Setting)
-	fc.Result = res
-	return ec.marshalNSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_adminSettings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AdminSettings(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Setting)
-	fc.Result = res
-	return ec.marshalNSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_ping(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1312,9 +1152,9 @@ func (ec *executionContext) _Query_AccessLogs(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.AccessLog)
+	res := resTmp.([]*model.Access)
 	fc.Result = res
-	return ec.marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessLogᚄ(ctx, field.Selections, res)
+	return ec.marshalNAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_AccessLogsLimit(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1354,9 +1194,9 @@ func (ec *executionContext) _Query_AccessLogsLimit(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.AccessLog)
+	res := resTmp.([]*model.Access)
 	fc.Result = res
-	return ec.marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessLogᚄ(ctx, field.Selections, res)
+	return ec.marshalNAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_AccessLogsByTime(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1396,9 +1236,9 @@ func (ec *executionContext) _Query_AccessLogsByTime(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.AccessLog)
+	res := resTmp.([]*model.Access)
 	fc.Result = res
-	return ec.marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessLogᚄ(ctx, field.Selections, res)
+	return ec.marshalNAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_AccessLogsByCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1438,9 +1278,128 @@ func (ec *executionContext) _Query_AccessLogsByCode(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.AccessLog)
+	res := resTmp.([]*model.Access)
 	fc.Result = res
-	return ec.marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessLogᚄ(ctx, field.Selections, res)
+	return ec.marshalNAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_AccessApiLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AccessAPILogs(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.APIAccess)
+	fc.Result = res
+	return ec.marshalNApiAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAPIAccessᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_AccessApiLogsLimit(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_AccessApiLogsLimit_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AccessAPILogsLimit(rctx, args["limit"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.APIAccess)
+	fc.Result = res
+	return ec.marshalNApiAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAPIAccessᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_AccessApiLogsByTime(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_AccessApiLogsByTime_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AccessAPILogsByTime(rctx, args["from"].(int), args["to"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.APIAccess)
+	fc.Result = res
+	return ec.marshalNApiAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAPIAccessᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2857,19 +2816,19 @@ func (ec *executionContext) unmarshalInputNewSetting(ctx context.Context, obj in
 
 // region    **************************** object.gotpl ****************************
 
-var accessLogImplementors = []string{"AccessLog"}
+var accessImplementors = []string{"Access"}
 
-func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet, obj *model.AccessLog) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, accessLogImplementors)
+func (ec *executionContext) _Access(ctx context.Context, sel ast.SelectionSet, obj *model.Access) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, accessImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("AccessLog")
+			out.Values[i] = graphql.MarshalString("Access")
 		case "id":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_id(ctx, field, obj)
+				return ec._Access_id(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2879,7 +2838,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "code":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_code(ctx, field, obj)
+				return ec._Access_code(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2889,7 +2848,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "duration":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_duration(ctx, field, obj)
+				return ec._Access_duration(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2899,14 +2858,14 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "error":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_error(ctx, field, obj)
+				return ec._Access_error(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
 
 		case "https":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_https(ctx, field, obj)
+				return ec._Access_https(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2916,7 +2875,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "method":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_method(ctx, field, obj)
+				return ec._Access_method(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2926,7 +2885,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "searchduration":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_searchduration(ctx, field, obj)
+				return ec._Access_searchduration(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2936,7 +2895,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "uri":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_uri(ctx, field, obj)
+				return ec._Access_uri(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2946,7 +2905,7 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 			}
 		case "writeerr":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._AccessLog_writeerr(ctx, field, obj)
+				return ec._Access_writeerr(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
@@ -2962,61 +2921,49 @@ func (ec *executionContext) _AccessLog(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
-var mutationImplementors = []string{"Mutation"}
+var apiAccessImplementors = []string{"ApiAccess"}
 
-func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
-	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
-		Object: "Mutation",
-	})
-
+func (ec *executionContext) _ApiAccess(ctx context.Context, sel ast.SelectionSet, obj *model.APIAccess) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, apiAccessImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
-		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
-			Object: field.Name,
-			Field:  field,
-		})
-
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Mutation")
-		case "changeSetting":
+			out.Values[i] = graphql.MarshalString("ApiAccess")
+		case "id":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_changeSetting(ctx, field)
+				return ec._ApiAccess_id(ctx, field, obj)
 			}
 
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "changeAdmin":
+		case "duration":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_changeAdmin(ctx, field)
+				return ec._ApiAccess_duration(ctx, field, obj)
 			}
 
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "reloadSites":
+		case "error":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_reloadSites(ctx, field)
+				return ec._ApiAccess_error(ctx, field, obj)
 			}
 
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+			out.Values[i] = innerFunc(ctx)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "reloadSite":
+		case "request":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_reloadSite(ctx, field)
+				return ec._ApiAccess_request(ctx, field, obj)
 			}
 
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+			out.Values[i] = innerFunc(ctx)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3082,52 +3029,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "settings":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_settings(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
-		case "adminSettings":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_adminSettings(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
 		case "ping":
 			field := field
 
@@ -3230,6 +3131,75 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_AccessLogsByCode(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "AccessApiLogs":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_AccessApiLogs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "AccessApiLogsLimit":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_AccessApiLogsLimit(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "AccessApiLogsByTime":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_AccessApiLogsByTime(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3769,7 +3739,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessLogᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.AccessLog) graphql.Marshaler {
+func (ec *executionContext) marshalNAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAccessᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Access) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3793,7 +3763,7 @@ func (ec *executionContext) marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐA
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNAccessLog2ᚖServerᚋgraphqlᚋmodelᚐAccessLog(ctx, sel, v[i])
+			ret[i] = ec.marshalNAccess2ᚖServerᚋgraphqlᚋmodelᚐAccess(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3813,14 +3783,68 @@ func (ec *executionContext) marshalNAccessLog2ᚕᚖServerᚋgraphqlᚋmodelᚐA
 	return ret
 }
 
-func (ec *executionContext) marshalNAccessLog2ᚖServerᚋgraphqlᚋmodelᚐAccessLog(ctx context.Context, sel ast.SelectionSet, v *model.AccessLog) graphql.Marshaler {
+func (ec *executionContext) marshalNAccess2ᚖServerᚋgraphqlᚋmodelᚐAccess(ctx context.Context, sel ast.SelectionSet, v *model.Access) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._AccessLog(ctx, sel, v)
+	return ec._Access(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNApiAccess2ᚕᚖServerᚋgraphqlᚋmodelᚐAPIAccessᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.APIAccess) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNApiAccess2ᚖServerᚋgraphqlᚋmodelᚐAPIAccess(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNApiAccess2ᚖServerᚋgraphqlᚋmodelᚐAPIAccess(ctx context.Context, sel ast.SelectionSet, v *model.APIAccess) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ApiAccess(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
@@ -3868,11 +3892,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewSetting2ServerᚋgraphqlᚋmodelᚐNewSetting(ctx context.Context, v interface{}) (model.NewSetting, error) {
-	res, err := ec.unmarshalInputNewSetting(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNPing2ServerᚋgraphqlᚋmodelᚐPing(ctx context.Context, sel ast.SelectionSet, v model.Ping) graphql.Marshaler {
 	return ec._Ping(ctx, sel, &v)
 }
@@ -3885,74 +3904,6 @@ func (ec *executionContext) marshalNPing2ᚖServerᚋgraphqlᚋmodelᚐPing(ctx 
 		return graphql.Null
 	}
 	return ec._Ping(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNReturn2ServerᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v model.Return) graphql.Marshaler {
-	return ec._Return(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNReturn2ᚖServerᚋgraphqlᚋmodelᚐReturn(ctx context.Context, sel ast.SelectionSet, v *model.Return) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Return(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNSetting2ᚕᚖServerᚋgraphqlᚋmodelᚐSettingᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Setting) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSetting2ᚖServerᚋgraphqlᚋmodelᚐSetting(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNSetting2ᚖServerᚋgraphqlᚋmodelᚐSetting(ctx context.Context, sel ast.SelectionSet, v *model.Setting) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Setting(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

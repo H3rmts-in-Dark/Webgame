@@ -18,7 +18,7 @@ type Ping {
     uptime: Int!
 }
 
-type AccessLog {
+type Access {
     id: ID!
     code: Int!
     duration: Int!
@@ -30,19 +30,22 @@ type AccessLog {
     writeerr: String
 }
 
-type Query {
-    settings: [Setting!]!
-    adminSettings: [Setting!]!
-    ping: Ping!
-    AccessLogs: [AccessLog!]!
-    AccessLogsLimit(limit: Int): [AccessLog!]!
-    AccessLogsByTime(from: Int!, to: Int!): [AccessLog!]!
-    AccessLogsByCode(from: Int!, to: Int!): [AccessLog!]!
+type ApiAccess {
+    id: ID!
+    duration: Int!
+    error: String
+    request: String!
 }
 
-type Mutation {
-    changeSetting(setting: NewSetting!): Return!
-    changeAdmin(validation: String!,setting: NewSetting!): Return!
-    reloadSites(validation: String!): Return!
-    reloadSite(site: String!, validation: String!): Return!
+type Query {
+    ping: Ping!
+
+    AccessLogs: [Access!]!
+    AccessLogsLimit(limit: Int): [Access!]!
+    AccessLogsByTime(from: Int!, to: Int!): [Access!]!
+    AccessLogsByCode(from: Int!, to: Int!): [Access!]!
+
+    AccessApiLogs: [ApiAccess!]!
+    AccessApiLogsLimit(limit: Int): [ApiAccess!]!
+    AccessApiLogsByTime(from: Int!, to: Int!): [ApiAccess!]!
 }
