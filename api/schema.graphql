@@ -23,6 +23,7 @@ type Mutation {
 }
 
 type Query {
+    ping: Ping!
     adminSettings: [Setting!]
     settings: [Setting!]
 }
@@ -36,6 +37,10 @@ type Setting {
     admin: Boolean!
     name: String!
     value: String!
+}
+
+type Ping {
+    uptime: Int!
 }
 
 scalar _Any

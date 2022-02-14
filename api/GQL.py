@@ -7,16 +7,15 @@ from sgqlc.endpoint.http import HTTPEndpoint
 
 # https://github.com/profusion/sgqlc
 
-def Query(name: str, port: int, timeout: int, verbose: bool, quiet: bool) -> Union[dict, urllib.error.URLError]:
+def Query(name: str, host: str, port: int, https: bool, timeout: int, verbose: bool, quiet: bool) -> Union[dict, urllib.error.URLError]:
 	with open("commands/{0}".format(name)) as f:
-		endpoint = HTTPEndpoint("http://localhost:{0}/query".format(port), timeout=timeout)
+		endpoint = HTTPEndpoint("{2}://{0}:{1}/query".format(host, port, "https" if https else "http"), timeout=timeout)
 		if quiet:
 			endpoint.logger.disabled = True
 		elif verbose:
 			logging.basicConfig(level=logging.DEBUG)
 		
 		try:
-			response = endpoint(f.read())
-			return response
+			return endpoint(f.read(), timeout=timeout)
 		except urllib.error.URLError as ex:
 			return ex
