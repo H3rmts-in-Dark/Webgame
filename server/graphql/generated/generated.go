@@ -68,11 +68,11 @@ type ComplexityRoot struct {
 	Query struct {
 		AccessAPILogs       func(childComplexity int) int
 		AccessAPILogsByTime func(childComplexity int, from int, to int) int
-		AccessAPILogsLimit  func(childComplexity int, limit *int) int
+		AccessAPILogsLimit  func(childComplexity int, limit int) int
 		AccessLogs          func(childComplexity int) int
 		AccessLogsByCode    func(childComplexity int, from int, to int) int
 		AccessLogsByTime    func(childComplexity int, from int, to int) int
-		AccessLogsLimit     func(childComplexity int, limit *int) int
+		AccessLogsLimit     func(childComplexity int, limit int) int
 		Ping                func(childComplexity int) int
 	}
 
@@ -91,11 +91,11 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	Ping(ctx context.Context) (*model.Ping, error)
 	AccessLogs(ctx context.Context) ([]*model.Access, error)
-	AccessLogsLimit(ctx context.Context, limit *int) ([]*model.Access, error)
+	AccessLogsLimit(ctx context.Context, limit int) ([]*model.Access, error)
 	AccessLogsByTime(ctx context.Context, from int, to int) ([]*model.Access, error)
 	AccessLogsByCode(ctx context.Context, from int, to int) ([]*model.Access, error)
 	AccessAPILogs(ctx context.Context) ([]*model.APIAccess, error)
-	AccessAPILogsLimit(ctx context.Context, limit *int) ([]*model.APIAccess, error)
+	AccessAPILogsLimit(ctx context.Context, limit int) ([]*model.APIAccess, error)
 	AccessAPILogsByTime(ctx context.Context, from int, to int) ([]*model.APIAccess, error)
 }
 
@@ -241,7 +241,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.AccessAPILogsLimit(childComplexity, args["limit"].(*int)), true
+		return e.complexity.Query.AccessAPILogsLimit(childComplexity, args["limit"].(int)), true
 
 	case "Query.AccessLogs":
 		if e.complexity.Query.AccessLogs == nil {
@@ -284,7 +284,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.AccessLogsLimit(childComplexity, args["limit"].(*int)), true
+		return e.complexity.Query.AccessLogsLimit(childComplexity, args["limit"].(int)), true
 
 	case "Query.ping":
 		if e.complexity.Query.Ping == nil {
@@ -421,12 +421,12 @@ type Query {
     ping: Ping!
 
     AccessLogs: [Access!]!
-    AccessLogsLimit(limit: Int): [Access!]!
+    AccessLogsLimit(limit: Int!): [Access!]!
     AccessLogsByTime(from: Int!, to: Int!): [Access!]!
     AccessLogsByCode(from: Int!, to: Int!): [Access!]!
 
     AccessApiLogs: [ApiAccess!]!
-    AccessApiLogsLimit(limit: Int): [ApiAccess!]!
+    AccessApiLogsLimit(limit: Int!): [ApiAccess!]!
     AccessApiLogsByTime(from: Int!, to: Int!): [ApiAccess!]!
 }`, BuiltIn: false},
 }
@@ -463,10 +463,10 @@ func (ec *executionContext) field_Query_AccessApiLogsByTime_args(ctx context.Con
 func (ec *executionContext) field_Query_AccessApiLogsLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *int
+	var arg0 int
 	if tmp, ok := rawArgs["limit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -526,10 +526,10 @@ func (ec *executionContext) field_Query_AccessLogsByTime_args(ctx context.Contex
 func (ec *executionContext) field_Query_AccessLogsLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *int
+	var arg0 int
 	if tmp, ok := rawArgs["limit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1182,7 +1182,7 @@ func (ec *executionContext) _Query_AccessLogsLimit(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AccessLogsLimit(rctx, args["limit"].(*int))
+		return ec.resolvers.Query().AccessLogsLimit(rctx, args["limit"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1343,7 +1343,7 @@ func (ec *executionContext) _Query_AccessApiLogsLimit(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AccessAPILogsLimit(rctx, args["limit"].(*int))
+		return ec.resolvers.Query().AccessAPILogsLimit(rctx, args["limit"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4197,22 +4197,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
-	return res
-}
-
-func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalInt(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalInt(*v)
 	return res
 }
 

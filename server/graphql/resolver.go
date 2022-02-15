@@ -8,7 +8,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"Server/graphql/generated"
@@ -19,6 +18,7 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/mitchellh/mapstructure"
+	"github.com/scylladb/gocqlx/v2"
 )
 
 func (r *mutationResolver) ChangeSetting(ctx context.Context, setting model.NewSetting) (*model.Return, error) {
@@ -62,73 +62,59 @@ func (r *queryResolver) Ping(ctx context.Context) (*model.Ping, error) {
 
 func (r *queryResolver) AccessLogs(ctx context.Context) ([]*model.Access, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM access",
-	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogs")
-		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogs")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.Access, len(Map))
-	for i, m := range Map {
+	iter := Query(r.session, "SELECT * FROM access").Iter()
+	logs := make([]*model.Access, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogs")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessLogs")
 	return logs, nil
 }
 
-func (r *queryResolver) AccessLogsLimit(ctx context.Context, limit *int) ([]*model.Access, error) {
+func (r *queryResolver) AccessLogsLimit(ctx context.Context, limit int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM access LIMIT ?", limit,
-	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogsLimit")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.Access, len(Map))
-	for i, m := range Map {
+	iter := Query(r.session, "SELECT id, code, duration, error, https, method, searchduration, uri, writeerr FROM access LIMIT ?", limit).Iter()
+	logging.Log(logging.GRAPHQL, int(time.Since(now)))
+	logs := make([]*model.Access, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogsLimit")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessLogsLimit")
 	return logs, nil
 }
 func (r *queryResolver) AccessLogsByTime(ctx context.Context, from int, to int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM access WHERE id >= ? AND id <= ? ALLOW FILTERING",
+	iter := Query(r.session, "SELECT * FROM access WHERE id >= ? AND id <= ? ALLOW FILTERING",
 		gocql.MinTimeUUID(time.Unix(int64(from), 0)),
 		gocql.MaxTimeUUID(time.Unix(int64(to), 0)),
 	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogsByTime")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.Access, len(Map))
-	for i, m := range Map {
+	logs := make([]*model.Access, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogsByTime")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessLogsByTime")
 	return logs, nil
@@ -136,24 +122,18 @@ func (r *queryResolver) AccessLogsByTime(ctx context.Context, from int, to int) 
 
 func (r *queryResolver) AccessLogsByCode(ctx context.Context, from int, to int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM access WHERE code >= ? AND code <= ? ALLOW FILTERING",
-		from, to,
-	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogsByCode")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.Access, len(Map))
-	for i, m := range Map {
+	iter := Query(r.session, "SELECT * FROM access WHERE code >= ? AND code <= ? ALLOW FILTERING", from, to).Iter()
+	logs := make([]*model.Access, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogsByCode")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessLogsByCode")
 	return logs, nil
@@ -161,48 +141,37 @@ func (r *queryResolver) AccessLogsByCode(ctx context.Context, from int, to int) 
 
 func (r *queryResolver) AccessAPILogs(ctx context.Context) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM apiaccess",
-	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogs")
-		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessLogs")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.APIAccess, len(Map))
-	for i, m := range Map {
+	iter := Query(r.session, "SELECT * FROM apiaccess").Iter()
+	logs := make([]*model.APIAccess, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.APIAccess{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessAPILogs")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessAPILogs")
 	return logs, nil
 }
 
-func (r *queryResolver) AccessAPILogsLimit(ctx context.Context, limit *int) ([]*model.APIAccess, error) {
+func (r *queryResolver) AccessAPILogsLimit(ctx context.Context, limit int) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM apiaccess LIMIT ?", limit,
-	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogsLimit")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.APIAccess, len(Map))
-	for i, m := range Map {
+	iter := Query(r.session, "SELECT * FROM apiaccess LIMIT ?", limit).Iter()
+	logs := make([]*model.APIAccess, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.APIAccess{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessAPILogsLimit")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessAPILogsLimit")
 	return logs, nil
@@ -210,32 +179,28 @@ func (r *queryResolver) AccessAPILogsLimit(ctx context.Context, limit *int) ([]*
 
 func (r *queryResolver) AccessAPILogsByTime(ctx context.Context, from int, to int) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := r.session.Query(
-		"SELECT * FROM apiaccess WHERE id >= ? AND id <= ? ALLOW FILTERING",
+	iter := Query(r.session, "SELECT * FROM apiaccess WHERE id >= %d AND id <= %d ALLOW FILTERING",
 		gocql.MinTimeUUID(time.Unix(int64(from), 0)),
 		gocql.MaxTimeUUID(time.Unix(int64(to), 0)),
 	).Iter()
-	Map, err := iter.SliceMap()
-	if err != nil {
-		logging.Err(logging.GRAPHQL, err, "Error getting AccessLogsByTime")
-		return nil, errors.New("SQL Error")
-	}
-	logs := make([]*model.APIAccess, len(Map))
-	for i, m := range Map {
+	logs := make([]*model.APIAccess, iter.Iter.NumRows())
+	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.APIAccess{}
-		err := r.createFromMap(m, &log)
-		if err != nil {
-			logging.Err(logging.GRAPHQL, err, fmt.Sprintf("Error creating AccessLog from map %v", m))
-			continue
-		}
+		iter.StructScan(&log)
 		logs[i] = &log
+	}
+	err := iter.Close()
+	if err != nil {
+		logging.Err(logging.GRAPHQL, err, "Error reading from DB")
+		go logging.LogAPIAccess(int(time.Since(now)), err, "AccessAPILogsByTime")
+		return nil, errors.New("DB Error")
 	}
 	go logging.LogAPIAccess(int(time.Since(now)), nil, "AccessAPILogsByTime")
 	return logs, nil
 }
 
 type Resolver struct {
-	session *gocql.Session
+	session *gocqlx.Session
 }
 
 type mutationResolver struct {
@@ -270,6 +235,10 @@ func (r Resolver) createFromMap(data map[string]interface{}, int interface{}) er
 
 func GenResolver() *Resolver {
 	return &Resolver{
-		session: logging.GQLsession,
+		session: &logging.GQLSession,
 	}
+}
+
+func Query(session *gocqlx.Session, stmt string, params ...interface{}) *gocqlx.Queryx {
+	return session.Query(stmt, nil).Bind(params...)
 }

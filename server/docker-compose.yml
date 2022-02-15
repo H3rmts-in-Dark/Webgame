@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server-db:
-    image: scylladb/scylla:4.5.0
+    image: scylladb/scylla:4.5.3
     restart: always
     ports:
       - "9042:9042"

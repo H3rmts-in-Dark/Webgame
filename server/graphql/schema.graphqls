@@ -41,11 +41,11 @@ type Query {
     ping: Ping!
 
     AccessLogs: [Access!]!
-    AccessLogsLimit(limit: Int): [Access!]!
+    AccessLogsLimit(limit: Int!): [Access!]!
     AccessLogsByTime(from: Int!, to: Int!): [Access!]!
     AccessLogsByCode(from: Int!, to: Int!): [Access!]!
 
     AccessApiLogs: [ApiAccess!]!
-    AccessApiLogsLimit(limit: Int): [ApiAccess!]!
+    AccessApiLogsLimit(limit: Int!): [ApiAccess!]!
     AccessApiLogsByTime(from: Int!, to: Int!): [ApiAccess!]!
 }

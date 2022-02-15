@@ -4,11 +4,12 @@ import (
 	"Server/util"
 
 	"github.com/gocql/gocql"
+	"github.com/scylladb/gocqlx/v2"
 )
 
 var cluster *gocql.ClusterConfig
+var GQLSession gocqlx.Session
 var session *gocql.Session
-var GQLsession *gocql.Session
 
 // DBInit Create and open DB Connection
 func DBInit() {
@@ -20,12 +21,8 @@ func DBInit() {
 		Password: util.GetConfig().Database.Password,
 	}
 	var err error
+	GQLSession, err = gocqlx.WrapSession(cluster.CreateSession())
 	session, err = cluster.CreateSession()
-	if err != nil {
-		Err(DB, err, "Error creating connection")
-		panic(err)
-	}
-	GQLsession, err = cluster.CreateSession()
 	if err != nil {
 		Err(DB, err, "Error creating connection")
 		panic(err)

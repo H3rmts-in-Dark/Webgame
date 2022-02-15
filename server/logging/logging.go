@@ -95,7 +95,7 @@ func log(prefix LogGroup, logOption logOptions, skip uint8, message ...interface
 	_, err := os.Stdout.Write([]byte(fmt.Sprintf(
 		"%s%s %s|%s %s \u001b[0m\n",
 		logOption.colorCode,
-		now.Format("2006.01.02 15:04:05.0000"),
+		now.Format("2006.01.02 15:04:05.000"),
 		location, printPrefix, printStr,
 	)))
 	if err != nil {

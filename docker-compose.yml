@@ -6,8 +6,8 @@ services:
     image: server:1.0
     restart: 'always'
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "9080:80"
+      - "9443:443"
       - "18267:18266"
     depends_on:
       - server-db
@@ -24,16 +24,13 @@ services:
       - site-volume:/website/site
   
   server-db:
-    image: mariadb:10.7
-    restart: 'always'
+    image: scylladb/scylla:4.5.0
+    restart: always
     ports:
-      - "3307:3306"
+      - "9043:9042"
     volumes:
-      - db-data:/var/lib/mysql
-    environment:
-      MARIADB_ROOT_PASSWORD: "root"
-      MARIADB_USER: "server"
-      MARIADB_PASSWORD: "server-password"
+      - ./server/scylla.yaml:/etc/scylla/scylla.yaml
+      - db-data:/var/lib/scylla
 
 volumes:
   db-data:
