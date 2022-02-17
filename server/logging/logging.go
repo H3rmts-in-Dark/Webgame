@@ -35,6 +35,8 @@ var prefix = map[string]logOptions{
 	"Error":  {suffix: "!", colorCode: "\u001b[38;2;255;0;0m"},
 }
 
+var Uptime = time.Now()
+
 func Err(group LogGroup, err error, message ...interface{}) {
 	log(group, prefix["Error"], 1, message...)
 	if err != nil {

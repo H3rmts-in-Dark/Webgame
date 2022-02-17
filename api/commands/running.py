@@ -1,12 +1,10 @@
 import urllib.error
+from typing import Union, Literal
 
 import click
-from rich.console import Console
 
 from GQL import Query
-from Globlals import main
-
-console = Console()
+from Globlals import main, pr, log
 
 
 @main.command("running")
@@ -16,11 +14,15 @@ console = Console()
 @click.option('-v', '--verbose', 'verbosity', flag_value='verbose', is_flag=True, help="print more information about request")
 @click.option('-q', '--quiet', 'verbosity', flag_value='quiet', is_flag=True, help="remove all printed information from request")
 @click.option('--https/--http', type=bool, default=True, show_default=True, help="Use https or http as connection")
-def _running(host: str, port: int, timeout: int, verbosity: str, https: bool):
-	data = Query("running.gql", host, port, https, timeout, verbosity == 'verbose', verbosity == 'quiet')
-	if type(data) is urllib.error.URLError:
-		console.print("Server not running", style="bold red")
-	else:
-		if verbosity == 'verbose':
-			console.print(f"query:{data}", style="bold")
-		console.print("Server running", style="bold green")
+def _running(host: str, port: int, timeout: int, verbosity: Union[Literal["verbose", "quiet"], None], https: bool):
+    data = Query("running.gql", host, port, https, timeout, verbosity)
+    if type(data) is urllib.error.URLError:
+        if data.reason.strerror == "Connection refused":
+            pr(verbosity, f"error:{data.reason}", style="red")
+            pr(verbosity, "Server not running", style="bold red")
+        else:
+            log(verbosity, f"error:{data.reason}", style="red")
+            pr(verbosity, "Error connecting to Server", style="bold red")
+    else:
+        log(verbosity, f"query:{data}")
+        pr(verbosity, "Server running", style="bold green")

@@ -17,7 +17,6 @@ import (
 	"Server/util"
 
 	"github.com/gocql/gocql"
-	"github.com/mitchellh/mapstructure"
 	"github.com/scylladb/gocqlx/v2"
 )
 
@@ -57,7 +56,7 @@ func (r *queryResolver) AdminSettings(ctx context.Context) ([]*model.Setting, er
 }
 
 func (r *queryResolver) Ping(ctx context.Context) (*model.Ping, error) {
-	panic("not implemented")
+	return &model.Ping{Uptime: int(time.Since(logging.Uptime).Seconds())}, nil
 }
 
 func (r *queryResolver) AccessLogs(ctx context.Context) ([]*model.Access, error) {
@@ -216,22 +215,6 @@ type queryResolver struct {
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
-
-func (r Resolver) createFromMap(data map[string]interface{}, int interface{}) error {
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		DecodeHook: model.Decode,
-		TagName:    "json",
-		Result:     int,
-	})
-	if err != nil {
-		return err
-	}
-	err = decoder.Decode(data)
-	if err != nil {
-		return nil
-	}
-	return nil
-}
 
 func GenResolver() *Resolver {
 	return &Resolver{
