@@ -57,15 +57,27 @@ module.exports = {
 	module: {
 		rules: [
 			{
+				test: /\.svg$/,
+				use: {
+					loader: 'svg-url-loader',
+					options: {},
+				},
+			},
+			{
+				test: /\.svelte$/,
+				use: {
+					loader: 'svelte-loader',
+					options: {}
+				},
+			},
+			{
 				test: /\.ts$/i,
-				use: [
-					{
-						loader: "ts-loader",
-						options: {
-							transpileOnly: mode === Modes.Development,   // improves speed
-						}
+				use: {
+					loader: "ts-loader",
+					options: {
+						transpileOnly: mode === Modes.Development,   // improves speed
 					}
-				]
+				}
 			},
 			{
 				test: /\.(css|sass)$/,
@@ -95,14 +107,12 @@ module.exports = {
 			},
 			{
 				test: /\.html$/i,
-				use: [
-					{
-						loader: "html-loader",
-						options: {
-							minimize: mode === Modes.Production,
-						}
+				use: {
+					loader: "html-loader",
+					options: {
+						minimize: mode === Modes.Production,
 					}
-				]
+				}
 			},
 		],
 	},

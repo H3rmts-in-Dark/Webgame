@@ -1,22 +1,8 @@
-import "CSS/main.sass";
-
-
-// @ts-ignore
-import * as login from './login.ts'
+// import "CSS/main.sass";
 
 // @ts-ignore
-import runWASM from './wasmtest.ts'
+import App from '../svelte/main.svelte';
 
-
-(() => {
-	console.debug(login)
-	let ip = login.checkLoggedIn()
-	if(ip) {
-		console.log(`passed login with ip:${ip}`)
-		login.addEvents()
-		runWASM()
-	} else {
-		console.log("opening login")
-		login.createLoginDiv()
-	}
-})()
+new App({
+	target: document.getElementById('root'),
+})
