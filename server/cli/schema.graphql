@@ -1,0 +1,53 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+directive @extends on OBJECT
+
+directive @external on FIELD_DEFINITION
+
+directive @key(fields: _FieldSet!) on OBJECT | INTERFACE
+
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+
+type Mutation {
+    changeAdmin(setting: NewSetting!, validation: String!): Return!
+    changeSetting(setting: NewSetting!): Return!
+    reloadSite(site: String!, validation: String!): Return!
+    reloadSites(validation: String!): Return!
+}
+
+type Query {
+    ping: Ping!
+    adminSettings: [Setting!]
+    settings: [Setting!]
+}
+
+type Return {
+    info: String!
+    ok: Boolean!
+}
+
+type Setting {
+    admin: Boolean!
+    name: String!
+    value: String!
+}
+
+type Ping {
+    uptime: Int!
+}
+
+scalar _Any
+
+scalar _FieldSet
+
+input NewSetting {
+    name: String!
+    value: String!
+}
