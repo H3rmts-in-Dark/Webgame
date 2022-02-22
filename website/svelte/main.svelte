@@ -1,11 +1,5 @@
-<script>
-	export let name = "name missing";
-	
-	let value = name;
-	import 'focus-visible';
-	
-	let checked = true;
-	
+<script lang="ts">
+	import Test from "../ts/wasm";
 	import Dialog from './dialog.svelte';
 	import TODO from './todo.svelte'
 	import Scale from './scale.svelte'

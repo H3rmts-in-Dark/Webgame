@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	let todos = [
 		{done: true, text: 'finish Svelte tutorial'},
 		{done: false, text: 'build an app'},

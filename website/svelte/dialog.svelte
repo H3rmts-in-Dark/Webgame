@@ -1,6 +1,6 @@
 <!-- https://svelte-mui.vercel.app/ -->
 
-<script>
+<script lang="ts">
 	export let visible = false;
 	export let username = '';
 	export let password = '';

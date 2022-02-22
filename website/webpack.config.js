@@ -43,16 +43,11 @@ module.exports = {
 			filename: "index.css",
 		})
 	],
-	resolve: {
-		alias: {  // shorten imports from ../html/test.html to HTML/test.html
-			// IDE gets confused with functions in TS imports, but can resolve the file so only css and html
-			CSS: path.resolve(__dirname, "css"),
-			HTML: path.resolve(__dirname, "html"),
-//			TS: path.resolve(__dirname, "ts")
-		}
-	},
 	experiments: {
 		asyncWebAssembly: true,
+	},
+	resolve: {
+		extensions: ['.js', '.wasm', '.ts', '.css', '.svg']
 	},
 	module: {
 		rules: [
@@ -60,14 +55,22 @@ module.exports = {
 				test: /\.svg$/,
 				use: {
 					loader: 'svg-url-loader',
-					options: {},
+					options: {
+						encoding: "utf-8",
+					},
 				},
 			},
 			{
 				test: /\.svelte$/,
 				use: {
 					loader: 'svelte-loader',
-					options: {}
+					options: {
+						emitCss: mode === Modes.Production,
+						sourceMap: true,
+						preprocess: require('svelte-preprocess')({
+
+						})
+					}
 				},
 			},
 			{
