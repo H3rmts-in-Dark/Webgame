@@ -67,9 +67,7 @@ module.exports = {
 					options: {
 						emitCss: mode === Modes.Production,
 						sourceMap: true,
-						preprocess: require('svelte-preprocess')({
-
-						})
+						preprocess: require('svelte-preprocess')({})
 					}
 				},
 			},
@@ -100,13 +98,18 @@ module.exports = {
 							sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
 						},
 					},
-					{
-						loader: "sass-loader",
-						options: {
-							sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
-						}
-					}
+
 				],
+			},
+			{
+				test: /\.sass$/,
+				use: {
+					loader: "sass-loader",
+					options: {
+						sourceMap: mode === Modes.Development,   // generates the ./css in devtools (origin files)
+					}
+				}
+
 			},
 			{
 				test: /\.html$/i,

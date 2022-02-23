@@ -1,56 +1,66 @@
 <script lang="ts">
 	import Test from "../ts/wasm";
-	import Dialog from './dialog.svelte';
 	import TODO from './todo.svelte'
 	import Scale from './scale.svelte'
+	import Count from "./counter.svelte";
 	import MenuDropDown from '../img/menu.svg'
-	
-	console.log(MenuDropDown)
-	
-	import {Button, Checkbox, Icon, Menu, Menuitem, Textfield} from "svelte-mui";
+
+	import Button from '@smui/button'
+	import Textfield from '@smui/textfield';
+	import IconButton, {Icon} from '@smui/icon-button';
+	import Checkbox from '@smui/checkbox';
+	import {Svg} from '@smui/common/elements';
+	import CharacterCounter from "@smui/textfield/character-counter";
+
+
+	export let name = "name missing";
+
+	let value: string = name;
+
+	let checked: boolean = true;
+
+	console.log(MenuDropDown, MenuDropDown.length)
+
+	let svg = MenuDropDown
+
+	Test()
 </script>
 
-<style>
-    h1 {
-        color: aqua;
-    }
-</style>
+<div>
+	<h1>Hello {value}!</h1>
+	<Textfield bind:value class="shaped-outlined" label="Name" variant="outlined" prefix="$" input$maxlength={18}
+				  style="width: 100%;"
+				  helperLine$style="width: 100%;">
+		<CharacterCounter slot="helper">0 / 18</CharacterCounter>
+	</Textfield>
+</div>
 
-<Textfield bind:value filled label="Name" message="Enter your name"/>
 
-<h1>Hello {value}!</h1>
-
-<Checkbox bind:checked>Checkbox</Checkbox>
+<Checkbox bind:checked indeterminate={checked === null} input$required/>
 
 <p>Checkbox is <strong>{checked ? 'checked' : 'unchecked'}</strong></p>
 
-<Button outlined shaped color="Red" on:click={() => { checked = !checked }}>
+<Button variant="raised" color="secondary" on:click={() => { checked = !checked }}>
 	Inverse
 </Button>
 
-
-<Dialog visible={true} username={"test"} password={"test"} onclose={(username, passwd) => {console.log(username, passwd)}}/>
+<Button variant="raised" color="primary" on:click={() => { checked = !checked }}>
+	Inverse2
+</Button>
 
 <div style="display: flex; gap: 50px; flex-direction: column">
 	<TODO/>
 	<Scale/>
-	
-	
-	<Menu origin="top left">
-		<div slot="activator">
-			<Button color="primary" outlined ripple={false} style="padding-right: 4px;">
-				<span>Menu</span>
-				<Icon path={MenuDropDown}/>
-			</Button>
-		</div>
-		
-		<Menuitem on:click={()=>{console.log("Refresh")}}>Refresh</Menuitem>
-		<Menuitem on:click={()=>{console.log("Send feedback")}}>Send feedback</Menuitem>
-		<hr/>
-		<Menuitem on:click={()=>{console.log("Settings")}} disabled>Settings</Menuitem>
-		<Menuitem on:click={()=>{console.log("Help")}}>Help</Menuitem>
-		<Menuitem on:click={()=>{console.log("Sign In")}}>Sign In</Menuitem>
-	</Menu>
+
+
+	<Count init='2'/>
+	<br>
 </div>
 
 
+<div style="display: flex; align-items: center;">
+	<IconButton>
+		<Icon component={Svg} bind:svg viewBox="0 0 24 24">
+		</Icon>
+	</IconButton>
+</div>

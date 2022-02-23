@@ -4,3 +4,4 @@ pkg/
 site/
 webassembly/target/
 webassembly/Cargo.lock
+css/smui.css
