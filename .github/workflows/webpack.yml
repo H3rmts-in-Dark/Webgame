@@ -17,7 +17,7 @@ jobs:
         node-version: 17.3
 
     - name: Install
-      run: cd website && npm install
+      run: cd website && npm install && npm run theme
         
     - name: Build
       run: cd website && npx webpack
