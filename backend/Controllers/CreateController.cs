@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers;
 
 [ApiController]
+[ServerHeader]
 [Route("create")]
 public class CreateController : ControllerBase {
 	private readonly IDatabase _database;
