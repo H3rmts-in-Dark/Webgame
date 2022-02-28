@@ -202,7 +202,7 @@ type config struct {
 const (
 	ConfigFile = "server.yml"
 	CertsFile  = "certs/cert.pem"
-	KeyFile    = "certs/key.pem"
+	KeyFile    = "certs/key.key"
 )
 
 var conf config
