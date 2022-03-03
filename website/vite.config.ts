@@ -6,6 +6,7 @@ import {svelte} from '@sveltejs/vite-plugin-svelte'
 export default defineConfig({
 	root: './',
 	build: {
+		target:['edge90','chrome90','firefox90','safari15'],
 		minify: false
 	},
 	plugins: [
