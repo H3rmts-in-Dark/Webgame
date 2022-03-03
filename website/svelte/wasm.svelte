@@ -1,3 +1,10 @@
+<script lang="ts">
+	import {onMount} from 'svelte';
+	import Test from "../ts/wasmtest";
+
+	onMount(Test)
+</script>
+
 <div>
 	<button id="play-pause"></button>
 	<br>
@@ -14,3 +21,8 @@
 	<br>
 	<canvas id="canvas"></canvas>
 </div>
+
+
+<!--<style lang="sass">
+
+</style>-->

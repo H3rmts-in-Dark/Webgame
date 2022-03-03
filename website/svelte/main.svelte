@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Test from "../ts/wasm";
 	import TODO from './todo.svelte'
 	import Scale from './scale.svelte'
 	import Count from "./counter.svelte";
 	import MenuDropDown from '../img/menu.svg'
+	import Wasm from "./wasm.svelte";
 
 	import Button from '@smui/button'
 	import Textfield from '@smui/textfield';
@@ -23,7 +23,6 @@
 
 	let svg = MenuDropDown
 
-	Test()
 </script>
 
 <div>
@@ -64,3 +63,5 @@
 		</Icon>
 	</IconButton>
 </div>
+
+<Wasm/>
