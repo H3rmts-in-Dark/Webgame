@@ -1,3 +1,4 @@
+using backend.dto;
 using backend.Entities;
 using backend.Settings;
 using MongoDB.Bson;
@@ -15,6 +16,10 @@ public class Database : IDatabase {
 
 	public async Task<List<Game>> GetGames() {
 		return await _gamesCollection.Find(new BsonDocumentFilterDefinition<Game>(new BsonDocument())).ToListAsync();
+	}
+
+	public async Task<Game> GetGame(Guid id) {
+		return await _gamesCollection.Find(Builders<Game>.Filter.Eq(i => i.Id, id)).SingleOrDefaultAsync();
 	}
 
 	public async Task CreateGame(Game game) {

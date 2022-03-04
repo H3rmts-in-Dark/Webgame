@@ -1,3 +1,4 @@
+using backend.dto;
 using backend.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,7 +6,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [ServerHeader]
-[Route("create")]
+[Route("games")]
 public class CreateController : ControllerBase {
 	private readonly IDatabase _database;
 
@@ -14,14 +15,19 @@ public class CreateController : ControllerBase {
 	}
 
 	[HttpPost("create")]
-	public async Task<ActionResult<Game>> Create() {
-		var item = new Game(Guid.NewGuid(), "test");
-		await _database.CreateGame(item);
-		return item;
+	public async Task<GameDto> Create(CreateGameDto create) {
+		var game = Game.FromDto(create);
+		await _database.CreateGame(game);
+		return game.ToDto();
 	}
 
-	[HttpPost("get")]
-	public async Task<ActionResult<List<Game>>> Get() {
-		return await _database.GetGames();
+	[HttpGet("all")]
+	public async Task<IEnumerable<GameDto>> All() {
+		return (await _database.GetGames()).Select(item => item.ToDto());
+	}
+
+	[HttpGet("{id}")]
+	public async Task<GameDto> Get(Guid id) {
+		return (await _database.GetGame(id)).ToDto();
 	}
 }
