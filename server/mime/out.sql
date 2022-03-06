@@ -1,3 +1,4 @@
+TRUNCATE server.mime;
 INSERT INTO server.mime (extension, mimetype) VALUES ('ez$', 'application/andrew-inset');
 INSERT INTO server.mime (extension, mimetype) VALUES ('aw$', 'application/applixware');
 INSERT INTO server.mime (extension, mimetype) VALUES ('atom$', 'application/atom+xml');

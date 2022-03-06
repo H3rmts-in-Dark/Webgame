@@ -1,6 +1,9 @@
 package logging
 
 import (
+	"fmt"
+	"time"
+
 	"Server/util"
 
 	"github.com/gocql/gocql"
@@ -31,8 +34,9 @@ func DBInit() {
 }
 
 func LogAccess(code int, duration int, searchDuration int, error error, writeErr error, https bool, method string, uri string) {
+	//language=SQL
 	query := session.Query(
-		"INSERT INTO access (id, uri, code, duration, searchDuration, method, https, error, writeErr) VALUES (?,?,?,?,?,?,?,?,?)",
+		"INSERT INTO server.access (id, uri, code, duration, searchDuration, method, https, error, writeErr) VALUES (?,?,?,?,?,?,?,?,?)",
 		gocql.TimeUUID(), uri, code, duration, searchDuration, method, https, (func() interface{} {
 			if error != nil {
 				return error.Error()
@@ -54,8 +58,9 @@ func LogAccess(code int, duration int, searchDuration int, error error, writeErr
 }
 
 func LogAPIAccess(duration int, error error, request string) {
+	//language=SQL
 	query := session.Query(
-		"INSERT INTO apiaccess (id, duration, error, request) VALUES (?,?,?,?)",
+		"INSERT INTO server.apiaccess (id, duration, error, request) VALUES (?,?,?,?)",
 		gocql.TimeUUID(), duration, (func() interface{} {
 			if error != nil {
 				return error.Error()
@@ -68,4 +73,26 @@ func LogAPIAccess(duration int, error error, request string) {
 		Err(DB, err, "Error inserting accessapi into DB")
 		Debug(query.Context())
 	}
+}
+
+func LoadMimeTypes() map[string]string {
+	now := time.Now()
+	//language=SQL
+	iter := session.Query(
+		"SELECT extension, mimetype FROM server.mime",
+	).Iter()
+	types := make(map[string]string, iter.NumRows())
+	for {
+		row := make(map[string]interface{})
+		if !iter.MapScan(row) {
+			break
+		}
+		types[fmt.Sprintf("%s", row["extension"])] = fmt.Sprintf("%s", row["mimetype"])
+	}
+	if err := iter.Close(); err != nil {
+		Err(DB, err, "Error loading Mime from DB")
+		Debug(iter.Warnings())
+	}
+	Debug(DB, "Loaded Mime in", int(time.Since(now).Milliseconds()), "ms")
+	return types
 }

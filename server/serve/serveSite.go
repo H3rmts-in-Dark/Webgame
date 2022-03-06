@@ -157,8 +157,10 @@ func CreateServe() http.HandlerFunc {
 		} else {
 			fileSplit := strings.Split(r.URL.Path[1:], ".")
 			filetype := fileSplit[len(fileSplit)-1]
-			if val, exists := util.GetConfig().ContentTypes[filetype]; exists == true {
+			if val, exists := getMime(filetype); exists {
 				w.Header().Set("Content-Type", val)
+			} else {
+				logging.Log(logging.SERVE, "unknown MimeType", filetype)
 			}
 		}
 		searchTime := time.Now()

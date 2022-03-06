@@ -174,13 +174,6 @@ type config struct {
 	// see Logging
 	Logging Logging `yaml:"Logging"`
 
-	// map of file extensions with the corresponding Content-Type
-	//
-	// {"css": "text/css"} <-- example for .css files
-	//
-	// default: {}
-	ContentTypes map[string]string `yaml:"ContentTypes"`
-
 	// which site to serve if no path was specified
 	// most likely be index.html
 	//
@@ -226,7 +219,7 @@ func LoadConfig() {
 		panic(err)
 	}
 
-	// load some values from env
+	// load some values from env (for docker)
 	if os.Getenv("PortHTTP") != "" {
 		port, err := strconv.Atoi(os.Getenv("PortHTTP"))
 		if err != nil {
@@ -268,7 +261,7 @@ func ValidateConfig() {
 }
 
 func defaultConfig() {
-	conf.PortHTTP = 8080 // TODO revert
+	conf.PortHTTP = 8080
 	conf.PortHTTPS = 8443
 	conf.ApiPort = 18266
 
@@ -293,7 +286,6 @@ func defaultConfig() {
 	}
 
 	conf.Debug = false
-	conf.ContentTypes = map[string]string{}
 
 	conf.Database = DB{
 		Host:     "no host provided",
