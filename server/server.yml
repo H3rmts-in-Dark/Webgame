@@ -21,12 +21,7 @@ Database:
   Password: 'root'
   Database: 'server'
 
-Debug: false
-ContentTypes:
-  html: 'text/html'
-  ico: 'image/x-icon'
-  wasm: 'application/wasm'
-  js: 'application/js'
+Debug: true
 
 Logging:
   LogPrefix: true

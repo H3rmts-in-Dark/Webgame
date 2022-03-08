@@ -28,6 +28,7 @@ func main() {
 			panic(err)
 		}
 	}
+	serve.LoadMime()
 
 	serv := serve.CreateServe()
 

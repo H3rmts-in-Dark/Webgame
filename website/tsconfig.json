@@ -1,11 +1,14 @@
 {
+	"extends": "@tsconfig/svelte/tsconfig.json",
 	"compilerOptions": {
-		"target": "ES6",
+		"target": "esnext",
+		"useDefineForClassFields": true,
+		"module": "esnext",
+		"resolveJsonModule": true,
+		"baseUrl": ".",
 		"allowJs": true,
-		"sourceMap": true,
-		"lib": [
-			"DOM",
-			"ES2020"
-		]
-	}
+		"checkJs": true
+	},
+	"include": ["ts/**/*.d.ts", "ts/**/*.ts", "ts/**/*.js", "ts/**/*.svelte"],
+	"references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,7 +1,5 @@
 package graph
 
-// THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
-
 //go:generate go get -d github.com/99designs/gqlgen
 //go:generate go run github.com/99designs/gqlgen generate
 
@@ -61,7 +59,8 @@ func (r *queryResolver) Ping(ctx context.Context) (*model.Ping, error) {
 
 func (r *queryResolver) AccessLogs(ctx context.Context) ([]*model.Access, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM access").Iter()
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.access").Iter()
 	logs := make([]*model.Access, iter.Iter.NumRows())
 	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
@@ -80,7 +79,8 @@ func (r *queryResolver) AccessLogs(ctx context.Context) ([]*model.Access, error)
 
 func (r *queryResolver) AccessLogsLimit(ctx context.Context, limit int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT id, code, duration, error, https, method, searchduration, uri, writeerr FROM access LIMIT ?", limit).Iter()
+	//language=SQL
+	iter := r.Query("SELECT id, code, duration, error, https, method, searchduration, uri, writeerr FROM server.access LIMIT ?", limit).Iter()
 	logging.Log(logging.GRAPHQL, int(time.Since(now)))
 	logs := make([]*model.Access, iter.Iter.NumRows())
 	for i := 0; i < iter.Iter.NumRows(); i++ {
@@ -99,7 +99,8 @@ func (r *queryResolver) AccessLogsLimit(ctx context.Context, limit int) ([]*mode
 }
 func (r *queryResolver) AccessLogsByTime(ctx context.Context, from int, to int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM access WHERE id >= ? AND id <= ? ALLOW FILTERING",
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.access WHERE id >= ? AND id <= ? ALLOW FILTERING",
 		gocql.MinTimeUUID(time.Unix(int64(from), 0)),
 		gocql.MaxTimeUUID(time.Unix(int64(to), 0)),
 	).Iter()
@@ -121,7 +122,8 @@ func (r *queryResolver) AccessLogsByTime(ctx context.Context, from int, to int) 
 
 func (r *queryResolver) AccessLogsByCode(ctx context.Context, from int, to int) ([]*model.Access, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM access WHERE code >= ? AND code <= ? ALLOW FILTERING", from, to).Iter()
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.access WHERE code >= ? AND code <= ? ALLOW FILTERING", from, to).Iter()
 	logs := make([]*model.Access, iter.Iter.NumRows())
 	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.Access{}
@@ -140,7 +142,8 @@ func (r *queryResolver) AccessLogsByCode(ctx context.Context, from int, to int) 
 
 func (r *queryResolver) AccessAPILogs(ctx context.Context) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM apiaccess").Iter()
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.apiaccess").Iter()
 	logs := make([]*model.APIAccess, iter.Iter.NumRows())
 	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.APIAccess{}
@@ -159,7 +162,8 @@ func (r *queryResolver) AccessAPILogs(ctx context.Context) ([]*model.APIAccess, 
 
 func (r *queryResolver) AccessAPILogsLimit(ctx context.Context, limit int) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM apiaccess LIMIT ?", limit).Iter()
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.apiaccess LIMIT ?", limit).Iter()
 	logs := make([]*model.APIAccess, iter.Iter.NumRows())
 	for i := 0; i < iter.Iter.NumRows(); i++ {
 		log := model.APIAccess{}
@@ -178,7 +182,8 @@ func (r *queryResolver) AccessAPILogsLimit(ctx context.Context, limit int) ([]*m
 
 func (r *queryResolver) AccessAPILogsByTime(ctx context.Context, from int, to int) ([]*model.APIAccess, error) {
 	now := time.Now()
-	iter := Query(r.session, "SELECT * FROM apiaccess WHERE id >= %d AND id <= %d ALLOW FILTERING",
+	//language=SQL
+	iter := r.Query("SELECT * FROM server.apiaccess WHERE id >= ? AND id <= ? ALLOW FILTERING",
 		gocql.MinTimeUUID(time.Unix(int64(from), 0)),
 		gocql.MaxTimeUUID(time.Unix(int64(to), 0)),
 	).Iter()
@@ -211,10 +216,14 @@ type queryResolver struct {
 }
 
 // // Mutation returns generated.MutationResolver implementation.
-// func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// func (r *Resolver) Mutation() generated.MutationResolver {
+//    return &mutationResolver{r}
+// }
 
 // Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() generated.QueryResolver {
+	return &queryResolver{r}
+}
 
 func GenResolver() *Resolver {
 	return &Resolver{
@@ -222,6 +231,6 @@ func GenResolver() *Resolver {
 	}
 }
 
-func Query(session *gocqlx.Session, stmt string, params ...interface{}) *gocqlx.Queryx {
-	return session.Query(stmt, nil).Bind(params...)
+func (r *queryResolver) Query(stmt string, params ...interface{}) *gocqlx.Queryx {
+	return r.session.Query(stmt, nil).Bind(params...)
 }

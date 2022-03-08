@@ -18,6 +18,9 @@ jobs:
 
     - name: Install
       run: cd website && npm install && npm run theme
+      
+    - name: WebAssembly
+      run: cd website && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && npm run wasm
         
     - name: Build
-      run: cd website && npx webpack
+      run: cd website && npm run build
