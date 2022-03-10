@@ -1,6 +1,5 @@
 import dataclasses
 import logging
-import urllib.error
 from typing import Optional
 from typing import Union, Literal
 
@@ -8,11 +7,10 @@ import click
 import rich
 from click import Context
 from rich import console
-from sgqlc.endpoint.http import HTTPEndpoint
 
 c = console.Console()
 
-Verbosity = Union[Literal["verbose", "quiet"], None]
+Verbosity = Union[Literal["verbose", "quiet", "debug"], None]
 
 
 @dataclasses.dataclass
@@ -22,9 +20,6 @@ class Container:
 	timeout: int
 	verbosity: Verbosity
 	https: bool
-	
-	def genQuery(self, gql):
-		return Query(gql, self.host, self.port, self.https, self.timeout, self.verbosity)
 
 
 @click.group()
@@ -38,12 +33,12 @@ class Container:
 @click.pass_context
 def main(ctx: Context, host: str, port: int, timeout: int, verbosity: Verbosity, https: bool):
 	"""
-	CLI to interact with golang server
+	CLI to interact with goServer
 	"""
 	ctx.obj = Container(host, port, timeout, verbosity, https)
 
 
-def pr(verbosity: Union[Literal["verbose", "quiet"], None], msg: str, *args, style: Optional[Union[str, rich.console.Style]] = None):
+def pr(msg: str, *args, style: Optional[Union[str, rich.console.Style]] = None):
 	"""
 	prints message with style provided
 
@@ -105,15 +100,3 @@ class Logger(logging.Logger):
 	def log(self, msg: str, *args, **kwargs) -> None:
 		if self.verbosity != "clean":
 			log(self.verbosity, msg % args, skip=1)
-
-
-# https://github.com/profusion/sgqlc
-def Query(query: str, host: str, port: int, https: bool, timeout: int, verbose: Union[Literal["verbose", "quiet"], None]) -> Union[
-	dict, urllib.error.URLError]:
-	endpoint = HTTPEndpoint("{2}://{0}:{1}/query".format(host, port, "https" if https else "http"), timeout=timeout)
-	log(verbose, f"sending to {endpoint.url} with timeout {endpoint.timeout}")
-	endpoint.logger = Logger(verbose)
-	try:
-		return endpoint(query, timeout=timeout)
-	except urllib.error.URLError as ex:
-		return ex
