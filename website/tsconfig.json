@@ -5,10 +5,8 @@
 		"useDefineForClassFields": true,
 		"module": "esnext",
 		"resolveJsonModule": true,
-		"baseUrl": ".",
 		"allowJs": true,
 		"checkJs": true
 	},
-	"include": ["ts/**/*.d.ts", "ts/**/*.ts", "ts/**/*.js", "ts/**/*.svelte"],
-	"references": [{ "path": "./tsconfig.node.json" }]
+	"include": ["ts/**/*.ts", "ts/**/*.js", "ts/**/*.svelte"]
 }
