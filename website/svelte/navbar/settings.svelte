@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import SvgIcon from "../SvgIcon.svelte";
 	import {mdiCogOutline} from "@mdi/js";
 

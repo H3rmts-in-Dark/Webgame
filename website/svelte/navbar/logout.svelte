@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import SvgIcon from "../SvgIcon.svelte";
 	import {mdiLogout} from "@mdi/js";
 
