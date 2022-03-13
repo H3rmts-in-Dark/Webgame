@@ -1,28 +1,28 @@
 @use '@material/theme/color-palette';
 
-$primary: #0f2ee5; // prim background
-$on-primary: #e59a0f; // prim background
+$primary: #28d3a5; // prim background
+$on-primary: #27725c; // prim background
 $secondary: #e50f61; // sec background
-$on-secondary: #ffffff; // sec background
-$error: color-palette.$red-300;
-$on-error: color-palette.$red-a700;
-$surface: #1c1b1b; // Background
-$on-surface: #2ca5de; // Textfield inner Text and border
+$on-secondary: #5b1f36; // sec background
+$surface: #1d232a; // Background
+$on-surface: #18a8ec; // Textfield inner Text and border
 
 @use '@material/theme/index' with (
   $primary: $primary,
   $on-primary: $on-primary,
   $secondary: $secondary,
   $on-secondary: $on-secondary,
-  $error: $error,
-  $on-error: $on-error,
   $surface: $surface,
   $on-surface: $on-surface,
 );
 
 
-html,
-body {
+html, body {
 	background-color: $surface;
 	color: $on-surface;
+}
+
+
+:root {
+	--mdc-ripple-color: rgba(0, 0, 0, 10);
 }
