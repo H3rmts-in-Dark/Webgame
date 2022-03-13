@@ -29,7 +29,7 @@
 	<input id="navbarfocus" class="hidden"/>
 	<div class="mdc-top-app-bar__row" style="height: 70px">
 		<section id="mainPage" class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-			<img class="icon" class:roundicon={!hovered} src="../img/favicon.ico" alt="favicon">
+			<img class="icon" class:roundedIcon={!hovered} src="../img/favicon.ico" alt="favicon">
 			<h3 style="font-size: 2em">Webgame</h3>
 		</section>
 		<section class:hide={!hovered} class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">

@@ -1,11 +1,22 @@
-@use '@material/theme/color-palette';
+// prim foreground
+$primary: #28d3a5;
 
-$primary: #28d3a5; // prim background
-$on-primary: #27725c; // prim background
-$secondary: #e50f61; // sec background
-$on-secondary: #5b1f36; // sec background
-$surface: #1d232a; // Background
-$on-surface: #18a8ec; // Textfield inner Text and border
+// prim background
+$on-primary: #27725c;
+
+// sec foreground
+$secondary: #e50f61;
+
+// sec background
+$on-secondary: #5b1f36;
+
+// Background
+$surface: #1d232a;
+
+// Textfield inner Text and border
+$on-surface: #18a8ec;
+
+@use '@material/theme/color-palette';
 
 @use '@material/theme/index' with (
   $primary: $primary,
@@ -25,4 +36,11 @@ html, body {
 
 :root {
 	--mdc-ripple-color: rgba(0, 0, 0, 10);
+
+	--primary: $primary;
+	--on-primary: $on-primary;
+	--secondary: $secondary;
+	--on-secondary: $on-secondary;
+	--surface: $surface;
+	--on-surface: $on-surface;
 }

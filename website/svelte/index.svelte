@@ -1,14 +1,14 @@
 <script>
-	import Header from './navbar/navbar.svelte'
+	import Navbar from './navbar/navbar.svelte'
+	import Games from "./games.svelte"
 </script>
 
 <div id="svelte-root">
-	<Header/>
+	<Navbar/>
 
 	<h1 style="padding-top: 70px">Click me</h1>
-	<button>Test</button>
 
-	
+	<Games/>
 </div>
 
 <style global lang="sass" src="../css/global.sass"></style>
