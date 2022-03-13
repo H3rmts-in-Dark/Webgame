@@ -2,13 +2,27 @@ using backend.dto;
 
 namespace backend.Entities;
 
-public record Game(Guid Id, string Code, uint Limit) {
+public class Game {
+	public Guid   Id;
+	public bool   Visible;
+	public string Code;
+	public ushort Limit;
+	public string Name;
+
+	public Game(Guid id, bool visible, string code, ushort limit, string name) {
+		Id      = id;
+		Visible = visible;
+		Code    = code;
+		Limit   = limit;
+		Name    = name;
+	}
+
 	public static Game FromDto(CreateGameDto create) {
-		var (code, limit) = create;
-		return new Game(Guid.NewGuid(), code, limit);
+		var (visible, code, limit, name) = create;
+		return new Game(Guid.NewGuid(), visible, code, limit, name);
 	}
 
 	public GameDto ToDto() {
-		return new GameDto(Id, Code, Limit);
+		return new GameDto(Id, Limit, Name);
 	}
 }

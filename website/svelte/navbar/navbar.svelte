@@ -40,28 +40,42 @@
 	</div>
 </div>
 
-<style lang="sass">
-	#navbar
-		overflow: hidden
-		height: 70px
+<div id="navbaroffset"></div>
 
-		.hide
-			opacity: 0
-			transition: 0.3s
+<style lang="scss">
+	@import "../css/vars";
 
-			gap: 10px
 
-		section
-			gap: 10px
-			padding: 6px
-			transition: 0.3s
+	#navbar {
+		overflow: hidden;
+		height: 70px;
 
-			.icon
-				height: 100%
-				border-radius: 8px 8px 8px 8px
-				transition: 0.1s
+		.hide {
+			opacity: 0;
+			transition: 0.3s;
 
-			.roundedIcon
-				border-radius: 8px 8px 24px 8px
-				transition: 0.5s
+			gap: 10px;
+		}
+
+		section {
+			gap: 10px;
+			padding: 6px;
+			transition: 0.3s;
+
+			.icon {
+				height: 100%;
+				border-radius: 8px 8px 8px 8px;
+				transition: 0.1s;
+			}
+
+			.roundedIcon {
+				border-radius: 8px 8px 24px 8px;
+				transition: 0.5s;
+			}
+		}
+	}
+
+	#navbaroffset {
+		padding-top: $navbar-height;
+	}
 </style>

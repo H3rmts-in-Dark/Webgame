@@ -1,0 +1,28 @@
+@import "../css/vars";
+
+#svelte-root {
+	//width: 100vw
+	//height: 100vh
+	//position: absolute
+}
+
+html, body {
+	margin: 0;
+}
+
+.hidden {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+
+.mdc-top-app-bar--short-collapsed {
+	width: $navbar-height;
+	height: $navbar-height;
+}
+
+.mdc-top-app-bar {
+	color: $on-primary;
+	background: $primary;
+}

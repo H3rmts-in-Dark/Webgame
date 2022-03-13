@@ -1,3 +1,3 @@
 namespace backend.dto;
 
-public record CreateGameDto(string Code, uint Limit);
+public record CreateGameDto(bool Visible, string Code, ushort Limit, string Name);

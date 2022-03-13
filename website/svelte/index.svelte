@@ -5,10 +5,7 @@
 
 <div id="svelte-root">
 	<Navbar/>
-
-	<h1 style="padding-top: 70px">Click me</h1>
-
 	<Games/>
 </div>
 
-<style global lang="sass" src="../css/global.sass"></style>
+<style global lang="scss" src="../css/global.scss"></style>

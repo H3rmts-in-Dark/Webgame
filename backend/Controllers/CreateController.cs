@@ -26,7 +26,7 @@ public class CreateController : ControllerBase {
 		return (await _database.GetGames()).Select(item => item.ToDto());
 	}
 
-	[HttpGet("{id}")]
+	[HttpGet("{id:guid}")]
 	public async Task<GameDto> Get(Guid id) {
 		return (await _database.GetGame(id)).ToDto();
 	}
