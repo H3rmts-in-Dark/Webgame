@@ -4,6 +4,10 @@
 
 	let games = loadGames()
 
+	let load = () => {
+		games = loadGames()
+	}
+
 	let join = (game) => {
 		console.log(`joining game`)
 		console.table(game)
@@ -12,6 +16,11 @@
 
 <div style="display: flex; flex-direction: column; align-items: center">
 	<h1>Games</h1>
+	<div id="scan">
+		<Button variant="raised" color="primary" on:click={load}>
+			Scan
+		</Button>
+	</div>
 	<div id="games">
 		{#await games}
 			<h2>Loading</h2>
@@ -19,7 +28,7 @@
 			{#each games as game}
 				<div class="game">
 					<h2>{game.name}</h2>
-					<Button variant="raised" color="secondary" on:click={() => {join(game)}} class="button-shaped-notch">
+					<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
 						Join
 					</Button>
 				</div>
@@ -32,6 +41,12 @@
 
 <style lang="scss">
 	@import "../css/vars";
+
+	#scan {
+		position: absolute;
+		padding-top: 20px;
+		right: 20px;
+	}
 
 	.game {
 		background: $primary;
