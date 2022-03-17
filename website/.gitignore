@@ -1,11 +1,6 @@
-package-lock.json
 node_modules/
 
-pkg/
-site/
+src/css/smui.css
+src/wasm/
 
-webassembly/target/
-webassembly/Cargo.lock
-
-css/smui.css
-dist/
+.svelte-kit/

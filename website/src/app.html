@@ -2,18 +2,17 @@
 <html lang="en">
 <head>
 	<title>Webgame</title>
+	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="This is a webgame."/>
-	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="../static/favicon.ico">
 	<!--	 Material Icons -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
 	<!--	 Roboto-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700"/>
-<!--	<link rel="stylesheet" href="node_modules/svelte-material-ui/bare.css"/>-->
+	%svelte.head%
 </head>
 <body>
-<div id="root"></div>
-<script type="module" src="/ts/index.js"></script>
+%svelte.body%
 </body>
-
 </html>

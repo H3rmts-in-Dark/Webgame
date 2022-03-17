@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {loadGames} from "../ts/game"
+	import {loadGames} from "./game"
 	import Button from "@smui/button";
 
 	let games = loadGames()
@@ -40,7 +40,7 @@
 </div>
 
 <style lang="scss">
-	@import "../css/vars";
+	@import "src/css/vars";
 
 	#scan {
 		position: absolute;

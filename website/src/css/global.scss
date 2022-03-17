@@ -1,0 +1,18 @@
+@import "./vars";
+
+#svelte-root {
+	//width: 100vw
+	//height: 100vh
+	//position: absolute
+}
+
+html, body {
+	margin: 0;
+}
+
+.hidden {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
