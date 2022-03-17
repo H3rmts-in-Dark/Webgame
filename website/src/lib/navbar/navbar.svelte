@@ -4,6 +4,7 @@
 	import Settings from "./settings.svelte"
 	import Logout from "./logout.svelte"
 	import Source from "./source.svelte"
+	import {page} from "$app/stores";
 
 	let hovered = false
 
@@ -28,12 +29,13 @@
 	  on:mouseenter={handleMouseEnter}>
 	<div class="mdc-top-app-bar__row" style="height: 70px">
 		<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-			<img class="icon" class:roundedIcon={!hovered} src="static/favicon.ico" alt="favicon">
+			<img class="icon" class:roundedIcon={!hovered} src="src/static/favicon.ico" alt="favicon">
 			<h3 style="font-size: 2em">Webgame</h3>
 		</section>
 		<section class:hide={!hovered} class="mdc-top-app-bar__section align-middle">
-			<h2>Home</h2>
-			<h2>Games</h2>
+			<div class:active={$page.url.pathname === '/'}><a sveltekit:prefetch href="/">Home</a></div>
+			<div class:active={$page.url.pathname === '/about'}><a sveltekit:prefetch href="/about">About</a></div>
+			<div class:active={$page.url.pathname === '/games'}><a sveltekit:prefetch href="/games">Games</a></div>
 		</section>
 		<section class:hide={!hovered} class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
 			<Source/>

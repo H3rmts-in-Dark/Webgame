@@ -4,11 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "svelte-kit dev",
+    "dev": "svelte-kit dev --port 3000",
     "build": "svelte-kit build",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview",
-    "prepare": "svelte-kit sync",
+    "preview": "svelte-kit preview --port 3001",
     "theme": "smui-theme compile src/css/smui.css -i src/css",
     "wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web --dev",
     "wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web"
