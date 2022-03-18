@@ -28,14 +28,24 @@ $on-surface: #18a8ec;
 );
 
 
-html, body {
+body {
 	background-color: $surface;
 	color: $on-surface;
 }
 
 
 :root {
+	// see ripple better on primary background
 	--mdc-ripple-color: rgba(0, 0, 0, 10);
+
+	// lager outline for outlined buttons
+	--mdc-outlined-button-outline-width: 3px;
+
+	// higher alpha for outlined buttons
+	--mdc-outlined-button-outline-color: #27725c80;
+
+	// removed focus background color
+	--mdc-outlined-button-focus-state-layer-opacity: 0;
 
 	--primary: #28d3a5;
 	--on-primary: #27725c;
