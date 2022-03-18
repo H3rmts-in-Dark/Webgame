@@ -21,6 +21,7 @@
 				}
 			}
 		})
+		handleMouseEnter()
 	})
 
 </script>
@@ -46,7 +47,7 @@
 	<input id="navbarfocus" class="hidden"/>
 </div>
 
-<div id="navbaroffset"></div>
+<div class="navbarOffset" class:navbarOffsetCompressed={!hovered}></div>
 
 <style lang="scss">
 	@import "src/css/vars";
@@ -88,8 +89,26 @@
 		}
 	}
 
-	#navbaroffset {
+	.navbarOffset {
 		padding-top: $navbar-height;
+		transition: 0.3s;
+	}
+
+	.navbarOffsetCompressed {
+		padding-top: 0;
+		animation: linear moveOut 0.3s;
+	}
+
+	@keyframes moveOut {
+		0% {
+			padding-top: $navbar-height;
+		}
+		40% {
+			padding-top: $navbar-height * 0.9;
+		}
+		100% {
+			padding-top: 0;
+		}
 	}
 
 	.mdc-top-app-bar--short-collapsed {
