@@ -4,4 +4,6 @@
 	<title>Index</title>
 </svelte:head>
 
-<h1>Index</h1>
+<div style="display: flex; flex-direction: column; align-items: center">
+	<h0>Index</h0>
+</div>

@@ -1,10 +1,11 @@
 <script lang="ts">
-	import {loadGames, create, hidden} from "./game"
+	import {loadGames, create, hidden, connect} from "./game"
 	import type {Game} from "./game";
 	import Button from "@smui/button";
 
 	import {mdiLoading} from "@mdi/js";
 	import SvgIcon from "$lib/SvgIcon.svelte";
+	import Open from "$lib/open.svelte"
 
 	type GameDisplay = {
 		game: Game
@@ -26,12 +27,17 @@
 	}
 	load()
 
-	let join = (gameDisplay: GameDisplay) => {
+	let join = async (gameDisplay: GameDisplay) => {
 		console.log(`joining game`)
 		gameDisplay.buttonDisplay = "Load"
 		console.table(gameDisplay)
 		// forces update
 		games = games
+
+		await connect()
+		gameDisplay.buttonDisplay = "Open"
+		games = games
+
 	}
 </script>
 
@@ -72,6 +78,8 @@
 						<Button variant="raised" color="secondary">
 							<SvgIcon cls="rotate" svg={mdiLoading}/>
 						</Button>
+					{:else if game.buttonDisplay === "Open"}
+						<Open link={`games/${game.game.id}`}/>
 					{:else}
 						<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
 							{game.buttonDisplay}

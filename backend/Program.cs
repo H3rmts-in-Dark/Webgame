@@ -13,7 +13,7 @@ builder.Services.AddSingleton(builder.Configuration.Get<DbSettings>());
 builder.Services.AddScoped<IDatabase, Database>();
 
 builder.Services.AddCors(options => {
-	options.AddPolicy(myAllowSpecificOrigins, builder => { builder.WithOrigins("http://localhost:3000"); });
+	options.AddPolicy(myAllowSpecificOrigins, builder => { builder.WithOrigins("http://localhost:3000", "http://localhost:3001"); });
 });
 
 var app = builder.Build();
