@@ -16,3 +16,23 @@ html, body {
 	height: 0;
 	position: absolute;
 }
+
+.rotate {
+	animation-duration: 2s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	animation-name: rotate;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.margin0 {
+	margin: 0 !important;
+}

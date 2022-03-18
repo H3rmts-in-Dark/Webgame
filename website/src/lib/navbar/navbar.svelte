@@ -58,8 +58,6 @@
 		.hide {
 			opacity: 0;
 			transition: 0.3s;
-
-			gap: 10px;
 		}
 
 		.align-middle {
@@ -81,7 +79,11 @@
 
 			.roundedIcon {
 				border-radius: 8px 8px 24px 8px;
-				transition: 0.5s;
+				transition: 0.4s;
+			}
+
+			.active {
+				text-decoration: underline;
 			}
 		}
 	}
@@ -98,5 +100,11 @@
 	.mdc-top-app-bar {
 		color: $on-primary;
 		background: $primary;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: inherit;
+		font-size: 1.2em;
 	}
 </style>

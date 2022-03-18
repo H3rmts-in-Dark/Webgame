@@ -1,43 +1,43 @@
 {
-  "author": "H3rmt | Man in Dark",
-  "name": "webgame",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "svelte-kit dev --port 3000",
-    "build": "svelte-kit build",
-    "preview": "svelte-kit preview --port 3001",
-    "theme": "smui-theme compile src/css/smui.css -i src/css",
-    "wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web --dev",
-    "wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web"
-  },
-  "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
-    "@sveltejs/kit": "next",
-    "@types/cookie": "^0.4.1",
-    "svelte-preprocess": "^4.10.1",
-    "@smui/button": "^6.0.0-beta.14",
-    "@smui/checkbox": "^6.0.0-beta.14",
-    "@smui/icon-button": "^6.0.0-beta.14",
-    "@smui/textfield": "^6.0.0-beta.14",
-    "@tsconfig/svelte": "^3.0.0",
-    "scss": "^0.2.4",
-    "smui-theme": "^6.0.0-beta.14",
-    "svelte": "^3.46.4",
-    "svelte-check": "^2.4.5",
-    "svelte-mui": "^0.5.0",
-    "typescript": "^4.5.5"
-  },
-  "dependencies": {
-    "@fontsource/fira-mono": "^4.5.0",
-    "@lukeed/uuid": "^2.0.0",
-    "cookie": "^0.4.1",
-    "@mdi/js": "^6.5.95",
-    "@smui/common": "^6.0.0-beta.15",
-    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.39",
-    "focus-visible": "^5.2.0",
-    "svelte-material-ui": "^6.0.0-beta.14",
-    "svelte-preprocess": "^4.10.3",
-    "vite": "^2.8.6"
-  }
+	"author": "H3rmt | Man in Dark",
+	"name": "webgame",
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "svelte-kit dev --port 3000",
+		"build": "svelte-kit build",
+		"preview": "svelte-kit preview --port 3001",
+		"theme": "smui-theme compile src/css/smui.css -i src/css",
+		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web --dev",
+		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"@types/cookie": "^0.4.1",
+		"svelte-preprocess": "^4.10.1",
+		"@smui/button": "^6.0.0-beta.14",
+		"@smui/checkbox": "^6.0.0-beta.14",
+		"@smui/icon-button": "^6.0.0-beta.14",
+		"@smui/textfield": "^6.0.0-beta.14",
+		"@tsconfig/svelte": "^3.0.0",
+		"scss": "^0.2.4",
+		"smui-theme": "^6.0.0-beta.14",
+		"svelte": "^3.46.4",
+		"svelte-check": "^2.4.5",
+		"svelte-mui": "^0.5.0",
+		"typescript": "^4.5.5"
+	},
+	"dependencies": {
+		"@fontsource/fira-mono": "^4.5.0",
+		"@lukeed/uuid": "^2.0.0",
+		"cookie": "^0.4.1",
+		"@mdi/js": "^6.5.95",
+		"@smui/common": "^6.0.0-beta.15",
+		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.39",
+		"focus-visible": "^5.2.0",
+		"svelte-material-ui": "^6.0.0-beta.14",
+		"svelte-preprocess": "^4.10.3",
+		"vite": "^2.8.6"
+	}
 }

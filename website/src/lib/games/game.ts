@@ -14,3 +14,5 @@ async function loadGames(): Promise<Game[]> {
 }
 
 export {loadGames}
+export type {Game}
+

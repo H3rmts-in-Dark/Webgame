@@ -1,16 +1,37 @@
 <script lang="ts">
 	import {loadGames} from "./game"
+	import type {Game} from "./game";
 	import Button from "@smui/button";
 
-	let games = loadGames()
+	import {mdiLoading} from "@mdi/js";
+	import SvgIcon from "../SvgIcon.svelte";
 
-	let load = () => {
-		games = loadGames()
+	type GameDisplay = {
+		game: Game
+		buttonDisplay: string
 	}
 
-	let join = (game) => {
+	let games: Array<GameDisplay> | null | string
+	let load = async () => {
+		games = await loadGames()
+				.then((games: Array<Game>) => {
+					return games.map((game: Game) => {
+						return {game: game, buttonDisplay: "Join"}
+					})
+				})
+				.catch((err: Error) => {
+					return err.message
+				})
+	}
+	load()
+
+	let join = (gameDisplay: GameDisplay) => {
 		console.log(`joining game`)
-		console.table(game)
+		gameDisplay.buttonDisplay = "Load"
+		console.table(gameDisplay)
+		console.table(gameDisplay)
+		// forces update
+		games = games
 	}
 </script>
 
@@ -22,20 +43,26 @@
 		</Button>
 	</div>
 	<div id="games">
-		{#await games}
+		{#if games == null}
 			<h2>Loading</h2>
-		{:then games}
+		{:else if typeof games == "string"}
+			<h2>Error {games}</h2>
+		{:else}
 			{#each games as game}
 				<div class="game">
-					<h2>{game.name}</h2>
-					<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
-						Join
-					</Button>
+					<h2>{game.game.name}</h2>
+					{#if game.buttonDisplay === "Load"}
+						<Button variant="raised" color="secondary">
+							<SvgIcon cls="rotate" svg={mdiLoading}/>
+						</Button>
+					{:else}
+						<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
+							{game.buttonDisplay}
+						</Button>
+					{/if}
 				</div>
 			{/each}
-		{:catch error}
-			<h2>Error {error}</h2>
-		{/await}
+		{/if}
 	</div>
 </div>
 

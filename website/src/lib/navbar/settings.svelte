@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SvgIcon from "../SvgIcon.svelte";
+	import SvgIcon from "../SvgIconButton.svelte";
 	import {mdiCogOutline} from "@mdi/js";
 
 	let click = () => {
