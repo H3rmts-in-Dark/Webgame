@@ -13,6 +13,14 @@ async function loadGames(): Promise<Game[]> {
 	})
 }
 
-export {loadGames}
+function create() {
+
+}
+
+function hidden() {
+
+}
+
+export {loadGames, create, hidden}
 export type {Game}
 
