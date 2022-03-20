@@ -26,8 +26,8 @@ function connect() {
 }
 
 async function getGame(id: string): Promise<Game> {
-	// let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/${id}`)   // location not available
-	let data = await fetch(`https://localhost:7044/games/${id}`)   // => hardcoded
+	// let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/${id}`)   // location not available on page reload
+	let data = await fetch(`http://localhost:5252/games/${id}`)   // => hardcoded https caused probelms
 	let json = await data.json()
 	console.debug(json)
 	return json as Game
