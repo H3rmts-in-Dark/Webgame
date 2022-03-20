@@ -10,6 +10,8 @@
 
 	let websocket: WebSocket = undefined;
 
+	let start = undefined;
+
 	async function ws() {
 		let g = await game
 		try {
@@ -33,8 +35,10 @@
 		};
 
 		websocket.onmessage = function (mess: MessageEvent) {
+			let end = new Date().getTime()
 			console.log(mess)
 			recived = mess.data
+			console.log(end - start)
 		}
 	}
 
@@ -65,7 +69,7 @@
 		Connect
 	</Button>
 	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="SEnd"/>
-	<Button variant="outlined" color="primary" on:click={() => {websocket.send(send)}}>
+	<Button variant="outlined" color="primary" on:click={() => {start = new Date().getTime();websocket.send(send)}}>
 		Send
 	</Button>
 	<h2>

@@ -16,11 +16,11 @@ pub struct Game {
 async fn main() {
 	let games: Arc<RwLock<HashMap<String, Game>>> = Arc::new(RwLock::new(HashMap::new()));
 
-	games.write().await.insert(String::from("418ef12e-bfaf-4d2d-937b-8aac66988d0f"), Game { connected_clients: 0 });
+	games.write().await.insert(String::from("418ef12e-bfaf-4d2d-937b-8aac66988d0f"), Game { connected_clients: 0 }); // hardcoded from database
 
 	let ws_route = warp::path("ws")
 			.and(warp::ws())   // 1. param (ws)
-			.and(warp::path::param())  // 2. param (id)
+			.and(warp::path::param())  // 2. param (game_id)
 			.and(with_clients(games.clone()))  // 3. param (games)
 			.and_then(ws_handler);
 
