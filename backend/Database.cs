@@ -11,6 +11,9 @@ public class Database : IDatabase {
 	public Database(DbSettings settings) {
 		var client = new MongoClient(settings.Mongo.ConnectionString);
 		_gamesCollection = client.GetDatabase(settings.Mongo.Db).GetCollection<Game>(settings.Mongo.Collection);
+		if(!client.GetDatabase(settings.Mongo.Db).RunCommandAsync((Command<BsonDocument>) "{ping:1}").Wait(1000)) {
+			throw new Exception("Database unreachable");
+		}
 	}
 
 	public async Task<List<Game>> GetGames() {
