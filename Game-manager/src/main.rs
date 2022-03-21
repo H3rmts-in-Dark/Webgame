@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
 
+use dashmap::DashMap;
 use tokio::sync::RwLock;
 use warp::{Filter, Rejection, Reply};
 
@@ -12,11 +13,13 @@ pub struct Game {
 	pub connected_clients: u8,
 }
 
+type Games =  Arc<DashMap<String, Game>>;
+
 #[tokio::main]
 async fn main() {
-	let games: Arc<RwLock<HashMap<String, Game>>> = Arc::new(RwLock::new(HashMap::new()));
+	let games: Games = Arc::new(DashMap::new());
 
-	games.write().await.insert(String::from("418ef12e-bfaf-4d2d-937b-8aac66988d0f"), Game { connected_clients: 0 }); // hardcoded from database
+	games.insert(String::from("40283437-12bf-4a85-92fe-d9391223259d"), Game { connected_clients: 0 });// hardcoded from database
 
 	let ws_route = warp::path("ws")
 			.and(warp::ws())   // 1. param (ws)
@@ -29,12 +32,12 @@ async fn main() {
 	warp::serve(routes).run(([127, 0, 0, 1], 6969)).await;
 }
 
-fn with_clients(clients: Arc<RwLock<HashMap<String, Game>>>) -> impl Filter<Extract=(Arc<RwLock<HashMap<String, Game>>>, ), Error=Infallible> + Clone {
+fn with_clients(clients: Games) -> impl Filter<Extract=(Games, ), Error=Infallible> + Clone {
 	warp::any().map(move || clients.clone())
 }
 
-async fn ws_handler(ws: warp::ws::Ws, game_id: String, games: Arc<RwLock<HashMap<String, Game>>>) -> Result<impl Reply, Rejection> {
-	if games.read().await.get(&game_id).is_some() {
+async fn ws_handler(ws: warp::ws::Ws, game_id: String, games: Games) -> Result<impl Reply, Rejection> {
+	if games.get(&game_id).is_some() {
 		Ok(ws.on_upgrade(move |socket| {
 			ws::client_connection(socket, game_id, games)
 		}))

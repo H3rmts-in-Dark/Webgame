@@ -7,3 +7,5 @@ edition = "2021"
 tokio = { version = "0.2", features = ["macros", "sync", "rt-threaded"] }
 warp = "0.2"
 futures = { version = "0.3", default-features = false }
+dashmap = "5.2.0"
+uuid = { version = "0.8.2", features = ["v4"] }
