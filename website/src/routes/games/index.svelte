@@ -12,8 +12,10 @@
 		buttonDisplay: string
 	}
 
-	let games: Array<GameDisplay> | null | string
-	let load = async () => {
+	// Array if loaded, null if loading, string if error
+	let games: Array<GameDisplay> | null | string = null
+
+	async function load() {
 		games = null
 		games = await loadGames()
 				.then((games: Array<Game>) => {
@@ -25,19 +27,19 @@
 					return err.message
 				})
 	}
+
 	load()
 
-	let join = async (gameDisplay: GameDisplay) => {
+	async function join(gameDisplay: GameDisplay) {
 		console.log(`joining game`)
 		gameDisplay.buttonDisplay = "Load"
-		console.table(gameDisplay)
-		// forces update
-		games = games
+
+		games = games // forces rerender
 
 		await connect()
-		gameDisplay.buttonDisplay = "Open"
-		games = games
 
+		gameDisplay.buttonDisplay = "__OpenLink"
+		games = games // forces rerender
 	}
 </script>
 
@@ -66,7 +68,7 @@
 		{#if games == null}
 			<h2>Loading</h2>
 		{:else if typeof games == "string"}
-			<h2>Error {games}</h2>
+			<h2>Error: {games}</h2>
 		{:else}
 			{#each games as game}
 				<div class="game">
@@ -78,7 +80,7 @@
 						<Button variant="raised" color="secondary">
 							<SvgIcon cls="rotate" svg={mdiLoading}/>
 						</Button>
-					{:else if game.buttonDisplay === "Open"}
+					{:else if game.buttonDisplay === "__OpenLink"}
 						<Open link={`games/${game.game.id}`}/>
 					{:else}
 						<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
@@ -108,6 +110,15 @@
 		}
 	}
 
+	#games {
+		margin: 15px;
+		display: grid;
+		grid-gap: 20px;
+		width: calc(100% - 30px);
+
+		grid-template-columns: repeat(auto-fill, minmax(300px, 3fr));
+	}
+
 	.game {
 		position: relative;
 		background: $primary;
@@ -132,12 +143,4 @@
 		}
 	}
 
-	#games {
-		margin: 15px;
-		display: grid;
-		grid-gap: 20px;
-		width: calc(100% - 30px);
-
-		grid-template-columns: repeat(auto-fill, minmax(300px, 3fr));
-	}
 </style>

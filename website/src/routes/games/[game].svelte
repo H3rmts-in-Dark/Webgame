@@ -5,45 +5,26 @@
 	import {onDestroy} from "svelte";
 	import Button from "@smui/button";
 	import Textfield from "@smui/textfield";
+	import {buildWebsocket} from "./game.ts";
 
 	let game: Promise<Game> = getGame($page.params.game)
 
 	let websocket: WebSocket = undefined;
 
-	let start = undefined;
-
-	async function ws() {
-		let g = await game
-		try {
-			websocket = new WebSocket(`ws://localhost:6969/ws/${g.id}`);
-			console.log("Connection built");
-		} catch (err) {
-			console.log("Connection invalid", err);
-			return
-		}
-
-		websocket.onopen = function () {
-			console.log("connection opened!");
-		};
-
-		websocket.onerror = function (error) {
-			console.log("WebSocket Error: " + error);
-		};
-
-		websocket.onclose = function () {
-			console.log("Connection lost");
-		};
-
-		websocket.onmessage = function (mess: MessageEvent) {
+	async function Websocket() {
+		websocket = buildWebsocket(await game)
+		websocket.onmessage = function(mess: MessageEvent) {
 			let end = new Date().getTime()
-			console.log(mess)
+			console.debug(mess)
 			recived = mess.data
-			console.log(end - start)
+			console.debug(end - start, "ms")
 		}
 	}
 
+	let start = undefined;
+
 	onDestroy(() => {
-		if (websocket != undefined)
+		if(websocket != undefined)
 			websocket.close()
 	})
 
@@ -53,7 +34,7 @@
 </script>
 
 <svelte:head>
-	<title>Game</title>
+	<title>Game {game.name}</title>
 </svelte:head>
 
 {#await game}
@@ -65,7 +46,7 @@
 
 	<h2>{game.id}, {game.limit}, {game.name}</h2>
 
-	<Button variant="outlined" color="primary" on:click={ws}>
+	<Button variant="outlined" color="primary" on:click={Websocket}>
 		Connect
 	</Button>
 	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="SEnd"/>
