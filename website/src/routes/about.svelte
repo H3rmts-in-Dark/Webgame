@@ -1,7 +1,7 @@
 <script></script>
 
 <svelte:head>
-	<title>Index</title>
+	<title>About</title>
 </svelte:head>
 
 <div style="display: flex; flex-direction: column; align-items: center">
