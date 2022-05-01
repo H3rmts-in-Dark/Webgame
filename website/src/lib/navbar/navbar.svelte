@@ -15,8 +15,8 @@
 
 	onMount(() => {
 		document.getElementById('svelte-root').addEventListener('focusout', (e) => {
-			if (document.getElementById('navbar').contains(e.target as HTMLElement)) {
-				if (!(document.getElementById('navbar').contains(e.relatedTarget as HTMLElement) || document.getElementById('navbar') == e.relatedTarget as HTMLElement)) {
+			if(document.getElementById('navbar').contains(e.target as HTMLElement)) {
+				if(!(document.getElementById('navbar').contains(e.relatedTarget as HTMLElement) || document.getElementById('navbar') == e.relatedTarget as HTMLElement)) {
 					hovered = false
 				}
 			}

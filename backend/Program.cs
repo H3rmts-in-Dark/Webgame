@@ -1,7 +1,7 @@
 using backend;
 using backend.Settings;
 
-const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+const string allowedOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,9 @@ builder.Services.AddSingleton(builder.Configuration.Get<DbSettings>());
 builder.Services.AddScoped<IDatabase, Database>();
 
 builder.Services.AddCors(options => {
-	options.AddPolicy(myAllowSpecificOrigins, builder => { builder.WithOrigins("http://localhost:3000", "http://localhost:3001"); });
+	options.AddPolicy(allowedOrigins, build => { // 3000 = svelte-kit dev, 3001 = svelte-kit preview
+		build.WithOrigins("http://localhost:3000", "http://localhost:3001");
+	});
 });
 
 var app = builder.Build();
@@ -23,8 +25,8 @@ if(app.Environment.IsDevelopment()) {
 	app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // todo fix later
-app.UseCors(myAllowSpecificOrigins);
+app.UseHttpsRedirection();
+app.UseCors(allowedOrigins);
 app.UseAuthorization();
 app.MapControllers();
 
