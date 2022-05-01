@@ -10,15 +10,24 @@
 	let game: Promise<Game> = getGame($page.params.game)
 
 	let websocket: WebSocket = undefined;
+	let connected: Boolean = false
 
 	async function Websocket() {
 		websocket = buildWebsocket(await game)
 		websocket.onmessage = function(mess: MessageEvent) {
 			let end = new Date().getTime()
 			console.debug(mess)
-			recived = mess.data
+			received = mess.data
 			console.debug(end - start, "ms")
 		}
+		websocket.onclose = function() {
+			console.debug("Connection lost");
+			connected = false
+		};
+		websocket.onopen = function() {
+			console.log("connection opened!");
+			connected = true
+		};
 	}
 
 	let start = undefined;
@@ -29,12 +38,12 @@
 	})
 
 	let send = "fuf"
-	let recived = "--"
+	let received = "--"
 
 </script>
 
 <svelte:head>
-	<title>Game {game.name}</title>
+	<title>Game</title>
 </svelte:head>
 
 {#await game}
@@ -49,11 +58,17 @@
 	<Button variant="outlined" color="primary" on:click={Websocket}>
 		Connect
 	</Button>
-	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="SEnd"/>
-	<Button variant="outlined" color="primary" on:click={() => {start = new Date().getTime();websocket.send(send)}}>
-		Send
-	</Button>
+	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Send"/>
+	{#if connected}
+		<Button variant="outlined" color="primary" on:click={() => {start = new Date().getTime();websocket.send(send)}}>
+			Send
+		</Button>
+	{:else }
+		<Button disabled variant="outlined" color="primary">
+			Send
+		</Button>
+	{/if}
 	<h2>
-		{recived}
+		{received}
 	</h2>
 {/await}

@@ -25,9 +25,10 @@ function connect() {
 	return sleep(2000)
 }
 
+// add check of exists
 async function getGame(id: string): Promise<Game> {
-	// let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/${id}`)   // location not available on page reload
-	let data = await fetch(`http://localhost:5252/games/${id}`)   // => hardcoded https caused problems
+	let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/${id}`)   // location not available on page reload
+	// let data = await fetch(`http://localhost:5252/games/${id}`)   // => hardcoded https caused problems
 	let json = await data.json()
 	console.debug(json)
 	return json as Game
@@ -43,17 +44,9 @@ function buildWebsocket(game: Game): WebSocket {
 		return
 	}
 
-	websocket.onopen = function() {
-		console.log("connection opened!");
-	};
-
 	websocket.onerror = function(error) {
 		console.log("WebSocket Error");
 		console.error(error)
-	};
-
-	websocket.onclose = function() {
-		console.log("Connection lost");
 	};
 	return websocket
 }
