@@ -13,7 +13,7 @@ pub struct Game {
 	pub connected_clients: u8,
 }
 
-type Games =  Arc<DashMap<String, Game>>;
+type Games = Arc<DashMap<String, Game>>;
 
 #[tokio::main]
 async fn main() {

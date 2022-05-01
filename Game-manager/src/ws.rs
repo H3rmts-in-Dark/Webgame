@@ -2,8 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use dashmap::DashMap;
-use futures::SinkExt;
-use tokio::stream::StreamExt;
+use futures::{SinkExt, StreamExt};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
