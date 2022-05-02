@@ -14,8 +14,10 @@ builder.Services.AddScoped<IDatabase, Database>();
 
 builder.Services.AddCors(options => {
 	options.AddPolicy(allowedOrigins, build => { // 3000 = svelte-kit dev, 3001 = svelte-kit preview
-		build.WithOrigins("http://localhost:3000", "http://localhost:3001");
-	});
+		                  build.AllowAnyMethod();
+		                  build.AllowAnyOrigin();
+		                  build.AllowAnyHeader();
+	                  });
 });
 
 var app = builder.Build();
@@ -25,7 +27,7 @@ if(app.Environment.IsDevelopment()) {
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseCors(allowedOrigins);
 app.UseAuthorization();
 app.MapControllers();
