@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {loadGames, create, hidden, connect} from "./game"
-	import type {Game} from "./game";
+	import type {Game, CreateGame} from "./game";
 	import Button from "@smui/button";
 
 	import {mdiLoading} from "@mdi/js";
@@ -15,7 +15,8 @@
 	}
 
 	let creatingGame = false
-	let newGame: Game = null
+	let newGame: CreateGame = null
+	let log: string = ""
 
 	// Array if loaded, null if loading, string if error
 	let games: Array<GameDisplay> | null | string = null
@@ -48,11 +49,20 @@
 		games = games // forces rerender
 	}
 
-	async function createGame() {
+	async function openCreateGame() {
 		creatingGame = !creatingGame
 		if(creatingGame) {
-			newGame = {limit: 0, name: ""}
+			newGame = {code: "wagfwegwegwe", limit: 0, name: "", visible: true}
 		}
+	}
+
+	async function createGame() {
+		log = await create(newGame).then((game: Game) => {
+			console.log("created game:", game)
+			return `Game id:${game.id}`
+		}).catch((err: Error) => {
+			return err.message
+		})
 	}
 </script>
 
@@ -64,7 +74,7 @@
 	<h0>Games</h0>
 	<div id="buttons_bar">
 		<div>
-			<Button variant="outlined" color="primary" on:click={createGame}>
+			<Button variant="outlined" color="primary" on:click={openCreateGame}>
 				{creatingGame ? "List" : "Create"}
 			</Button>
 		</div>
@@ -86,9 +96,10 @@
 				<Slider bind:data={newGame.limit} name="Value: "></Slider>
 			</div>
 			<div class="field">
-				<Button variant="raised" color="secondary" on:click={() => {create(newGame)}}>
+				<Button variant="raised" color="secondary" on:click={createGame}>
 					Create
 				</Button>
+				<h3>{log}</h3>
 			</div>
 		</div>
 	{:else}

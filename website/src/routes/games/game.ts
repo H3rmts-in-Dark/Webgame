@@ -1,11 +1,23 @@
 type Game = {
-	id?: number
+	id: number
 	limit: number
 	name: string
 }
+type CreateGame = {
+	limit: number
+	name: string
+	visible: boolean
+	code: string
+}
+
+function getServerAddress(): string {
+	// return `https://${location.host.split(':')[0]}:7044`
+	return `http://${location.host.split(':')[0]}:5252`
+
+}
 
 async function loadGames(): Promise<Game[]> {
-	let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/all`).then((games) => games.json())
+	let data = await fetch(`${getServerAddress()}/games/all`).then((games) => games.json())
 	await sleep(500) // to see loading
 	console.debug(data)
 	return data.map((game) => {
@@ -13,8 +25,16 @@ async function loadGames(): Promise<Game[]> {
 	})
 }
 
-function create(game: Game) {
+async function create(game: CreateGame) {
 	console.debug("creating", game)
+	let data = await fetch(`${getServerAddress()}/games/create`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(game)
+	}).then((game) => game.json())
+	return data as Game
 }
 
 function hidden() {
@@ -56,5 +76,5 @@ function sleep(delay: number) {
 }
 
 export {loadGames, create, hidden, getGame, connect, buildWebsocket}
-export type {Game}
+export type {Game, CreateGame}
 
