@@ -18,7 +18,7 @@
 			let end = new Date().getTime()
 			console.debug(mess)
 			received = mess.data
-			console.debug(end - start, "ms")
+			console.timeEnd("ws")
 		}
 		websocket.onclose = function() {
 			console.debug("Connection lost");
@@ -60,7 +60,7 @@
 	</Button>
 	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Send"/>
 	{#if connected}
-		<Button variant="outlined" color="primary" on:click={() => {start = new Date().getTime();websocket.send(send)}}>
+		<Button variant="outlined" color="primary" on:click={() => {console.time("ws");websocket.send(send)}}>
 			Send
 		</Button>
 	{:else }
