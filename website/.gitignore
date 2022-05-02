@@ -4,3 +4,4 @@ src/css/smui.css
 src/wasm/
 
 .svelte-kit/
+package-lock.json

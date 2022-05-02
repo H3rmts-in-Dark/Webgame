@@ -15,7 +15,7 @@
 	}
 
 	let creatingGame = false
-	let newGame: CreateGame = null
+	let newGame: CreateGame = {code: "qwf", limit: 4, name: "new Game", visible: true}
 	let log: string = ""
 
 	// Array if loaded, null if loading, string if error
@@ -52,7 +52,9 @@
 	async function openCreateGame() {
 		creatingGame = !creatingGame
 		if(creatingGame) {
-			newGame = {code: "wagfwegwegwe", limit: 0, name: "", visible: true}
+			//
+		} else {
+			await load()
 		}
 	}
 

@@ -18,7 +18,7 @@ function getServerAddress(): string {
 
 async function loadGames(): Promise<Game[]> {
 	let data = await fetch(`${getServerAddress()}/games/all`).then((games) => games.json())
-	await sleep(500) // to see loading
+	await sleep(100) // to see loading
 	console.debug(data)
 	return data.map((game) => {
 		return game as Game
