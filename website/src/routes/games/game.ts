@@ -1,6 +1,6 @@
 type Game = {
-	id: number
-	limit: string
+	id?: number
+	limit: number
 	name: string
 }
 
@@ -13,8 +13,8 @@ async function loadGames(): Promise<Game[]> {
 	})
 }
 
-function create() {
-
+function create(game: Game) {
+	console.debug("creating", game)
 }
 
 function hidden() {

@@ -15,6 +15,7 @@
 		"@smui/button": "^6.0.0-beta.14",
 		"@smui/checkbox": "^6.0.0-beta.14",
 		"@smui/icon-button": "^6.0.0-beta.14",
+		"@smui/slider": "^6.0.0-beta.14",
 		"@smui/textfield": "^6.0.0-beta.14",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
