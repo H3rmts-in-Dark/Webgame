@@ -3,7 +3,6 @@ use std::convert::Infallible;
 use std::sync::Arc;
 
 use dashmap::DashMap;
-use tokio::sync::RwLock;
 use warp::{Filter, Rejection, Reply};
 
 mod ws;
@@ -32,6 +31,7 @@ async fn main() {
 	warp::serve(routes).run(([127, 0, 0, 1], 6969)).await;
 }
 
+// ?
 fn with_clients(clients: Games) -> impl Filter<Extract=(Games, ), Error=Infallible> + Clone {
 	warp::any().map(move || clients.clone())
 }
@@ -42,6 +42,7 @@ async fn ws_handler(ws: warp::ws::Ws, game_id: String, games: Games) -> Result<i
 			ws::client_connection(socket, game_id, games)
 		}))
 	} else {
+		println!("game not found {}", game_id);
 		Err(warp::reject::not_found())
 	}
 }

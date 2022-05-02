@@ -1,21 +1,16 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-
-use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
-use tokio::sync::RwLock;
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
 
-use crate::{Game, Games};
+use crate::Games;
 
 pub async fn client_connection(mut ws: WebSocket, id: String, games: Games) {
 	let uuid = &Uuid::new_v4().to_string()[0..8];
 	games.get_mut(&id).unwrap().connected_clients += 1;
 
-	if let game = games.get(&id).unwrap() {
-		println!("{} connected to {:?}", uuid, game.value());
-	}
+	let game = games.get(&id).unwrap();
+	println!("{} connected to {:?}", uuid, game.value());
+
 
 	while let Some(result) = ws.next().await {
 		let msg = match result {
