@@ -1,18 +1,25 @@
 import type {CreateGame} from "src/ts/dto/createGame"
 import type {Game} from "src/ts/dto/game"
 import {getServerAddress, getWebsocketAddress} from "../../ts/addresses";
+import {sleep} from "../../ts/util";
 
 
-async function loadGames(): Promise<Game[]> {
+async function getGamesFromServer(): Promise<Game[]> {
 	let data = await fetch(`${getServerAddress()}/games/all`).then((games) => games.json())
-	await sleep(100) // to see loading
 	console.debug(data)
 	return data.map((game) => {
 		return game as Game
 	})
 }
 
-async function create(game: CreateGame) {
+// add check of exists
+async function getGameFromServer(id: string): Promise<Game> {
+	let data = await fetch(`${getServerAddress()}/games/${id}`).then((games) => games.json())
+	console.debug(data)
+	return data as Game
+}
+
+async function createGameOnServer(game: CreateGame) {
 	console.debug("creating", game)
 	let data = await fetch(`${getServerAddress()}/games/create`, {
 		method: 'POST',
@@ -24,21 +31,12 @@ async function create(game: CreateGame) {
 	return data as Game
 }
 
-function hidden() {
-
-}
-
-function connect() {
-	return sleep(2000)
-}
-
 // add check of exists
-async function getGame(id: string): Promise<Game> {
-	let data = await fetch(`${getServerAddress()}/games/${id}`)
-	let json = await data.json()
-	console.debug(json)
-	return json as Game
+async function checkAvailable(): Promise<boolean> {
+	await sleep(1000)
+	return true
 }
+
 
 function buildWebsocket(game: Game): WebSocket {
 	let websocket: WebSocket = null
@@ -57,10 +55,7 @@ function buildWebsocket(game: Game): WebSocket {
 	return websocket
 }
 
-function sleep(delay: number) {
-	return new Promise(resolve => setTimeout(resolve, delay))
-}
 
-export {loadGames, create, hidden, getGame, connect, buildWebsocket}
+export {getGamesFromServer, createGameOnServer, getGameFromServer, checkAvailable, buildWebsocket}
 export type {Game, CreateGame}
 

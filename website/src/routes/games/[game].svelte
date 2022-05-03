@@ -1,13 +1,13 @@
 <script lang="ts">
 	import {page} from '$app/stores';
 	import type {Game} from "./game";
-	import {getGame} from "./game";
+	import {getGameFromServer} from "./game";
 	import {onDestroy} from "svelte";
 	import Button from "@smui/button";
 	import Textfield from "@smui/textfield";
 	import {buildWebsocket} from "./game.ts";
 
-	let game: Promise<Game> = getGame($page.params.game)
+	let game: Promise<Game> = getGameFromServer($page.params.game)
 
 	let websocket: WebSocket = undefined;
 	let connected: Boolean = false
@@ -15,7 +15,7 @@
 	async function Websocket() {
 		websocket = buildWebsocket(await game)
 		websocket.onmessage = function(mess: MessageEvent) {
-			let end = new Date().getTime()
+			new Date().getTime();
 			console.debug(mess)
 			received = mess.data
 			console.timeEnd("ws")
@@ -29,6 +29,7 @@
 			connected = true
 		};
 	}
+
 
 	let start = undefined;
 

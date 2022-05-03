@@ -1,13 +1,17 @@
 <script lang="ts">
-	import {loadGames, create, hidden, connect} from "./game"
+	import {getGamesFromServer, createGameOnServer, checkAvailable} from "./game"
 	import type {Game, CreateGame} from "./game";
 	import Button from "@smui/button";
 
 	import {mdiLoading} from "@mdi/js";
 	import SvgIcon from "$lib/SvgIcon.svelte";
 	import Open from "$lib/open.svelte"
+	import FormField from '@smui/form-field';
 	import Textfield from "@smui/textfield";
+	import Checkbox from '@smui/checkbox';
 	import Slider from "$lib/Slider.svelte";
+	import {sleep} from "../../ts/util";
+	import {onMount} from "svelte";
 
 	type GameDisplay = {
 		game: Game
@@ -21,51 +25,57 @@
 	// Array if loaded, null if loading, string if error
 	let games: Array<GameDisplay> | null | string = null
 
-	async function load() {
+	async function loadGames() {
 		creatingGame = false
 		games = null
-		games = await loadGames()
+		games = await getGamesFromServer()
 				.then((games: Array<Game>) => {
 					return games.map((game: Game) => {
 						return {game: game, buttonDisplay: "Join"}
 					})
+				}).then(async (games: Array<GameDisplay>) => {
+					await sleep(100) // show loading
+					return games
 				})
 				.catch((err: Error) => {
 					return err.message
 				})
 	}
 
-	load()
-
-	async function join(gameDisplay: GameDisplay) {
+	async function joinGame(gameDisplay: GameDisplay) {
 		console.log(`joining game`)
 		gameDisplay.buttonDisplay = "Load"
 
 		games = games // forces rerender
 
-		await connect()
+		let available = await checkAvailable()
 
-		gameDisplay.buttonDisplay = "__OpenLink"
+		if(available)
+			gameDisplay.buttonDisplay = "__OpenLink"
+		else
+			gameDisplay.buttonDisplay = "Error Joining"
 		games = games // forces rerender
 	}
 
-	async function openCreateGame() {
-		creatingGame = !creatingGame
-		if(creatingGame) {
-			//
-		} else {
-			await load()
-		}
-	}
-
 	async function createGame() {
-		log = await create(newGame).then((game: Game) => {
+		log = await createGameOnServer(newGame).then((game: Game) => {
 			console.log("created game:", game)
 			return `Game id:${game.id}`
 		}).catch((err: Error) => {
 			return err.message
 		})
 	}
+
+	async function toggleCreateGame() {
+		creatingGame = !creatingGame
+		if(!creatingGame) {
+			await loadGames()
+		}
+	}
+
+	onMount(() => {
+		loadGames()
+	})
 </script>
 
 <svelte:head>
@@ -76,15 +86,15 @@
 	<h0>Games</h0>
 	<div id="buttons_bar">
 		<div>
-			<Button variant="outlined" color="primary" on:click={openCreateGame}>
+			<Button variant="outlined" color="primary" on:click={toggleCreateGame}>
 				{creatingGame ? "List" : "Create"}
 			</Button>
 		</div>
 		<div>
-			<Button variant="outlined" color="primary" on:click={hidden}>
+			<Button variant="outlined" color="primary" on:click={() => {}}>
 				Hidden
 			</Button>
-			<Button variant="outlined" color="primary" on:click={load}>
+			<Button variant="outlined" color="primary" on:click={loadGames}>
 				Scan
 			</Button>
 		</div>
@@ -95,7 +105,17 @@
 			<div class="field">
 				<Textfield style="width: 45%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.name}
 							  label="Name"/>
-				<Slider bind:data={newGame.limit} name="Value: "></Slider>
+			</div>
+			<div class="field">
+				<Slider bind:data={newGame.limit} name="Max Players: "></Slider>
+			</div>
+			<div class="field">
+				<FormField>
+					<Checkbox bind:checked={newGame.visible} touch/>
+					<h3 slot="label">Visible</h3>
+				</FormField>
+				<Textfield style="width: 35%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.code}
+							  label="Code"/>
 			</div>
 			<div class="field">
 				<Button variant="raised" color="secondary" on:click={createGame}>
@@ -124,7 +144,7 @@
 						{:else if game.buttonDisplay === "__OpenLink"}
 							<Open link={`games/${game.game.id}`}/>
 						{:else}
-							<Button variant="raised" color="secondary" on:click={() => {join(game)}}>
+							<Button variant="raised" color="secondary" on:click={() => {joinGame(game)}}>
 								{game.buttonDisplay}
 							</Button>
 						{/if}
