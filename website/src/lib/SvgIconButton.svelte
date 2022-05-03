@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconButton from "@smui/icon-button";
-	import SvgIcon from "./SvgIcon.svelte";
+	import SvgIcon from "$lib/SvgIcon.svelte";
 
 	export var svg = ''
 	export var size = 'button'

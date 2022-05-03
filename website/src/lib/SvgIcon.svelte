@@ -6,6 +6,6 @@
 	export var cls = ''
 </script>
 
-<Icon class="margin0 {cls}" component={Svg} viewBox="0 0 24 24" color="secondary">
+<Icon style="margin: 0" class="{cls}" component={Svg} viewBox="0 0 24 24" color="secondary">
 	<path fill="currentColor" d={svg} color="secondary"/>
 </Icon>

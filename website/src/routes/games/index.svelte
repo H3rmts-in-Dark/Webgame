@@ -136,7 +136,7 @@
 </div>
 
 <style lang="scss">
-	@import "src/css/vars";
+	@use "src/css/vars";
 
 	#buttons_bar {
 		display: flex;
@@ -170,7 +170,7 @@
 		border: {
 			style: solid;
 			width: 6px;
-			color: $on-primary;
+			color: vars.$on-primary;
 		}
 
 		.field {
@@ -188,15 +188,15 @@
 
 	.game {
 		position: relative;
-		background: $primary;
+		background: vars.$primary;
 		padding: 10px;
 		margin: 10px;
-		color: $on-primary;
+		color: vars.$on-primary;
 
 		border: {
 			style: solid;
-			width: 6px;
-			color: $on-primary;
+			width: 0.4em;
+			color: vars.$on-primary;
 		}
 		display: flex;
 		flex-direction: column;

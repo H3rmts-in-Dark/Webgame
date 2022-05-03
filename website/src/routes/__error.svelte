@@ -20,10 +20,10 @@
 
 
 <style lang="scss">
-	@import "src/css/vars";
+	@use "src/css/vars";
 
 	h1 {
-		padding-top: $navbar-height;
+		padding-top: vars.$navbar-height;
 		text-align: center;
 	}
 

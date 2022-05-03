@@ -1,36 +1,19 @@
-// prim foreground
-$primary: #28d3a5;
-
-// prim background
-$on-primary: #27725c;
-
-// sec foreground
-$secondary: #e50f61;
-
-// sec background
-$on-secondary: #5b1f36;
-
-// Background
-$surface: #1d232a;
-
-// Textfield inner Text and border
-$on-surface: #18a8ec;
-
+@use 'vars';
 @use '@material/theme/color-palette';
 
 @use '@material/theme/index' with (
-  $primary: $primary,
-  $on-primary: $on-primary,
-  $secondary: $secondary,
-  $on-secondary: $on-secondary,
-  $surface: $surface,
-  $on-surface: $on-surface,
+  $primary: vars.$primary,
+  $on-primary: vars.$on-primary,
+  $secondary: vars.$secondary,
+  $on-secondary: vars.$on-secondary,
+  $surface: vars.$surface,
+  $on-surface: vars.$on-surface,
 );
 
 
 body {
-	background-color: $surface;
-	color: $on-surface;
+	background-color: vars.$surface;
+	color: vars.$on-surface;
 }
 
 
@@ -38,7 +21,7 @@ body {
 	// see ripple better on primary background
 	--mdc-ripple-color: rgba(0, 0, 0, 10);
 
-	// lager outline for outlined buttons
+	// lager outline for buttons
 	--mdc-outlined-button-outline-width: 3px;
 
 	// higher alpha for outlined buttons
@@ -47,10 +30,6 @@ body {
 	// removed focus background color
 	--mdc-outlined-button-focus-state-layer-opacity: 0;
 
-	--primary: #28d3a5;
-	--on-primary: #27725c;
-	--secondary: #e50f61;
-	--on-secondary: #5b1f36;
-	--surface: #1d232a;
-	--on-surface: #18a8ec;
+	// for text inside span in Formfield
+	--mdc-theme-text-primary-on-background: vars.$on-surface;
 }

@@ -50,7 +50,7 @@
 <div class="navbarOffset" class:navbarOffsetCompressed={!hovered}></div>
 
 <style lang="scss">
-	@import "src/css/vars";
+	@use "src/css/vars";
 
 	#navbar {
 		overflow: hidden;
@@ -90,7 +90,7 @@
 	}
 
 	.navbarOffset {
-		padding-top: $navbar-height;
+		padding-top: vars.$navbar-height;
 		transition: 0.3s;
 	}
 
@@ -101,10 +101,10 @@
 
 	@keyframes moveOut {
 		0% {
-			padding-top: $navbar-height;
+			padding-top: vars.$navbar-height;
 		}
 		40% {
-			padding-top: $navbar-height * 0.9;
+			padding-top: vars.$navbar-height * 0.9;
 		}
 		100% {
 			padding-top: 0;
@@ -112,13 +112,13 @@
 	}
 
 	.mdc-top-app-bar--short-collapsed {
-		width: $navbar-height;
-		height: $navbar-height;
+		width: vars.$navbar-height;
+		height: vars.$navbar-height;
 	}
 
 	.mdc-top-app-bar {
-		color: $on-primary;
-		background: $primary;
+		color: vars.$on-primary;
+		background: vars.$primary;
 	}
 
 	a {
