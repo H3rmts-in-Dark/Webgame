@@ -1,20 +1,7 @@
-type Game = {
-	id: number
-	limit: number
-	name: string
-}
-type CreateGame = {
-	limit: number
-	name: string
-	visible: boolean
-	code: string
-}
+import type {CreateGame} from "src/ts/dto/createGame"
+import type {Game} from "src/ts/dto/game"
+import {getServerAddress, getWebsocketAddress} from "../../ts/addresses";
 
-function getServerAddress(): string {
-	// return `https://${location.host.split(':')[0]}:7044`
-	return `http://${location.host.split(':')[0]}:5252`
-
-}
 
 async function loadGames(): Promise<Game[]> {
 	let data = await fetch(`${getServerAddress()}/games/all`).then((games) => games.json())
@@ -47,8 +34,7 @@ function connect() {
 
 // add check of exists
 async function getGame(id: string): Promise<Game> {
-	let data = await fetch(`https://${location.host.split(':')[0]}:7044/games/${id}`)   // location not available on page reload
-	// let data = await fetch(`http://localhost:5252/games/${id}`)   // => hardcoded https caused problems
+	let data = await fetch(`${getServerAddress()}/games/${id}`)
 	let json = await data.json()
 	console.debug(json)
 	return json as Game
@@ -57,7 +43,7 @@ async function getGame(id: string): Promise<Game> {
 function buildWebsocket(game: Game): WebSocket {
 	let websocket: WebSocket = null
 	try {
-		websocket = new WebSocket(`ws://localhost:6969/ws/${game.id}`);
+		websocket = new WebSocket(`${getWebsocketAddress()}/${game.id}`);
 		console.log("Connection built");
 	} catch(err) {
 		console.log("Connection invalid", err);
