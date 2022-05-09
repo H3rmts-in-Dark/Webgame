@@ -41,7 +41,7 @@ async function checkAvailable(): Promise<boolean> {
 function buildWebsocket(game: Game): WebSocket {
 	let websocket: WebSocket = null
 	try {
-		websocket = new WebSocket(`${getWebsocketAddress()}/${game.id}`);
+		websocket = new WebSocket(`${getWebsocketAddress()}/ws/${game.id}`);
 		console.log("Connection built");
 	} catch(err) {
 		console.log("Connection invalid", err);
