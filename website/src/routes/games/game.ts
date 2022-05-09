@@ -1,6 +1,6 @@
 import type {CreateGame} from "src/ts/dto/createGame"
 import type {Game} from "src/ts/dto/game"
-import {getServerAddress, getWebsocketAddress} from "../../ts/addresses";
+import {getServerAddress} from "../../ts/addresses";
 import {sleep} from "../../ts/util";
 
 
@@ -38,24 +38,6 @@ async function checkAvailable(): Promise<boolean> {
 }
 
 
-function buildWebsocket(game: Game): WebSocket {
-	let websocket: WebSocket = null
-	try {
-		websocket = new WebSocket(`${getWebsocketAddress()}/ws/${game.id}`);
-		console.log("Connection built");
-	} catch(err) {
-		console.log("Connection invalid", err);
-		return
-	}
-
-	websocket.onerror = function(error) {
-		console.log("WebSocket Error");
-		console.error(error)
-	};
-	return websocket
-}
-
-
-export {getGamesFromServer, createGameOnServer, getGameFromServer, checkAvailable, buildWebsocket}
+export {getGamesFromServer, createGameOnServer, getGameFromServer, checkAvailable}
 export type {Game, CreateGame}
 

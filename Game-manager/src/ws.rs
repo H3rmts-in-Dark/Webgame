@@ -22,7 +22,8 @@ pub async fn client_connection(mut ws: WebSocket, id: String, games: Games) {
 		};
 //		client_msg(&id, msg).await;
 		println!("received message from {}: {:?}", uuid, msg);
-		ws.send(Message::text(msg.to_str().unwrap().to_owned() + " fuf")).await;
+		let res = ws.send(Message::text("Start")).await;
+		println!("sending: {}  {:?}", res.is_ok(), res.err())
 	}
 
 

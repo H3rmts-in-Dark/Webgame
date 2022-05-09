@@ -5,7 +5,7 @@
 	import {onDestroy} from "svelte";
 	import Button from "@smui/button";
 	import Textfield from "@smui/textfield";
-	import {buildWebsocket} from "./game.ts";
+	import {buildWebsocket} from "../../ts/websocket.ts";
 
 	let game: Promise<Game> = getGameFromServer($page.params.game)
 
@@ -13,25 +13,22 @@
 	let connected: Boolean = false
 
 	async function Websocket() {
-		websocket = buildWebsocket(await game)
-		websocket.onmessage = function(mess: MessageEvent) {
-			new Date().getTime();
-			console.debug(mess)
-			received = mess.data
-			console.timeEnd("ws")
-		}
-		websocket.onclose = function() {
-			console.debug("Connection lost");
-			connected = false
-		};
-		websocket.onopen = function() {
-			console.log("connection opened!");
-			connected = true
-		};
+		websocket = buildWebsocket(await game,
+				() => {
+					console.debug("opened");
+					connected = true
+				}, mess => {
+					console.debug("message");
+					if(mess == "Start")
+						initialising = false
+				}, err => {
+					console.debug("error");
+				}, () => {
+					console.debug("lost");
+					connected = false
+				}
+		)
 	}
-
-
-	let start = undefined;
 
 	onDestroy(() => {
 		if(websocket != undefined)
@@ -39,7 +36,8 @@
 	})
 
 	let send = "fuf"
-	let received = "--"
+
+	let initialising = true
 
 </script>
 
@@ -54,22 +52,21 @@
 		<h0>Game {game.name}</h0>
 	</div>
 
-	<h2>{game.id}, {game.limit}, {game.name}</h2>
+	{#if initialising}
+		<h2>{game.id}, {game.limit}, {game.name}</h2>
 
-	<Button variant="outlined" color="primary" on:click={Websocket}>
-		Connect
-	</Button>
-	<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Send"/>
-	{#if connected}
-		<Button variant="outlined" color="primary" on:click={() => {console.time("ws");websocket.send(send)}}>
-			Send
+		<Button variant="outlined" color="primary" on:click={Websocket}>
+			Connect
 		</Button>
-	{:else }
-		<Button disabled variant="outlined" color="primary">
-			Send
-		</Button>
+		<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Name"/>
+		{#if connected}
+			<Button variant="outlined" color="primary" on:click={() => {console.time("ws");websocket.send(send)}}>
+				Start
+			</Button>
+		{:else }
+			<Button disabled variant="outlined" color="primary">
+				Start
+			</Button>
+		{/if}
 	{/if}
-	<h2>
-		{received}
-	</h2>
 {/await}

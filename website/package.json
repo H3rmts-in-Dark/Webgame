@@ -14,10 +14,10 @@
 	"devDependencies": {
 		"@smui/button": "^6.0.0-beta.14",
 		"@smui/checkbox": "^6.0.0-beta.14",
+		"@smui/form-field": "^6.0.0-beta.14",
 		"@smui/icon-button": "^6.0.0-beta.14",
 		"@smui/slider": "^6.0.0-beta.14",
 		"@smui/textfield": "^6.0.0-beta.14",
-		"@smui/form-field": "^6.0.0-beta.14",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@tsconfig/svelte": "^3.0.0",
@@ -37,6 +37,6 @@
 		"focus-visible": "^5.2.0",
 		"svelte-material-ui": "^6.0.0-beta.14",
 		"svelte-preprocess": "^4.10.3",
-		"vite": "^2.8.6"
+		"vite": "^2.9.8"
 	}
 }

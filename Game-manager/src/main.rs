@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
 
@@ -37,6 +36,7 @@ fn with_clients(clients: Games) -> impl Filter<Extract=(Games, ), Error=Infallib
 }
 
 async fn ws_handler(ws: warp::ws::Ws, game_id: String, games: Games) -> Result<impl Reply, Rejection> {
+	println!("connection");
 	if games.get(&game_id).is_some() {
 		Ok(ws.on_upgrade(move |socket| {
 			ws::client_connection(socket, game_id, games)
