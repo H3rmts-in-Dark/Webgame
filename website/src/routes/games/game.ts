@@ -12,7 +12,7 @@ async function getGamesFromServer(): Promise<Game[]> {
 	})
 }
 
-// add check of exists
+// add check if exists
 async function getGameFromServer(id: string): Promise<Game> {
 	let data = await fetch(`${getServerAddress()}/games/${id}`).then((games) => games.json())
 	console.debug(data)

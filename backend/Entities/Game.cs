@@ -6,6 +6,7 @@ public class Game {
 	public Guid   Id;
 	public bool   Visible;
 	public string Code;
+	public ushort Players;
 	public ushort Limit;
 	public string Name;
 
@@ -15,6 +16,7 @@ public class Game {
 		Code    = code;
 		Limit   = limit;
 		Name    = name;
+		Players = 0;
 	}
 
 	public static Game FromDto(CreateGameDto create) {
@@ -23,6 +25,6 @@ public class Game {
 	}
 
 	public GameDto ToDto() {
-		return new GameDto(Id, Limit, Name);
+		return new GameDto(Id, Limit, Players, Name);
 	}
 }

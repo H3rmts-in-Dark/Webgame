@@ -1,7 +1,7 @@
 namespace backend.Settings;
 
 public class MongoDbSettings {
-	public string? ConnectionString => $"mongodb://{Username}:{Password}@{Host}:{Port}";
+	public string  ConnectionString => $"mongodb://{Username}:{Password}@{Host}:{Port}";
 	public string? Db               { get; set; }
 	public string? Collection       { get; set; }
 	public string? Username         { get; set; }

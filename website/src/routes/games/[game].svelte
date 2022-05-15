@@ -23,6 +23,7 @@
 						initialising = false
 				}, err => {
 					console.debug("error");
+					console.error(err)
 				}, () => {
 					console.debug("lost");
 					connected = false
@@ -53,7 +54,7 @@
 	</div>
 
 	{#if initialising}
-		<h2>{game.id}, {game.limit}, {game.name}</h2>
+		<h2>{game.id}, {game.limit}, {game.players}, {game.name}</h2>
 
 		<Button variant="outlined" color="primary" on:click={Websocket}>
 			Connect

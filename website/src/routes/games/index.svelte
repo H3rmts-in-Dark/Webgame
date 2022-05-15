@@ -19,7 +19,7 @@
 	}
 
 	let creatingGame = false
-	let newGame: CreateGame = {code: "qwf", limit: 4, name: "new Game", visible: true}
+	let newGame: CreateGame = {code: "uwu", limit: 4, name: "new Game", visible: false}
 	let log: string = ""
 
 	// Array if loaded, null if loading, string if error
@@ -135,7 +135,7 @@
 					<div class="game">
 						<h2>{game.game.name}</h2>
 						<h3 class="players">
-							? / {game.game.limit}
+							{game.game.players} / {game.game.limit}
 						</h3>
 						{#if game.buttonDisplay === "Load"}
 							<Button variant="raised" color="secondary">
