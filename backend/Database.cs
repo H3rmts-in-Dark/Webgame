@@ -21,10 +21,18 @@ public class Database : IDatabase {
 	}
 
 	public async Task<Game> GetGame(Guid id) {
-		return await _gamesCollection.Find(Builders<Game>.Filter.Eq(i => i.Id, id)).SingleOrDefaultAsync();
+		return await _gamesCollection.Find(g => g.Id == id).SingleOrDefaultAsync();
 	}
 
 	public async Task CreateGame(Game game) {
 		await _gamesCollection.InsertOneAsync(game);
+	}
+
+	public async Task AddPlayer(Guid id) {
+		await _gamesCollection.UpdateOneAsync(g => g.Id == id, Builders<Game>.Update.Inc(g => g.Players, 1));
+	}
+
+	public async Task SubtractPlayer(Guid id) {
+		await _gamesCollection.UpdateOneAsync(g => g.Id == id, Builders<Game>.Update.Inc(g => g.Players, -1));
 	}
 }
