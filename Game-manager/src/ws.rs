@@ -4,34 +4,56 @@ use warp::ws::{Message, WebSocket};
 
 use crate::Games;
 
-pub async fn client_connection(mut ws: WebSocket, id: String, games: Games) {
-	let uuid = &Uuid::new_v4().to_string()[0..8];
-	games.get_mut(&id).unwrap().connected_clients += 1;
+pub async fn client_connection(ws: WebSocket, game_id: String, games: Games) {
+	let uuid = &Uuid::new_v4().to_string()[24..36]; // get 12 long random
+	let (mut sender, mut reciver) = ws.split();
 
-	let game = games.get(&id).unwrap();
-	println!("{} connected to {:?}", uuid, game.value());
+	games.get_mut(&game_id).unwrap().connected_clients += 1;
 
-
-	while let Some(result) = ws.next().await {
-		let msg = match result {
-			Ok(msg) => msg,
-			Err(e) => {
-				eprintln!("error receiving ws message for id: {}: {}", id, e);
-				break;
-			}
-		};
-//		client_msg(&id, msg).await;
-		println!("received message from {}: {:?}", uuid, msg);
-		let res = ws.send(Message::text("Start")).await;
-		println!("sending: {}  {:?}", res.is_ok(), res.err())
+	match games.get(&game_id) {
+		Some(game) => {
+			println!("{} connected to {:?}", uuid, game.value())
+		}
+		None => {
+			eprintln!("Error getting {} game from list", game_id);
+			return;
+		}
 	}
 
 
-	games.get_mut(&id).unwrap().connected_clients -= 1;
-	println!("{} disconnected", uuid);
-}
+	while let Some(result) = reciver.next().await {
+		let msg = match result {
+			Ok(msg) => msg,
+			Err(e) => {
+				eprintln!("error receiving ws message for game_id: {}: {}", game_id, e);
+				break;
+			}
+		};
 
-async fn client_msg(id: &str, msg: Message) {
-	println!("received message from {}: {:?}", id, msg);
-	msg.as_bytes();
+		println!("received message from {}: {:?}", uuid, msg);
+		if msg.is_close() {
+			break;
+		}
+
+		let mess = "Start";
+		let res = sender.send(Message::text(mess)).await;
+		if res.is_err() {
+			eprintln!("error sending ws message for game_id: {}: {}", game_id, res.err().unwrap());
+		} else {
+			println!("sending {} to {}", mess, uuid);
+		}
+	}
+
+
+	games.get_mut(&game_id).unwrap().connected_clients -= 1;
+
+	match games.get(&game_id) {
+		Some(game) => {
+			println!("{} disconnected from {:?}", uuid, game.value())
+		}
+		None => {
+			eprintln!("Error getting {} game from list", game_id);
+			return;
+		}
+	}
 }
