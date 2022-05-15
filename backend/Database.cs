@@ -16,8 +16,8 @@ public class Database : IDatabase {
 		}
 	}
 
-	public async Task<List<Game>> GetGames() {
-		return await _gamesCollection.Find(new BsonDocumentFilterDefinition<Game>(new BsonDocument())).ToListAsync();
+	public async Task<List<Game>> GetGames(bool onlyVisible) {
+		return await _gamesCollection.Find(g => g.Visible || !onlyVisible).ToListAsync();
 	}
 
 	public async Task<Game> GetGame(Guid id) {

@@ -1,5 +1,6 @@
 using backend.dto;
 using backend.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -7,10 +8,10 @@ namespace backend.Controllers;
 [ApiController]
 [ServerHeader]
 [Route("games")]
-public class CreateController : ControllerBase {
+public class GamesController : ControllerBase {
 	private readonly IDatabase _database;
 
-	public CreateController(IDatabase database) {
+	public GamesController(IDatabase database) {
 		_database = database;
 	}
 
@@ -23,7 +24,7 @@ public class CreateController : ControllerBase {
 
 	[HttpGet("all")]
 	public async Task<IEnumerable<GameDto>> All() {
-		return (await _database.GetGames()).Select(item => item.ToDto());
+		return (await _database.GetGames(true)).Select(item => item.ToDto());
 	}
 
 	[HttpGet("{id:guid}")]
