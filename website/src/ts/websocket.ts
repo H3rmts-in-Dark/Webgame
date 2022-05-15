@@ -35,10 +35,12 @@ async function process(data: string) {
 	switch(data) {
 		case "Start":
 			console.log("INIT")
-			await load()
-			console.log("Loaded")
+			load().then(() => {
+				console.log("Loaded")
+			})
 			break
 		default:
+			console.log("process failed")
 	}
 }
 

@@ -12,6 +12,7 @@
 	import Slider from "$lib/Slider.svelte";
 	import {sleep} from "../../ts/util";
 	import {onMount} from "svelte";
+	import Title from "../../lib/Title.svelte";
 
 	type GameDisplay = {
 		game: Game
@@ -31,7 +32,7 @@
 		games = await getGamesFromServer()
 				.then((games: Array<Game>) => {
 					return games.map((game: Game) => {
-						return {game: game, buttonDisplay: "Join"}
+						return {game: game, buttonDisplay: "Open"}
 					})
 				}).then(async (games: Array<GameDisplay>) => {
 					await sleep(100) // show loading
@@ -82,78 +83,77 @@
 	<title>Games</title>
 </svelte:head>
 
-<div style="display: flex; flex-direction: column; align-items: center">
-	<h0>Games</h0>
-	<div id="buttons_bar">
-		<div>
-			<Button variant="outlined" color="primary" on:click={toggleCreateGame}>
-				{creatingGame ? "List" : "Create"}
-			</Button>
+<Title title="Games"></Title>
+
+<div id="buttons_bar">
+	<div>
+		<Button variant="outlined" color="primary" on:click={toggleCreateGame}>
+			{creatingGame ? "List" : "Create"}
+		</Button>
+	</div>
+	<div>
+		<Button variant="outlined" color="primary">
+			Hidden
+		</Button>
+		<Button variant="outlined" color="primary" on:click={loadGames}>
+			Scan
+		</Button>
+	</div>
+</div>
+{#if creatingGame}
+	<div id="createGame">
+		<h1 class="title">Create new Game</h1>
+		<div class="field">
+			<Textfield style="width: 45%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.name}
+						  label="Name"/>
 		</div>
-		<div>
-			<Button variant="outlined" color="primary" on:click={() => {}}>
-				Hidden
+		<div class="field">
+			<Slider bind:data={newGame.limit} name="Max Players: "></Slider>
+		</div>
+		<div class="field">
+			<FormField>
+				<Checkbox bind:checked={newGame.visible} touch/>
+				<h3 slot="label">Visible</h3>
+			</FormField>
+			<Textfield style="width: 35%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.code}
+						  label="Code"/>
+		</div>
+		<div class="field">
+			<Button variant="raised" color="secondary" on:click={createGame}>
+				Create
 			</Button>
-			<Button variant="outlined" color="primary" on:click={loadGames}>
-				Scan
-			</Button>
+			<h3>{log}</h3>
 		</div>
 	</div>
-	{#if creatingGame}
-		<div id="createGame">
-			<h1 class="title">Create new Game</h1>
-			<div class="field">
-				<Textfield style="width: 45%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.name}
-							  label="Name"/>
-			</div>
-			<div class="field">
-				<Slider bind:data={newGame.limit} name="Max Players: "></Slider>
-			</div>
-			<div class="field">
-				<FormField>
-					<Checkbox bind:checked={newGame.visible} touch/>
-					<h3 slot="label">Visible</h3>
-				</FormField>
-				<Textfield style="width: 35%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.code}
-							  label="Code"/>
-			</div>
-			<div class="field">
-				<Button variant="raised" color="secondary" on:click={createGame}>
-					Create
-				</Button>
-				<h3>{log}</h3>
-			</div>
-		</div>
-	{:else}
-		<div id="games">
-			{#if games == null}
-				<h2>Loading</h2>
-			{:else if typeof games == "string"}
-				<h2>Error: {games}</h2>
-			{:else}
-				{#each games as game}
-					<div class="game">
-						<h2>{game.game.name}</h2>
-						<h3 class="players">
-							{game.game.players} / {game.game.limit}
-						</h3>
-						{#if game.buttonDisplay === "Load"}
-							<Button variant="raised" color="secondary">
-								<SvgIcon cls="rotate" svg={mdiLoading}/>
-							</Button>
-						{:else if game.buttonDisplay === "__OpenLink"}
-							<Open link={`games/${game.game.id}`}/>
-						{:else}
-							<Button variant="raised" color="secondary" on:click={() => {joinGame(game)}}>
-								{game.buttonDisplay}
-							</Button>
-						{/if}
-					</div>
-				{/each}
-			{/if}
-		</div>
-	{/if}
-</div>
+{:else}
+	<div id="games">
+		{#if games == null}
+			<h2>Loading</h2>
+		{:else if typeof games == "string"}
+			<h2>Error: {games}</h2>
+		{:else}
+			{#each games as game}
+				<div class="game">
+					<h2>{game.game.name}</h2>
+					<h3 class="players">
+						{game.game.players} / {game.game.limit}
+					</h3>
+					{#if game.buttonDisplay === "Load"}
+						<Button variant="raised" color="secondary">
+							<SvgIcon cls="rotate" svg={mdiLoading}/>
+						</Button>
+					{:else if game.buttonDisplay === "__OpenLink"}
+						<Open link={`games/${game.game.id}`}/>
+					{:else}
+						<Button variant="raised" color="secondary" on:click={() => {joinGame(game)}}>
+							{game.buttonDisplay}
+						</Button>
+					{/if}
+				</div>
+			{/each}
+		{/if}
+	</div>
+{/if}
 
 <style lang="scss">
 	@use "src/css/vars";

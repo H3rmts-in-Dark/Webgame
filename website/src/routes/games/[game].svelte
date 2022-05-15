@@ -6,6 +6,7 @@
 	import Button from "@smui/button";
 	import Textfield from "@smui/textfield";
 	import {buildWebsocket} from "../../ts/websocket.ts";
+	import Title from "../../lib/Title.svelte";
 
 	let game: Promise<Game> = getGameFromServer($page.params.game)
 
@@ -47,27 +48,43 @@
 </svelte:head>
 
 {#await game}
-	<h0>Loading</h0>
+	<Title title="Loading"></Title>
 {:then game }
-	<div style="display: flex; flex-direction: column; align-items: center">
-		<h0>Game {game.name}</h0>
-	</div>
+	<Title title={game.name}></Title>
 
 	{#if initialising}
-		<h2>{game.id}, {game.limit}, {game.players}, {game.name}</h2>
-
-		<Button variant="outlined" color="primary" on:click={Websocket}>
-			Connect
-		</Button>
-		<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Name"/>
-		{#if connected}
-			<Button variant="outlined" color="primary" on:click={() => {console.time("ws");websocket.send(send)}}>
-				Start
-			</Button>
-		{:else }
-			<Button disabled variant="outlined" color="primary">
-				Start
-			</Button>
-		{/if}
+		<div id="connect">
+			{#if !connected}
+				<Button variant="outlined" color="primary" on:click={Websocket}>
+					Connect
+				</Button>
+			{/if}
+			<div>
+				<Textfield class="shaped-outlined" variant="outlined" bind:value={send} label="Name"/>
+			</div>
+			{#if connected}
+				<Button variant="outlined" color="primary" on:click={() => {console.time("ws");websocket.send(send)}}>
+					Start
+				</Button>
+			{:else }
+				<Button disabled variant="outlined" color="primary">
+					Start
+				</Button>
+			{/if}
+		</div>
+	{:else }
+		*Game*
 	{/if}
 {/await}
+
+<style lang="scss">
+	#connect {
+		display: flex;
+		flex-direction: column;
+		width: auto;
+		gap: 3em;
+		align-items: center;
+
+		margin-top: 2em;
+	}
+</style>
