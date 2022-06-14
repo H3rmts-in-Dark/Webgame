@@ -14,6 +14,6 @@ RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 WORKDIR /webgame
 COPY . .
 
-RUN npm install --no-update-notifier && npm run theme
+RUN npm install --no-update-notifier && npm run theme --no-update-notifier && npm run wasm --no-update-notifier
 
-CMD npm run build --no-update-notifier
+CMD npm run dev --no-update-notifier
