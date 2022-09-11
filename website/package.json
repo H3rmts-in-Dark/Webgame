@@ -37,6 +37,6 @@
 		"focus-visible": "^5.2.0",
 		"svelte-material-ui": "^6.0.0-beta.14",
 		"svelte-preprocess": "^4.10.3",
-		"vite": "^2.9.8"
+		"vite": "^2.9.13"
 	}
 }
