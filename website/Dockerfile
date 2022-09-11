@@ -1,4 +1,4 @@
-FROM node:17-alpine as BUILD
+FROM node:18-alpine as BUILD
 COPY --from=rust:1.57.0-alpine /usr/local/cargo /usr/local/cargo
 ENV PATH="$PATH:/usr/local/cargo/bin"
 
