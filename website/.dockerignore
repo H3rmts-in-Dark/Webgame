@@ -1,8 +1,5 @@
 node_modules/
 
-webassembly/target/
-webassembly/Cargo.lock
-
 src/css/smui.css
 src/wasm/
 

@@ -12,8 +12,15 @@ RUN rustup default stable && rustup target add wasm32-unknown-unknown
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 WORKDIR /webgame
+
+COPY ./package.json ./package-lock.json ./
+RUN npm install --no-update-notifier
+
+COPY ./src/css/_smui-theme.scss ./src/css/vars.scss ./src/css/
+RUN npm run theme --no-update-notifier
+
+COPY ./webassembly ./webassembly
+RUN npm run wasm --no-update-notifier
+
 COPY . .
-
-RUN npm install --no-update-notifier && npm run theme --no-update-notifier && npm run wasm --no-update-notifier
-
 CMD npm run dev --no-update-notifier
