@@ -9,7 +9,7 @@ RUN apk add curl && apk add build-base
 RUN rustup default stable && rustup target add wasm32-unknown-unknown
 
 # install wasm-pack
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+RUN cargo install wasm-pack
 
 WORKDIR /webgame
 
