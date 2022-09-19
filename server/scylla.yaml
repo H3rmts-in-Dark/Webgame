@@ -1,3 +1,0 @@
-authenticator: PasswordAuthenticator
-api_address: 127.0.0.1
-native_transport_port: 9042

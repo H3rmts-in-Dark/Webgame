@@ -1,6 +1,5 @@
 using backend.dto;
 using backend.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;

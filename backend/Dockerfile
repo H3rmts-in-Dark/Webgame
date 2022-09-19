@@ -8,7 +8,8 @@ RUN dotnet publish "backend.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 COPY --from=build /app/publish .
+COPY ./cert ./cert
+
+EXPOSE 5252
 ENTRYPOINT ["dotnet", "backend.dll"]

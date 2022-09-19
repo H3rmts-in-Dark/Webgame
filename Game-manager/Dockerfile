@@ -18,4 +18,5 @@ COPY ./src ./src
 # 5. Build for release.
 RUN cargo install --path .
 
+EXPOSE 6969
 CMD ["Game-manager"]
