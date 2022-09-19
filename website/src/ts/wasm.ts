@@ -1,8 +1,9 @@
-import init from "../wasm/pkg";
+import init from "../wasm";
 
-async function load() {
-	let wasm = await init()
-	wasm.greet()
+async function run() {
+	console.log("WASM started")
+	await init()
+	console.log("WASM finished")
 }
 
-export {load}
+export {run}

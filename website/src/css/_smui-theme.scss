@@ -10,10 +10,9 @@
   $on-surface: vars.$on-surface,
 );
 
-
+// prevent eye cancer
 body {
 	background-color: vars.$surface;
-	color: vars.$on-surface;
 }
 
 

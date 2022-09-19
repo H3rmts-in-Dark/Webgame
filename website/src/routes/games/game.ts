@@ -16,7 +16,6 @@ async function getGamesFromServer(): Promise<Game[]> {
 async function getGameFromServer(id: string): Promise<Game> {
 	let data = await fetch(`${getServerAddress()}/games/${id}`).then((games) => games.json())
 	console.debug(data)
-	await sleep(300) // TODO just test
 	return data as Game
 }
 
@@ -32,7 +31,7 @@ async function createGameOnServer(game: CreateGame) {
 	return data as Game
 }
 
-// add check of exists
+// add check if exists
 async function checkAvailable(): Promise<boolean> {
 	await sleep(2500)
 	return true

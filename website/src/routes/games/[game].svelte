@@ -13,7 +13,7 @@
 	let websocket: WebSocket = undefined;
 	let connected: Boolean = false
 
-	async function Websocket() {
+	async function createWebsocket() {
 		websocket = buildWebsocket(await game,
 				() => {
 					console.debug("opened");
@@ -40,7 +40,6 @@
 	let send = "fuf"
 
 	let initialising = true
-
 </script>
 
 <svelte:head>
@@ -55,7 +54,7 @@
 	{#if initialising}
 		<div id="connect">
 			{#if !connected}
-				<Button variant="outlined" color="primary" on:click={Websocket}>
+				<Button variant="outlined" color="primary" on:click={createWebsocket}>
 					Connect
 				</Button>
 			{/if}

@@ -1,6 +1,6 @@
 import type {Game} from "./dto/game";
 import {getWebsocketAddress} from "./addresses";
-import {load} from "./wasm";
+import {run} from "./wasm";
 
 function buildWebsocket(game: Game, onopen: () => void, onmessage: (mess: string) => void, onerror: (err: Event) => void, onclose): WebSocket {
 	let websocket: WebSocket = null
@@ -35,8 +35,8 @@ async function process(data: string) {
 	switch(data) {
 		case "Start":
 			console.log("INIT")
-			load().then(() => {
-				console.log("Loaded")
+			run().then(() => {
+				console.log("Loaded WASM")
 			})
 			break
 		default:
