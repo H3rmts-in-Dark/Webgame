@@ -8,8 +8,8 @@
 		"build": "svelte-kit build --verbose",
 		"preview": "svelte-kit preview --port 3001",
 		"theme": "smui-theme compile src/css/smui.css -i src/css",
-		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web --dev",
-		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm/pkg --target web"
+		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web --dev",
+		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web"
 	},
 	"devDependencies": {
 		"@smui/button": "^6.0.0-beta.14",
