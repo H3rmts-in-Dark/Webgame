@@ -30,4 +30,19 @@ public class GamesController : ControllerBase {
 	public async Task<GameDto> Get(Guid id) {
 		return (await _database.GetGame(id)).ToDto();
 	}
+
+	[HttpGet("{id:guid}/check")]
+	public async Task<CheckCodes> Check(Guid id, string? code) {
+		return (await _database.GetGame(id)).Check(code ?? "");
+	}
+
+	[HttpPost("{id:guid}/players/add")]
+	public async Task AddPlayer(Guid id) {
+		await _database.AddPlayer(id); // TODO remote and replace with GRPC
+	}
+
+	[HttpPost("{id:guid}/players/remove")]
+	public async Task SubtractPlayer(Guid id) {
+		await _database.SubtractPlayer(id);
+	}
 }

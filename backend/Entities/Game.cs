@@ -19,12 +19,20 @@ public class Game {
 		Players = 0;
 	}
 
+	public CheckCodes Check(string code) {
+		if(Players >= Limit)
+			return CheckCodes.MaxPlayersReached;
+		if(Code != code)
+			return CheckCodes.CodeWrong;
+		return CheckCodes.Ok;
+	}
+
 	public static Game FromDto(CreateGameDto create) {
 		var (visible, code, limit, name) = create;
 		return new Game(Guid.NewGuid(), visible, code, limit, name);
 	}
 
 	public GameDto ToDto() {
-		return new GameDto(Id, Limit, Players, Name);
+		return new GameDto(Id, Limit, Players, Name, Code != "");
 	}
 }
