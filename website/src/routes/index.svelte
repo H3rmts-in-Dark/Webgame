@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>Index</title>
 </svelte:head>
 
 <Title title="Home"></Title>

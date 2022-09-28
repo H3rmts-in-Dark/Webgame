@@ -118,8 +118,8 @@
 	}
 
 	.mdc-top-app-bar {
-		color: vars.$on-primary;
-		background: vars.$primary;
+		color: vars.$on-primary-surface;
+		background: vars.$primary-surface;
 	}
 
 	a {
