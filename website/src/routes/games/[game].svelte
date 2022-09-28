@@ -2,16 +2,9 @@
 	import {page} from '$app/stores';
 	import type {Game} from "./game";
 	import {getGameFromServer} from "./game";
-	import {onDestroy} from "svelte";
-	import Button from "@smui/button";
-	import Textfield from "@smui/textfield";
 	import Title from "../../lib/Title.svelte";
 
 	let game: Promise<Game> = getGameFromServer($page.params.game)
-
-	let send = "fuf"
-
-	let initialising = true
 </script>
 
 <svelte:head>

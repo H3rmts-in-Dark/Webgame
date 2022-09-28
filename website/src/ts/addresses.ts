@@ -3,9 +3,4 @@ function getServerAddress(): string {
 	return `http://${location.host.split(':')[0]}:5252`
 }
 
-function getWebsocketAddress(): string {
-	// return `wss://${location.host.split(':')[0]}:6969`
-	return `ws://${location.host.split(':')[0]}:6969`
-}
-
-export {getServerAddress, getWebsocketAddress}
+export {getServerAddress}
