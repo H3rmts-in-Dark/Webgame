@@ -37,6 +37,7 @@
 			<div class:active={$page.url.pathname === '/'}><a sveltekit:prefetch href="/">Home</a></div>
 			<div class:active={$page.url.pathname === '/games'}><a sveltekit:prefetch href="/games">Games</a></div>
 			<div class:active={$page.url.pathname === '/about'}><a sveltekit:prefetch href="/about">About</a></div>
+			<div class:active={$page.url.pathname === '/testWasm'}><a sveltekit:prefetch href="/testWasm">testWasm</a></div>
 		</section>
 		<section class:hide={!hovered} class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
 			<Source/>

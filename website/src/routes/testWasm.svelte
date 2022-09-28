@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Title from "../../lib/Title.svelte";
-	import {run} from "../../ts/wasm";
+	import Title from "../lib/Title.svelte";
+	import {run} from "../ts/wasm";
 </script>
 
 <svelte:head>
@@ -13,7 +13,7 @@
 	START
 </button>
 
-<div id="123">
+<div id="1234">
 	box
 </div>
 
