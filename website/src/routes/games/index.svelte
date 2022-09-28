@@ -1,6 +1,6 @@
 <script lang="ts">
-	import {getGamesFromServer, createGameOnServer, checkAvailable} from "./game"
-	import type {Game, CreateGame} from "./game";
+	import type {CreateGame, Game} from "./game";
+	import {check, createGameOnServer, getGamesFromServer} from "./game"
 	import Button from "@smui/button";
 
 	import {mdiLoading} from "@mdi/js";
@@ -13,15 +13,17 @@
 	import {sleep} from "../../ts/util";
 	import {onMount} from "svelte";
 	import Title from "../../lib/Title.svelte";
+	import {CheckCodes} from "../../ts/dto/checkCodes";
 
 	type GameDisplay = {
 		game: Game
 		buttonDisplay: string
+		code: string
 	}
 
 	let creatingGame = false
-	let newGame: CreateGame = {code: "uwu", limit: 4, name: "new Game", visible: false}
-	let log: string = ""
+	let newGame: CreateGame = {code: "", limit: 4, name: "new Game", visible: false}
+	let log: number | string | undefined = undefined
 
 	// Array if loaded, null if loading, string if error
 	let games: Array<GameDisplay> | null | string = null
@@ -30,13 +32,11 @@
 		creatingGame = false
 		games = null
 		games = await getGamesFromServer()
-				.then((games: Array<Game>) => {
+				.then(async (games: Array<Game>) => {
+					await sleep(50) // show loading text to let user know something happened
 					return games.map((game: Game) => {
-						return {game: game, buttonDisplay: "Open"}
+						return {game: game, buttonDisplay: "Open", code: ''}
 					})
-				}).then(async (games: Array<GameDisplay>) => {
-					await sleep(100) // show loading
-					return games
 				})
 				.catch((err: Error) => {
 					return err.message
@@ -45,25 +45,38 @@
 
 	async function joinGame(gameDisplay: GameDisplay) {
 		console.log(`joining game`)
+
+
 		gameDisplay.buttonDisplay = "Load"
 
 		games = games // forces rerender
 
-		let available = await checkAvailable()
+		let ok = await check(gameDisplay.game.id, gameDisplay.code)
 
-		if(available)
+		if(ok == CheckCodes.Ok)
 			gameDisplay.buttonDisplay = "__OpenLink"
-		else
-			gameDisplay.buttonDisplay = "Error Joining"
+		else {
+			switch(ok) {
+				case CheckCodes.AlreadyPlaying:
+					gameDisplay.buttonDisplay = "Already Playing"
+					break
+				case CheckCodes.CodeWrong:
+					gameDisplay.buttonDisplay = "Wrong Code"
+					break
+				case CheckCodes.MaxPlayersReached:
+					gameDisplay.buttonDisplay = "Max Players Reached"
+					break
+			}
+		}
 		games = games // forces rerender
 	}
 
 	async function createGame() {
 		log = await createGameOnServer(newGame).then((game: Game) => {
 			console.log("created game:", game)
-			return `Game id:${game.id}`
+			return game.id
 		}).catch((err: Error) => {
-			return err.message
+			return "error: " + err.message
 		})
 	}
 
@@ -104,7 +117,7 @@
 	<div id="createGame">
 		<h1 class="title">Create new Game</h1>
 		<div class="field">
-			<Textfield style="width: 45%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.name}
+			<Textfield style="width: 45%;" class="shaped-outlined" variant="outlined" bind:value={newGame.name}
 						  label="Name"/>
 		</div>
 		<div class="field">
@@ -115,14 +128,20 @@
 				<Checkbox bind:checked={newGame.visible} touch/>
 				<h3 slot="label">Visible</h3>
 			</FormField>
-			<Textfield style="width: 35%;" class="shaped-outlined" color="secondary" variant="outlined" bind:value={newGame.code}
+			<Textfield style="width: 35%;" class="shaped-outlined" variant="outlined" bind:value={newGame.code}
 						  label="Code"/>
 		</div>
 		<div class="field">
 			<Button variant="raised" color="secondary" on:click={createGame}>
 				Create
 			</Button>
-			<h3>{log}</h3>
+			{#if log}
+				{#if log.startsWith("error: ") }
+					<h3>{log}</h3>
+				{:else }
+					<Open link={`games/${log}`}/>
+				{/if}
+			{/if}
 		</div>
 	</div>
 {:else}
@@ -138,6 +157,9 @@
 					<h3 class="players">
 						{game.game.players} / {game.game.limit}
 					</h3>
+					{#if game.game.code}
+						<Textfield variant="outlined" bind:value={game.code} label="Code"/>
+					{/if}
 					{#if game.buttonDisplay === "Load"}
 						<Button variant="raised" color="secondary">
 							<SvgIcon cls="rotate" svg={mdiLoading}/>
@@ -184,13 +206,16 @@
 	#createGame {
 		margin-block: 3.5em;
 		padding: 10px;
-		padding-inline: 3em;
-		width: calc(80%);
+		width: 50%;
+		background: vars.$primary-surface;
+		color: vars.$on-primary-surface;
+		margin-left: calc(25% - 10px - 6px);
+		margin-right: calc(25% - 10px - 6px);
 
 		border: {
 			style: solid;
 			width: 6px;
-			color: vars.$on-primary;
+			color: vars.$on-primary-surface;
 		}
 
 		.field {
@@ -208,17 +233,19 @@
 
 	.game {
 		position: relative;
-		background: vars.$primary;
+		background: vars.$primary-surface;
 		padding: 10px;
 		margin: 10px;
-		color: vars.$on-primary;
+		color: vars.$on-primary-surface;
 
 		border: {
 			style: solid;
 			width: 0.4em;
-			color: vars.$on-primary;
+			color: vars.$on-primary-surface;
 		}
+
 		display: flex;
+		gap: 1rem;
 		flex-direction: column;
 		align-items: center;
 
