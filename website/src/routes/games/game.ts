@@ -5,18 +5,23 @@ import {sleep} from "../../ts/util";
 
 
 async function getGamesFromServer(): Promise<Game[]> {
-	let data = await fetch(`${getServerAddress()}/games/all`).then((games) => games.json())
-	console.debug(data)
-	return data.map((game) => {
-		return game as Game
+	return fetch(`${getServerAddress()}/games/all`).then((games) => {
+		console.debug(games)
+		return games.json() as unknown as Game[]
+	}).catch((error) => {
+		console.error("getGamesFromServer", error)
+		throw error
 	})
 }
 
-// add check if exists
 async function getGameFromServer(id: string): Promise<Game> {
-	let data = await fetch(`${getServerAddress()}/games/${id}`).then((games) => games.json())
-	console.debug(data)
-	return data as Game
+	return fetch(`${getServerAddress()}/games/${id}`).then((game) => {
+		console.debug(game)
+		return game.json() as unknown as Game
+	}).catch((error) => {
+		console.error("getGameFromServer", error)
+		throw error
+	})
 }
 
 async function createGameOnServer(game: CreateGame) {
