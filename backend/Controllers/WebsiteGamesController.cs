@@ -6,11 +6,11 @@ namespace backend.Controllers;
 
 [ApiController]
 [ServerHeader]
-[Route("games")]
-public class GamesController : ControllerBase {
+[Route("website/games")]
+public class WebsiteGamesController : ControllerBase {
 	private readonly IDatabase _database;
 
-	public GamesController(IDatabase database) {
+	public WebsiteGamesController(IDatabase database) {
 		_database = database;
 	}
 
@@ -34,15 +34,5 @@ public class GamesController : ControllerBase {
 	[HttpGet("{id:guid}/check")]
 	public async Task<CheckCodes> Check(Guid id, string? code) {
 		return (await _database.GetGame(id)).Check(code ?? "");
-	}
-
-	[HttpPost("{id:guid}/players/add")]
-	public async Task AddPlayer(Guid id) {
-		await _database.AddPlayer(id); // TODO remote and replace with GRPC
-	}
-
-	[HttpPost("{id:guid}/players/remove")]
-	public async Task SubtractPlayer(Guid id) {
-		await _database.SubtractPlayer(id);
 	}
 }

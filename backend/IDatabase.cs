@@ -12,4 +12,6 @@ public interface IDatabase {
 	Task AddPlayer(Guid id);
 
 	Task SubtractPlayer(Guid id);
+
+	Task SetPlayer(Guid id, int value);
 }

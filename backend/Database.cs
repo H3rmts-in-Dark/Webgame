@@ -35,4 +35,8 @@ public class Database : IDatabase {
 	public async Task SubtractPlayer(Guid id) {
 		await _gamesCollection.UpdateOneAsync(g => g.Id == id, Builders<Game>.Update.Inc(g => g.Players, -1));
 	}
+
+	public async Task SetPlayer(Guid id, int value) {
+		await _gamesCollection.UpdateOneAsync(g => g.Id == id, Builders<Game>.Update.Set(g => g.Players, value));
+	}
 }
