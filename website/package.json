@@ -5,8 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "svelte-kit dev --port 3000",
-		"build": "svelte-kit build --verbose",
-		"preview": "svelte-kit preview --port 3001",
+		"build": "vite build --verbose",
 		"theme": "smui-theme compile src/css/smui.css -i src/css",
 		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web --dev",
 		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web"
