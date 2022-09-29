@@ -7,34 +7,36 @@
 		"dev": "svelte-kit dev --port 3000",
 		"build": "svelte-kit build --verbose",
 		"preview": "svelte-kit preview --port 3001",
-		"theme": "smui-theme compile src/css/smui.css -i src/css"
+		"theme": "smui-theme compile src/css/smui.css -i src/css",
+		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web --dev",
+		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web"
 	},
 	"devDependencies": {
-		"@smui/button": "^6.0.0-beta.14",
-		"@smui/checkbox": "^6.0.0-beta.14",
-		"@smui/form-field": "^6.0.0-beta.14",
-		"@smui/icon-button": "^6.0.0-beta.14",
-		"@smui/slider": "^6.0.0-beta.14",
-		"@smui/textfield": "^6.0.0-beta.14",
+		"@smui/button": "^6.1.4",
+		"@smui/checkbox": "^6.1.4",
+		"@smui/form-field": "^6.1.4",
+		"@smui/icon-button": "^6.1.4",
+		"@smui/slider": "^6.1.4",
+		"@smui/textfield": "^6.1.4",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@tsconfig/svelte": "^3.0.0",
-		"@types/cookie": "^0.4.1",
+		"@types/cookie": "^0.5.1",
 		"scss": "^0.2.4",
-		"smui-theme": "^6.0.0-beta.14",
-		"svelte": "^3.46.4",
-		"svelte-check": "^2.4.5",
+		"smui-theme": "^6.2.0",
+		"svelte": "^3.50.1",
+		"svelte-check": "^2.9.1",
 		"svelte-mui": "^0.5.0",
-		"svelte-preprocess": "^4.10.1",
-		"typescript": "^4.5.5"
+		"svelte-preprocess": "^4.10.7",
+		"typescript": "^4.8.4"
 	},
 	"dependencies": {
-		"@mdi/js": "^6.5.95",
-		"@smui/common": "^6.0.0-beta.14",
-		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.39",
+		"@mdi/js": "^7.0.96",
+		"@smui/common": "^6.1.4",
+		"@sveltejs/vite-plugin-svelte": "^1.0.8",
 		"focus-visible": "^5.2.0",
-		"svelte-material-ui": "^6.0.0-beta.14",
+		"svelte-material-ui": "^6.2.0",
 		"svelte-preprocess": "^4.10.3",
-		"vite": "^2.9.13"
+		"vite": "^3.1.4"
 	}
 }
