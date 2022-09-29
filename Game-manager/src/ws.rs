@@ -1,21 +1,21 @@
 use futures::{SinkExt, StreamExt};
+use futures::stream::{SplitSink, SplitStream};
 use uuid::Uuid;
 use warp::ws::{Message, WebSocket};
 
 use crate::Games;
 
 pub async fn client_connection(ws: WebSocket, game_id: String, games: Games) {
-	let uuid = &Uuid::new_v4().to_string()[24..36]; // get 12 long random
-	let (mut sender, mut reciver) = ws.split();
+	let uuid = &Uuid::new_v4().to_string()[24..36]; // get 12 long random to identify connection
+	let (mut sender, mut reciver): (SplitSink<WebSocket, Message>, SplitStream<WebSocket>) = ws.split();
 
-	games.get_mut(&game_id).unwrap().connected_clients += 1;
-
-	match games.get(&game_id) {
-		Some(game) => {
-			println!("{} connected to {:?}", uuid, game.value())
+	match games.get_mut(&game_id) {
+		Some(mut game) => {
+			game.connected_clients += 1;
+			println!("{} connected to {}, connected clients: {}", uuid, game_id, game.connected_clients);
 		}
 		None => {
-			eprintln!("Error getting {} game from list", game_id);
+			eprintln!("{} game not found {}", uuid, game_id);
 			return;
 		}
 	}
@@ -25,34 +25,38 @@ pub async fn client_connection(ws: WebSocket, game_id: String, games: Games) {
 		let msg = match result {
 			Ok(msg) => msg,
 			Err(e) => {
-				eprintln!("error receiving ws message for game_id: {}: {}", game_id, e);
+				eprintln!("{} error receiving ws message: {}", uuid, e);
 				break;
 			}
 		};
 
-		println!("received message from {}: {:?}", uuid, msg);
+		println!("{} received message: {:?}", uuid, msg);
+
 		if msg.is_close() {
+			println!("{} received close", uuid);
 			break;
 		}
 
 		let mess = "Start";
-		let res = sender.send(Message::text(mess)).await;
-		if res.is_err() {
-			eprintln!("error sending ws message for game_id: {}: {}", game_id, res.err().unwrap());
-		} else {
-			println!("sending {} to {}", mess, uuid);
+
+		match sender.send(Message::text(mess)).await {
+			Ok(_) => {
+				println!("{} sent message: {}", uuid, mess)
+			}
+			Err(e) => {
+				eprintln!("{} error sending ws message: {}", uuid, e);
+				break;
+			}
 		}
 	}
 
-
-	games.get_mut(&game_id).unwrap().connected_clients -= 1;
-
-	match games.get(&game_id) {
-		Some(game) => {
-			println!("{} disconnected from {:?}", uuid, game.value())
+	match games.get_mut(&game_id) {
+		Some(mut game) => {
+			game.connected_clients -= 1;
+			println!("{} disconnected from {}, connected clients: {}", uuid, game_id, game.connected_clients);
 		}
 		None => {
-			eprintln!("Error getting {} game from list", game_id);
+			eprintln!("{} game not found {}", uuid, game_id);
 			return;
 		}
 	}
