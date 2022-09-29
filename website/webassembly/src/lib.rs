@@ -1,12 +1,11 @@
 extern crate console_error_panic_hook;
 extern crate core;
 
-use std::panic;
-
 use futures_util::sink::SinkExt;
+use futures_util::stream::{SplitSink, SplitStream};
+use futures_util::StreamExt;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::spawn_local;
-use ws_stream_wasm::{WsMessage, WsMeta, WsStream};
+use ws_stream_wasm::{WsErr, WsMessage, WsMeta, WsStream};
 
 #[wasm_bindgen]
 extern "C" {
@@ -16,6 +15,10 @@ extern "C" {
 	fn error(s: &str);
 }
 
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
@@ -23,30 +26,79 @@ macro_rules! console_err {
     ($($t:tt)*) => (error(&format_args!($($t)*).to_string()))
 }
 
-const T: &str = "40283437-12bf-4a85-92fe-d9391223259d";
 
-#[wasm_bindgen(start)]
-pub fn main() -> Result<(), JsValue> {
-	panic::set_hook(Box::new(console_error_panic_hook::hook));
-
+#[wasm_bindgen]
+pub async fn run() -> Result<(), JsValue> {
 	console_log!("Hello from {}!", "rust");
+	set_panic_hook();
 
-	console_log!("Hello using web-sys");
+	const T: &str = "40283437-12bf-4a85-92fe-d9391223259d";
+	let (ws, mut sender, mut receiver) = match open(format!("ws://localhost:6969/ws/{}", T)).await {
+		Ok((ws, sender, receiver)) => (ws, sender, receiver),
+		Err(_) => {
+			return Err(JsValue::from_str("Failed to open websocket"));
+		}
+	};
 
-	spawn_local(async {
-		let (ws, mut wsio): (WsMeta, WsStream) = match WsMeta::connect(format!("ws://localhost:6969/ws/{}", T), None).await {
-			Ok(conn) => conn,
+	match send(&mut sender, "TESTTEST").await {
+		Ok(_) => {}
+		Err(_) => {
+			return Err(JsValue::from_str("Failed to send message"));
+		}
+	}
 
-			Err(e) => {
-				console_err!("Error connecting to server: {:?}", e);
-				panic!("Failed to connect to websocket")
-			}
-		};
-		wsio.send(WsMessage::Text("TESTTEST".to_string())).await.expect("Failed to send message");
-		ws.close().await.expect("Failed to close websocket");
-	});
+	while let Some(msg) = receiver.next().await {
+		console_log!("received message: {:?}", msg);
+	}
+
+	console_log!("closed connection");
 
 	Ok(())
+}
+
+async fn open(url: String) -> Result<(WsMeta, SplitSink<WsStream, WsMessage>, SplitStream<WsStream>), WsErr> {
+	match WsMeta::connect(url, None).await {
+		Ok((ws, wsio)) => {
+			console_log!("connected to websocket");
+			let (sender, receiver): (SplitSink<WsStream, WsMessage>, SplitStream<WsStream>) = wsio.split();
+			Ok((ws, sender, receiver))
+		}
+		Err(e) => {
+			console_err!("Error connecting to websocket: {:?}", e);
+			Err(e)
+		}
+	}
+}
+
+async fn send(wsio: &mut SplitSink<WsStream, WsMessage>, mess: &str) -> Result<(), WsErr> {
+	match wsio.send(WsMessage::Text(mess.to_string())).await {
+		Ok(_) => {
+			Ok(())
+		}
+		Err(e) => {
+			match e {
+				WsErr::ConnectionNotOpen => {
+					console_err!("Error sending ws message: Connection Not Open SendFailed: {:?}", e);
+					Err(e)
+				}
+				_ => {
+					console_err!("Error sending ws message: {:?}", e);
+					Err(e)
+				}
+			}
+		}
+	}
+}
+
+pub fn set_panic_hook() {
+	// When the `console_error_panic_hook` feature is enabled, we can call the
+	// `set_panic_hook` function at least once during initialization, and then
+	// we will get better error messages if our code ever panics.
+	//
+	// For more details see
+	// https://github.com/rustwasm/console_error_panic_hook#readme
+	#[cfg(feature = "console_error_panic_hook")]
+	console_error_panic_hook::set_once();
 }
 
 //
