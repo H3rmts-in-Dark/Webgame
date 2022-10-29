@@ -32,7 +32,7 @@
 	"dependencies": {
 		"@mdi/js": "^7.0.96",
 		"@smui/common": "^6.1.4",
-		"@sveltejs/vite-plugin-svelte": "^1.0.8",
+		"@sveltejs/vite-plugin-svelte": "^1.0.9",
 		"focus-visible": "^5.2.0",
 		"svelte-material-ui": "^6.2.0",
 		"svelte-preprocess": "^4.10.3",
