@@ -30,7 +30,7 @@
 		"typescript": "^4.8.4"
 	},
 	"dependencies": {
-		"@mdi/js": "^7.0.96",
+		"@mdi/js": "^7.1.96",
 		"@smui/common": "^6.1.4",
 		"@sveltejs/vite-plugin-svelte": "^1.0.8",
 		"focus-visible": "^5.2.0",
