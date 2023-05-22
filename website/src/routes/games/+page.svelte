@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type {CreateGame, Game} from "./game";
-	import {check, createGameOnServer, getGamesFromServer} from "./game"
 	import Button from "@smui/button";
 
 	import {mdiLoading} from "@mdi/js";
@@ -10,10 +8,13 @@
 	import Textfield from "@smui/textfield";
 	import Checkbox from '@smui/checkbox';
 	import Slider from "$lib/Slider.svelte";
-	import {sleep} from "../../ts/util";
+	import {sleep} from "$lib/ts/util";
 	import {onMount} from "svelte";
-	import Title from "../../lib/Title.svelte";
-	import {CheckCodes} from "../../ts/dto/checkCodes";
+	import {CheckCodes} from "$lib/ts/dto/checkCodes";
+	import type {CreateGame} from "$lib/ts/dto/createGame";
+	import type {Game} from "$lib/ts/dto/game";
+	import {check, createGameOnServer, getGamesFromServer} from "$lib/ts/game";
+	import Title from "$lib/Title.svelte";
 
 	type GameDisplay = {
 		game: Game
@@ -178,7 +179,7 @@
 {/if}
 
 <style lang="scss">
-	@use "src/css/vars";
+	@use "../../css/vars";
 
 	#buttons_bar {
 		display: flex;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Title from "../lib/Title.svelte";
-	import {run} from "../ts/wasm";
+	import Title from "$lib/Title.svelte";
+	import {run} from "$lib/ts/wasm";
 </script>
 
 <svelte:head>

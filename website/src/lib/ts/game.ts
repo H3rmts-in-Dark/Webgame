@@ -1,8 +1,7 @@
-import type {CreateGame} from "src/ts/dto/createGame"
-import type {Game} from "src/ts/dto/game"
-import {getServerAddress} from "../../ts/addresses";
-import type {CheckCodes} from "../../ts/dto/checkCodes";
-
+import {getServerAddress} from "./addresses";
+import type {CheckCodes} from "./dto/checkCodes";
+import type {Game} from "./dto/game";
+import type {CreateGame} from "./dto/createGame";
 
 async function getGamesFromServer(): Promise<Game[]> {
 	console.log("getGamesFromServer")
@@ -64,5 +63,3 @@ async function check(id: number, code: string): Promise<CheckCodes> {
 
 
 export {getGamesFromServer, createGameOnServer, getGameFromServer, check}
-export type {Game, CreateGame}
-

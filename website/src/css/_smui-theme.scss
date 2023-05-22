@@ -1,7 +1,8 @@
 @use 'vars';
 @use '@material/theme/color-palette';
 
-@use '@material/theme/index' with (
+// Svelte Colors!
+@use '@material/theme/index' as theme with (
   $primary: vars.$primary,
   $on-primary: vars.$on-primary,
   $secondary: vars.$secondary,
@@ -10,25 +11,23 @@
   $on-surface: vars.$on-surface,
 );
 
-// prevent eye cancer
 body {
-	background-color: vars.$surface;
+  background-color: vars.$surface;
 }
 
-
 :root {
-	// see ripple better on primary background
-	--mdc-ripple-color: rgba(0, 0, 0, 10);
+  // see ripple better on primary background
+  --mdc-ripple-color: rgba(0, 0, 0, 10);
 
-	// lager outline for buttons
-	--mdc-outlined-button-outline-width: 3px;
+  // lager outline for buttons
+  --mdc-outlined-button-outline-width: 3px;
 
-	// higher alpha for outlined buttons
-	--mdc-outlined-button-outline-color: #27725c80;
+  // higher alpha for outlined buttons
+  --mdc-outlined-button-outline-color: #27725c80;
 
-	// removed focus background color
-	--mdc-outlined-button-focus-state-layer-opacity: 0;
+  // removed focus background color
+  --mdc-outlined-button-focus-state-layer-opacity: 0;
 
-	// for text inside span in Formfield
-	--mdc-theme-text-primary-on-background: vars.$on-surface;
+  // for text inside span in Formfield
+  --mdc-theme-text-primary-on-background: vars.$on-surface;
 }

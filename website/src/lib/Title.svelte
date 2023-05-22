@@ -3,7 +3,7 @@
 </script>
 
 <div id="title">
-	<h0>{title}</h0>
+	<h1>{title}</h1>
 </div>
 
 <style lang="scss">
@@ -11,5 +11,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center
+	}
+
+	h1 {
+		font-size: 4em;
+		margin-block-start: 0.5em;
+		margin-block-end: 0.5em;
+		font-weight: bold;
 	}
 </style>

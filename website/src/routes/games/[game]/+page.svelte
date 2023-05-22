@@ -1,8 +1,8 @@
 <script lang="ts">
 	import {page} from '$app/stores';
-	import type {Game} from "./game";
-	import {getGameFromServer} from "./game";
-	import Title from "../../lib/Title.svelte";
+	import Title from "$lib/Title.svelte";
+	import type {Game} from "$lib/ts/dto/game";
+	import {getGameFromServer} from "$lib/ts/game";
 
 	let game: Promise<Game> = getGameFromServer($page.params.game)
 </script>

@@ -1,4 +1,4 @@
-@use "./vars";
+@use "vars";
 
 #svelte-root {
 	width: 100vw;
@@ -35,13 +35,6 @@ body {
 	100% {
 		transform: rotate(360deg);
 	}
-}
-
-h0 {
-	font-size: 4em;
-	margin-block-start: 0.5em;
-	margin-block-end: 0.5em;
-	font-weight: bold;
 }
 
 h1 {

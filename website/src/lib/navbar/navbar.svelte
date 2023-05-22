@@ -51,7 +51,7 @@
 <div class="navbarOffset" class:navbarOffsetCompressed={!hovered}></div>
 
 <style lang="scss">
-	@use "src/css/vars";
+	@use "../../css/vars";
 
 	#navbar {
 		overflow: hidden;

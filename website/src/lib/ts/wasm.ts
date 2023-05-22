@@ -1,5 +1,5 @@
-import init from "../wasm";
-import {run as runWASM} from "../wasm";
+import init from "../../wasm";
+import {run as runWASM} from "../../wasm";
 
 async function run() {
 	console.log("WASM loading")

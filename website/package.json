@@ -1,41 +1,34 @@
 {
-	"author": "H3rmt | Man in Dark",
-	"name": "webgame",
-	"version": "0.1.0",
-	"type": "module",
+	"name": "website",
+	"version": "0.0.1",
 	"scripts": {
-		"dev": "svelte-kit dev --port 3000",
-		"build": "vite build --verbose",
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"theme": "smui-theme compile src/css/smui.css -i src/css",
 		"wasm": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web --dev",
 		"wasm build": "wasm-pack build ./webassembly --out-dir ../src/wasm --target web"
 	},
 	"devDependencies": {
-		"@smui/button": "^6.1.4",
-		"@smui/checkbox": "^6.1.4",
-		"@smui/form-field": "^6.1.4",
-		"@smui/icon-button": "^6.1.4",
-		"@smui/slider": "^6.1.4",
-		"@smui/textfield": "^6.1.4",
-		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/kit": "next",
-		"@tsconfig/svelte": "^3.0.0",
-		"@types/cookie": "^0.5.1",
-		"scss": "^0.2.4",
+		"@mdi/js": "^7.2.96",
+		"@smui/button": "^7.0.0-beta.8",
+		"@smui/checkbox": "^7.0.0-beta.8",
+		"@smui/form-field": "^7.0.0-beta.8",
+		"@smui/icon-button": "^7.0.0-beta.8",
+		"@smui/slider": "^7.0.0-beta.8",
+		"@smui/textfield": "^7.0.0-beta.8",
+		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/kit": "^1.5.0",
 		"smui-theme": "^6.2.0",
-		"svelte": "^3.50.1",
-		"svelte-check": "^2.9.1",
-		"svelte-mui": "^0.5.0",
-		"svelte-preprocess": "^4.10.7",
-		"typescript": "^4.8.4"
+		"svelte": "^3.54.0",
+		"svelte-check": "^3.0.1",
+		"typescript": "^5.0.0",
+		"vite": "^4.3.0"
 	},
+	"type": "module",
 	"dependencies": {
-		"@mdi/js": "^7.0.96",
-		"@smui/common": "^6.1.4",
-		"@sveltejs/vite-plugin-svelte": "^1.0.8",
-		"focus-visible": "^5.2.0",
-		"svelte-material-ui": "^6.2.0",
-		"svelte-preprocess": "^4.10.3",
-		"vite": "^3.1.4"
+		"wasm-pack": "^0.11.1"
 	}
 }
